@@ -1,0 +1,1 @@
+-- Placeholder: 08_industry.sql (待后续 Sprint 补充)

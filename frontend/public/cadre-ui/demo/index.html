@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Cadre UI System · Demo</title>
+<link rel="stylesheet" href="../core/variables.css">
+<link rel="stylesheet" href="../core/base.css">
+<link rel="stylesheet" href="../components/CadreCard.css">
+<link rel="stylesheet" href="../components/StatCard.css">
+<link rel="stylesheet" href="../components/Tag.css">
+<link rel="stylesheet" href="../components/Avatar.css">
+<link rel="stylesheet" href="../layout/Grid.css">
+<link rel="stylesheet" href="../layout/Dashboard.css">
+<script src="../components/CadreCard.js"></script>
+<style>
+  /* Demo-specific overrides */
+  body { padding: 24px; }
+  .demo-section { margin-bottom: 32px; }
+  .demo-section h2 { font-size: var(--fs-h2); color: var(--text-white); margin-bottom: 16px; letter-spacing:1px; }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="title">📋 中堰村 · 村委班子</div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="alert('新增干部')">➕ 新增干部</button>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="demo-section">
+    <h2>📊 统计卡片</h2>
+    <div class="dashboard-stats">
+      <div class="stat-card"><div class="value">6</div><div class="label">干部总数</div><div class="sub">两委班子</div></div>
+      <div class="stat-card"><div class="value green">139</div><div class="label">本月事项</div><div class="sub">↑12%</div></div>
+      <div class="stat-card"><div class="value amber">93%</div><div class="label">综合满意率</div></div>
+      <div class="stat-card"><div class="value blue">10</div><div class="label">本月留言</div></div>
+    </div>
+  </div>
+
+  <!-- Cadre Grid -->
+  <div class="demo-section">
+    <h2>👥 干部卡片</h2>
+    <div class="grid grid-auto" id="cadreGrid">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="demo-section">
+    <h2>🏷️ 职务标签</h2>
+    <span class="tag tag-green">村两委</span>
+    <span class="tag tag-blue">党总支部</span>
+    <span class="tag tag-amber">监委会</span>
+    <span class="tag tag-purple">村民代表</span>
+    <span class="tag tag-dim">已离职</span>
+  </div>
+</div>
+
+<script>
+// Mock data — replace with real API call
+var cadres = [
+  { id:'deng',  name:'邓超',   title:'党总支部书记、村委会主任', org:'中堰村党总支部', phone:'15929510089', avatar:'邓', color:'#E74C3C', photo:'../../leader-deng.jpg',   qr:'../../qr-deng.jpg',   monthTasks:22, monthDone:20, satisfaction:97 },
+  { id:'huang', name:'黄尊海', title:'党总支部副书记',         org:'中堰村党总支部', phone:'15229151368', avatar:'黄', color:'#F8B400', photo:'../../leader-huang.jpg',  qr:'../../qr-huang.jpg',  monthTasks:14, monthDone:13, satisfaction:95 },
+  { id:'chen',  name:'陈良敏', title:'村委会副主任',           org:'中堰村村民委员会', phone:'15389513886', avatar:'陈', color:'#28C7FA', photo:'../../leader-chen.jpg',   qr:'../../qr-chen.jpg',   monthTasks:30, monthDone:27, satisfaction:94 },
+  { id:'liao',  name:'廖邦洪', title:'村委会副主任',           org:'中堰村村民委员会', phone:'13679151313', avatar:'廖', color:'#39D98A', photo:'../../leader-liao.jpg',   qr:'../../qr-liao.jpg',   monthTasks:26, monthDone:24, satisfaction:95 },
+  { id:'gong',  name:'龚磊',   title:'监委会主任',             org:'中堰村监督委员会', phone:'17889100100', avatar:'龚', color:'#8b5cf6', photo:'../../leader-gong.jpg',   qr:'../../qr-gong.jpg',   monthTasks:10, monthDone:9,  satisfaction:93 },
+  { id:'li',    name:'李强强', title:'村委会文书',             org:'中堰村村民委员会', phone:'15991187663', avatar:'李', color:'#0ea5e9', photo:'../../leader-li.jpg',     qr:'../../qr-li.jpg',     monthTasks:16, monthDone:15, satisfaction:96 }
+];
+
+// Render using the CadreCard component library
+CadreCard.renderGrid(
+  document.getElementById('cadreGrid'),
+  cadres,
+  function(d) {
+    alert('打开履职档案 — ' + d.name + ' · ' + d.title + '\n📱 ' + d.phone);
+  }
+);
+</script>
+</body>
+</html>

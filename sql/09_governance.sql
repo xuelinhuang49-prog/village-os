@@ -1,0 +1,1 @@
+-- Placeholder: 09_governance.sql (待后续 Sprint 补充)

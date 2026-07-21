@@ -1,0 +1,82 @@
+{
+  "description": "数字乡村平台 IoT 传感器实时流数据格式定义",
+  "protocol": "WebSocket",
+  "endpoint": "ws://localhost:8080/ws/iot",
+  "push_interval_seconds": 5,
+  "message_format": {
+    "type": "iot_update",
+    "village_id": "Long",
+    "device_id": "Long",
+    "device_type": "String (greenhouse|weather_station|water_quality|smart_market)",
+    "status": "String (normal|warning|alarm|offline)",
+    "timestamp": "Long (epoch millis)",
+    "data": "Object (device-specific)"
+  },
+  "device_schemas": {
+    "greenhouse": {
+      "temperature": "number (°C, range 20-35)",
+      "humidity": "number (%, range 50-90)",
+      "soil_moisture": "number (%, range 20-60)",
+      "co2": "number (ppm, range 350-500)",
+      "light_intensity": "number (lux, range 5000-35000)"
+    },
+    "weather_station": {
+      "temperature": "number (°C, range 15-35)",
+      "humidity": "number (%, range 40-80)",
+      "wind_speed": "number (m/s, range 0-10)",
+      "rainfall": "number (mm, range 0-20)",
+      "air_pressure": "number (hPa, range 1000-1030)"
+    },
+    "water_quality": {
+      "ph": "number (range 6.5-8.5)",
+      "dissolved_oxygen": "number (mg/L, range 5-10)",
+      "turbidity": "number (NTU, range 0-10)",
+      "ammonia_nitrogen": "number (mg/L, range 0-1)",
+      "water_temperature": "number (°C, range 15-30)"
+    },
+    "smart_market": {
+      "visitor_count": "integer (range 50-550)",
+      "transaction_count": "integer (range 20-220)",
+      "total_amount": "number (元, range 1000-6000)",
+      "stall_active": "integer (range 10-40)"
+    }
+  },
+  "sample_stream": [
+    {
+      "type": "iot_update",
+      "village_id": 1,
+      "device_id": 1001,
+      "device_type": "greenhouse",
+      "status": "normal",
+      "timestamp": 1719705600000,
+      "data": { "temperature": 28.5, "humidity": 65.0, "soil_moisture": 30.0, "co2": 420.0, "light_intensity": 18500.0 }
+    },
+    {
+      "type": "iot_update",
+      "village_id": 1,
+      "device_id": 1002,
+      "device_type": "weather_station",
+      "status": "normal",
+      "timestamp": 1719705601000,
+      "data": { "temperature": 26.8, "humidity": 58.0, "wind_speed": 3.2, "rainfall": 0.0, "air_pressure": 1013.5 }
+    },
+    {
+      "type": "iot_update",
+      "village_id": 1,
+      "device_id": 1003,
+      "device_type": "water_quality",
+      "status": "normal",
+      "timestamp": 1719705602000,
+      "data": { "ph": 7.6, "dissolved_oxygen": 6.8, "turbidity": 4.2, "ammonia_nitrogen": 0.3, "water_temperature": 24.5 }
+    },
+    {
+      "type": "iot_update",
+      "village_id": 1,
+      "device_id": 1004,
+      "device_type": "smart_market",
+      "status": "normal",
+      "timestamp": 1719705603000,
+      "data": { "visitor_count": 287, "transaction_count": 103, "total_amount": 3650.0, "stall_active": 25 }
+    }
+  ]
+}

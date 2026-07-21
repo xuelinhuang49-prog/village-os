@@ -1,0 +1,33 @@
+/* ============================================================
+   Avatar · 头像组件
+   ============================================================ */
+
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-sm  { width: 40px; height: 40px; }
+.avatar-md  { width: 64px; height: 64px; }
+.avatar-lg  { width: 80px; height: 80px; }
+.avatar-xl  { width: 100px; height: 100px; }
+
+.avatar-bordered {
+  border: 3px solid var(--pri);
+  box-shadow: 0 0 16px var(--pri-glow);
+}
+
+/* 占位头像（文字） */
+.avatar-placeholder {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.avatar-placeholder-sm  { width: 40px; height: 40px; font-size: 16px; }
+.avatar-placeholder-md  { width: 64px; height: 64px; font-size: 24px; }
+.avatar-placeholder-lg  { width: 80px; height: 80px; font-size: 30px; }

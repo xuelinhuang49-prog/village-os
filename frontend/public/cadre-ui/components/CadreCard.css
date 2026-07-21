@@ -1,0 +1,132 @@
+/* ============================================================
+   CadreCard · 干部卡片组件
+   ============================================================ */
+
+.cadre-card {
+  background: var(--bg-card);
+  border-radius: var(--r-lg);
+  padding: var(--gap-xl);
+  box-shadow: var(--shadow-md);
+  color: var(--text);
+  transition: all var(--normal) var(--ease);
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.cadre-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--pri);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.cadre-card:active {
+  transform: scale(0.97);
+}
+
+/* 头像 */
+.cadre-card .avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto var(--gap-md);
+  display: block;
+  border: 3px solid var(--pri);
+  box-shadow: 0 0 20px var(--pri-glow);
+}
+
+.cadre-card .avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--gap-md);
+  font-size: 30px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* 姓名 */
+.cadre-card .name {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--text-white);
+  margin-bottom: var(--gap-xs);
+  letter-spacing: 0.5px;
+}
+
+/* 职务 */
+.cadre-card .role {
+  font-size: var(--fs-xs);
+  color: var(--pri);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* 组织 */
+.cadre-card .org {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: var(--gap-xs);
+}
+
+/* 电话 */
+.cadre-card .phone {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--gap-xs);
+}
+
+/* 二维码入口 */
+.cadre-card .qr-entry {
+  font-size: 9px;
+  color: var(--pri);
+  cursor: pointer;
+  margin-bottom: var(--gap-sm);
+  transition: color var(--fast);
+}
+.cadre-card .qr-entry:hover {
+  color: #fff;
+}
+
+/* 统计行 */
+.cadre-card .stats {
+  display: flex;
+  justify-content: center;
+  gap: var(--gap-sm);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.cadre-card .stats .stat-item {
+  text-align: center;
+}
+
+.cadre-card .stats .stat-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pri);
+}
+
+.cadre-card .stats .stat-val.green {
+  color: #34d399;
+}
+
+.cadre-card .stats .stat-val.amber {
+  color: var(--amber);
+}
+
+.cadre-card .stats .stat-lbl {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.cadre-card .stats .stat-divider {
+  width: 1px;
+  background: rgba(255,255,255,0.08);
+}

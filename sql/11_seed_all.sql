@@ -1,0 +1,1 @@
+-- Placeholder: 11_seed_all.sql (待后续 Sprint 补充)

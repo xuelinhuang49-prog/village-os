@@ -1,0 +1,57 @@
+/* ============================================================
+   Dashboard · 仪表盘容器
+   ============================================================ */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-2xl);
+  padding: var(--gap-2xl);
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--gap-lg) var(--gap-2xl);
+  background: var(--bg-panel);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-header .title {
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  color: var(--text-white);
+  letter-spacing: 1px;
+}
+
+.dashboard-header .actions {
+  display: flex;
+  gap: var(--gap-sm);
+}
+
+/* 统计行 */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--gap-lg);
+}
+
+/* 主体区域 */
+.dashboard-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-xl);
+}
+
+.dashboard-body.sidebar-layout {
+  grid-template-columns: 1fr 320px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-body.sidebar-layout {
+    grid-template-columns: 1fr;
+  }
+}

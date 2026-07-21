@@ -1,0 +1,100 @@
+{
+  "description": "数字乡村平台 IoT 告警模拟数据",
+  "alerts": [
+    {
+      "id": 1,
+      "village_id": 1,
+      "device_id": 1001,
+      "device_type": "greenhouse",
+      "alert_type": "temperature_high",
+      "severity": "warning",
+      "message": "智慧大棚A区温度超过35°C阈值",
+      "threshold": 35.0,
+      "actual": 37.2,
+      "created_at": "2026-06-30T10:15:00+08:00",
+      "status": "resolved",
+      "resolved_at": "2026-06-30T10:32:00+08:00"
+    },
+    {
+      "id": 2,
+      "village_id": 1,
+      "device_id": 1001,
+      "device_type": "greenhouse",
+      "alert_type": "humidity_low",
+      "severity": "info",
+      "message": "智慧大棚湿度低于40%，建议增加喷雾",
+      "threshold": 40.0,
+      "actual": 35.0,
+      "created_at": "2026-06-30T09:45:00+08:00",
+      "status": "resolved",
+      "resolved_at": "2026-06-30T10:00:00+08:00"
+    },
+    {
+      "id": 3,
+      "village_id": 1,
+      "device_id": 1003,
+      "device_type": "water_quality",
+      "alert_type": "ph_abnormal",
+      "severity": "warning",
+      "message": "荷虾混养区pH值偏高，可能影响虾苗生长",
+      "threshold": 8.5,
+      "actual": 8.7,
+      "created_at": "2026-06-29T16:20:00+08:00",
+      "status": "resolved",
+      "resolved_at": "2026-06-29T18:00:00+08:00"
+    },
+    {
+      "id": 4,
+      "village_id": 1,
+      "device_id": 1004,
+      "device_type": "smart_market",
+      "alert_type": "visitor_overflow",
+      "severity": "urgent",
+      "message": "智慧市集客流量超过500人，建议启动分流",
+      "threshold": 500,
+      "actual": 523,
+      "created_at": "2026-06-28T11:00:00+08:00",
+      "status": "resolved",
+      "resolved_at": "2026-06-28T13:00:00+08:00"
+    },
+    {
+      "id": 5,
+      "village_id": 1,
+      "device_id": 1002,
+      "device_type": "weather_station",
+      "alert_type": "rainfall_heavy",
+      "severity": "urgent",
+      "message": "暴雨预警：过去1小时降雨量达25mm，注意农田排水",
+      "threshold": 20.0,
+      "actual": 25.0,
+      "created_at": "2026-06-27T15:30:00+08:00",
+      "status": "resolved",
+      "resolved_at": "2026-06-27T17:00:00+08:00"
+    },
+    {
+      "id": 6,
+      "village_id": 1,
+      "device_id": 1001,
+      "device_type": "greenhouse",
+      "alert_type": "co2_high",
+      "severity": "info",
+      "message": "大棚CO2浓度偏高，请检查通风系统",
+      "threshold": 500.0,
+      "actual": 520.0,
+      "created_at": "2026-06-30T08:00:00+08:00",
+      "status": "active"
+    }
+  ],
+  "alert_types": {
+    "temperature_high": { "severity": "warning", "description": "温度过高" },
+    "temperature_low": { "severity": "warning", "description": "温度过低" },
+    "humidity_low": { "severity": "info", "description": "湿度过低" },
+    "humidity_high": { "severity": "info", "description": "湿度过高" },
+    "ph_abnormal": { "severity": "warning", "description": "pH值异常" },
+    "dissolved_oxygen_low": { "severity": "urgent", "description": "溶解氧过低" },
+    "visitor_overflow": { "severity": "urgent", "description": "客流量过大" },
+    "rainfall_heavy": { "severity": "urgent", "description": "暴雨预警" },
+    "co2_high": { "severity": "info", "description": "CO2浓度过高" },
+    "device_offline": { "severity": "critical", "description": "设备离线" }
+  }
+}

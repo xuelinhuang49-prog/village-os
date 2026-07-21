@@ -1,0 +1,66 @@
+{
+  "description": "数字乡村平台 IoT 模拟数据 - 静态快照",
+  "village": "中堰村",
+  "generated_at": "2026-06-30T08:00:00+08:00",
+  "devices": [
+    {
+      "village_id": 1,
+      "device_id": 1001,
+      "device_type": "greenhouse",
+      "device_name": "智慧大棚传感器-A1",
+      "status": "normal",
+      "location": "智慧大棚A区",
+      "data": {
+        "temperature": 28.5,
+        "humidity": 65.0,
+        "soil_moisture": 30.0,
+        "co2": 420.0,
+        "light_intensity": 18500.0
+      }
+    },
+    {
+      "village_id": 1,
+      "device_id": 1002,
+      "device_type": "weather_station",
+      "device_name": "气象监测站-W1",
+      "status": "normal",
+      "location": "产业园中心",
+      "data": {
+        "temperature": 26.8,
+        "humidity": 58.0,
+        "wind_speed": 3.2,
+        "rainfall": 0.0,
+        "air_pressure": 1013.5
+      }
+    },
+    {
+      "village_id": 1,
+      "device_id": 1003,
+      "device_type": "water_quality",
+      "device_name": "水质监测器-Q1",
+      "status": "normal",
+      "location": "荷虾混养区",
+      "data": {
+        "ph": 7.6,
+        "dissolved_oxygen": 6.8,
+        "turbidity": 4.2,
+        "ammonia_nitrogen": 0.3,
+        "water_temperature": 24.5
+      }
+    },
+    {
+      "village_id": 1,
+      "device_id": 1004,
+      "device_type": "smart_market",
+      "device_name": "智慧市集终端-M1",
+      "status": "normal",
+      "location": "智慧市集入口",
+      "data": {
+        "visitor_count": 287,
+        "transaction_count": 103,
+        "total_amount": 3650.0,
+        "stall_active": 25
+      }
+    }
+  ]
+}

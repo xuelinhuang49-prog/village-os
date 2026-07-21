@@ -1,0 +1,24 @@
+# ============================================
+# 数字乡村平台 - 测试环境配置
+# ============================================
+
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://test-db-host:5432/village_os_test
+    username: village_test
+    password: ${DB_PASSWORD}
+  data:
+    redis:
+      host: test-redis-host
+      port: 6379
+      password: ${REDIS_PASSWORD}
+
+jwt:
+  expiration: 3600000  # 1小时
+
+logging:
+  level:
+    com.village.os: info
