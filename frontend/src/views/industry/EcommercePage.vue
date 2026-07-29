@@ -496,7 +496,7 @@
 <!-- 渠道 + 订单 -->
 <div style="display:flex;gap:10px;margin-bottom:10px">
 <div class="pn" style="flex:1;cursor:pointer" @click="openAnalyticsDetail('channel')"><div class="tt">📡 销售渠道</div>
-<div class="dg3"><span class="dl3">商城订单</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsChannelOnline.toLocaleString()}}<span style="font-size:9px;color:#6F91A8;font-weight:400"> · {{analyticsPaidOrders.value.filter(o=>o.source!=='直播').length}}笔</span></div></div>
+<div class="dg3"><span class="dl3">商城订单</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsChannelOnline.toLocaleString()}}<span style="font-size:9px;color:#6F91A8;font-weight:400"> · {{analyticsPaidOrders.filter(o=>o.source!=='直播').length}}笔</span></div></div>
 <div class="dg3"><span class="dl3">直播销售</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsLiveSales.toLocaleString()}}<span style="font-size:9px;color:#6F91A8;font-weight:400"> · {{lives.reduce((s,l)=>s+(l.orders||0),0)}}笔</span></div></div>
 <div class="dg3"><span class="dl3">线下销售</span><div>¥0</div></div>
 </div>
@@ -560,7 +560,7 @@
 </template>
 <template v-if="analyticsDetailType==='channel'">
 <div class="ds-title">📡 销售渠道详情</div>
-<div class="dg3"><span class="dl3">商城订单</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsChannelOnline.toLocaleString()}} · {{analyticsPaidOrders.value.filter(o=>o.source!=='直播').length}}笔</div></div>
+<div class="dg3"><span class="dl3">商城订单</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsChannelOnline.toLocaleString()}} · {{analyticsPaidOrders.filter(o=>o.source!=='直播').length}}笔</div></div>
 <div class="dg3"><span class="dl3">直播销售</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsLiveSales.toLocaleString()}} · {{lives.reduce((s,l)=>s+(l.orders||0),0)}}笔</div></div>
 <div class="dg3"><span class="dl3">线下销售</span><div>¥0</div></div>
 </template>
@@ -1085,7 +1085,7 @@ const analyticsTotalSales=computed(()=>analyticsPaidOrders.value.reduce((s,o)=>s
 const analyticsTotalOrders=computed(()=>analyticsPaidOrders.value.length)
 const analyticsTopProds=computed(()=>[...prods].filter(p=>p.sales>0).sort((a,b)=>b.sales-a.sales))
 const analyticsLiveSales=computed(()=>lives.reduce((s,l)=>s+(l.sales||0),0))
-const analyticsChannelOnline=computed(()=>analyticsPaidOrders.value.filter(o=>o.source!=='直播').reduce((s,o)=>s+(o.paidAmount||0),0))
+const analyticsChannelOnline=computed(()=>analyticsPaidOrders.filter(o=>o.source!=='直播').reduce((s,o)=>s+(o.paidAmount||0),0))
 const analyticsLinkedTraces=computed(()=>traces.filter(t=>prods.some(p=>t.productName&&p.name&&(t.productName.includes(p.name)||p.name.includes(t.productName)))).length)
 const analyticsHasSalesData=computed(()=>analyticsPaidOrders.value.length>0)
 const analyticsDetailType=ref(''),analyticsDetailOpen=ref(false)
