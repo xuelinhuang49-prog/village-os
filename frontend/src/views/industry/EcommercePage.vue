@@ -400,19 +400,65 @@
 <!-- 直播详情抽屉 -->
 <div class="dov2" :class="{on:liveDrawerOpen}" @click="liveDrawerOpen=false"></div>
 <div class="dw2" :class="{on:liveDrawerOpen}">
-<div class="dwh2"><h3>{{liveDetail?.title}}</h3><button class="mc" @click="liveDrawerOpen=false">✕</button></div>
+<div class="dwh2"><h3>📺 {{liveDetail?.title}}</h3><button class="mc" @click="liveDrawerOpen=false">✕</button></div>
 <div class="dwb2" v-if="liveDetail">
+<!-- 状态条 -->
+<div style="text-align:center;padding:10px 0;margin-bottom:10px;border-radius:8px;background:rgba(10,36,68,.55)">
+<span :class="'t '+liveStatusCls(liveDetail.status)" style="font-size:10px;padding:4px 12px">{{liveStatusLabel(liveDetail.status)}}</span>
+<div v-if="liveDetail.status==='pending'" style="font-size:10px;color:#6F91A8;margin-top:4px">距离开播：即将开始</div>
+<div v-if="liveDetail.status==='living'" style="font-size:10px;color:#28C76F;margin-top:4px">🟢 直播中 · 开始时间：{{liveDetail.time}}</div>
+<div v-if="liveDetail.status==='ended'" style="font-size:10px;color:#6F91A8;margin-top:4px">直播时长：{{liveDetail.duration}}</div>
+</div>
+
 <div class="ds-title">📋 基本信息</div>
-<div class="dg3"><span class="dl3">直播主题</span><div style="color:#fff;font-weight:600">{{liveDetail.title}}</div></div>
-<div class="dg3"><span class="dl3">主播</span><div>{{liveDetail.host}} · {{liveDetail.phone||''}}</div></div>
-<div class="dg3"><span class="dl3">时间</span><div>{{liveDetail.time}} · {{liveDetail.duration}}</div></div>
-<div class="dg3"><span class="dl3">状态</span><div><span :class="'t '+liveStatusCls(liveDetail.status)">{{liveStatusLabel(liveDetail.status)}}</span></div></div>
-<div class="ds-title">📦 关联商品</div>
-<div class="dg3"><span class="dl3">商品</span><div><span v-for="p in (liveDetail.products||[])" :key="p" class="t g" style="margin-right:3px">{{p}}</span><span v-if="!(liveDetail.products||[]).length" style="color:#6F91A8">无</span></div></div>
-<div class="ds-title">📊 销售情况</div>
-<div class="dg3"><span class="dl3">观看人数</span><div>{{(liveDetail.views||0).toLocaleString()}}</div></div>
-<div class="dg3"><span class="dl3">成交金额</span><div style="color:#28C76F;font-weight:600">¥{{(liveDetail.sales||0).toLocaleString()}}</div></div>
-<div class="dg3"><span class="dl3">直播说明</span><div>{{liveDetail.desc||'无'}}</div></div>
+<div class="dg3"><span class="dl3">直播名称</span><div style="color:#fff;font-weight:600">{{liveDetail.title}}</div></div>
+<div class="dg3"><span class="dl3">主播</span><div>{{liveDetail.host}}</div></div>
+<div class="dg3"><span class="dl3">负责人</span><div>{{liveDetail.manager||'--'}}</div></div>
+<div class="dg3"><span class="dl3">开播时间</span><div>{{liveDetail.time}}</div></div>
+<div class="dg3"><span class="dl3">预计时长</span><div>{{liveDetail.duration}}</div></div>
+<div class="dg3"><span class="dl3">创建时间</span><div>{{liveDetail.createdAt}}</div></div>
+<div class="dg3" v-if="liveDetail.desc"><span class="dl3">直播简介</span><div>{{liveDetail.desc}}</div></div>
+
+<div class="ds-title" style="display:flex;justify-content:space-between;align-items:center"><span>📦 关联商品（{{(liveDetail.products||[]).length}}件）</span></div>
+<div v-for="pName in (liveDetail.products||[])" :key="pName" class="dg3" style="cursor:default">
+<span class="dl3">{{pName}}</span>
+<div>
+<div v-if="getProdByName(pName)" style="color:#28C76F;font-weight:500">¥{{getProdByName(pName)?.price}} / {{getProdByName(pName)?.unit||'件'}}</div>
+<div style="font-size:10px;color:#6F91A8">来源：{{getProdByName(pName)?.origin||'--'}}</div>
+</div>
+</div>
+<div v-if="!(liveDetail.products||[]).length" style="color:#6F91A8;font-size:10px;padding:6px">未关联商品</div>
+
+<div class="ds-title">💰 销售情况</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+<div class="dg3"><span class="dl3">成交金额</span><div style="color:#28C76F;font-weight:600;font-size:15px">¥{{(liveDetail.sales||0).toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">成交订单</span><div style="color:#fff;font-weight:600;font-size:15px">{{liveDetail.orders||0}}笔</div></div>
+<div class="dg3"><span class="dl3">销售商品</span><div>{{(liveDetail.products||[]).length}}件</div></div>
+<div class="dg3"><span class="dl3">退款订单</span><div style="color:#E74C3C">{{liveDetail.refunds||0}}笔</div></div>
+</div>
+
+<div class="ds-title">👁️ 观看情况</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+<div class="dg3"><span class="dl3">累计观看人数</span><div style="color:#fff;font-weight:600">{{(liveDetail.views||0).toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">最高在线人数</span><div>{{liveDetail.peakViews||'--'}}</div></div>
+</div>
+
+<div class="ds-title">🎬 直播回放</div>
+<div v-if="liveDetail.replayUrl" class="dg3"><span class="dl3">回放状态</span><div style="color:#28C76F">✓ 已上传</div></div>
+<div v-if="liveDetail.replayUrl" class="dg3"><span class="dl3">上传时间</span><div>{{liveDetail.replayAt||'--'}}</div></div>
+<div v-if="liveDetail.replayUrl" style="display:flex;gap:6px;margin-top:8px"><button class="bp bps" @click="toast('查看回放','info')">▶ 查看</button><button class="bo bps" @click="toast('回放已更新','ok')">更新</button><button class="bd bps" @click="liveDetail.replayUrl='';liveDetail.replayAt='';toast('已删除','ok')">删除</button></div>
+<div v-if="!liveDetail.replayUrl" class="dg3"><span class="dl3">回放状态</span><div style="color:#6F91A8">暂无回放</div></div>
+<div v-if="!liveDetail.replayUrl" style="margin-top:6px"><button class="bo bps" @click="liveDetail.replayUrl='/replay/'+liveDetail.id;liveDetail.replayAt=new Date().toISOString().replace('T',' ').slice(0,16);toast('回放已上传','ok')">📤 上传回放</button></div>
+
+<div class="ds-title">📝 操作记录</div>
+<div v-for="(log,i) in (liveDetail.timeline||[{time:liveDetail.createdAt,action:'创建直播',operator:liveDetail.manager||'管理员'}])" :key="i" class="dg3"><span class="dl3">{{log.time||liveDetail.createdAt}}</span><div>{{log.operator||'管理员'}} · {{log.action}}</div></div>
+
+<div style="display:flex;gap:8px;margin-top:14px">
+<button v-if="liveDetail.status==='draft'||liveDetail.status==='pending'" class="bp bps" @click="openLiveForm(liveDetail.id);liveDrawerOpen=false">编辑直播</button>
+<button v-if="liveDetail.status==='draft'||liveDetail.status==='pending'" class="bd bps" @click="cancelLive(liveDetail.id);liveDrawerOpen=false">取消直播</button>
+<button v-if="liveDetail.status==='living'" class="bp bps" @click="endLive(liveDetail.id);liveDrawerOpen=false">结束直播</button>
+<button v-if="liveDetail.status==='ended'" class="bo bps" @click="toast('查看回放','info')">查看回放</button>
+</div>
 </div>
 </div>
 </template>
@@ -864,9 +910,9 @@ function exportTraces(){
 // GET    /api/ecommerce/lives/export        导出
 
 const lives=reactive([
-  {id:1,title:'中堰蜂糖李专场',host:'赵大哥',phone:'139****6789',manager:'刘管理员',time:'2026-07-20 19:00',duration:'预计2小时',views:3200,orders:38,sales:12800,status:'pending',platform:'微信视频号',products:['蜂糖李'],villageName:'中堰村',cover:'',desc:'介绍蜂糖李种植过程，现场采摘展示，限时优惠',replayUrl:'',cancelReason:'',createdAt:'2026-07-18 09:00'},
-  {id:2,title:'富硒黄桃采摘直播',host:'赵大哥',phone:'138****8901',manager:'刘管理员',time:'2026-07-18 10:00',duration:'预计1.5小时',views:5600,orders:85,sales:25600,status:'ended',platform:'抖音',products:['富硒黄桃'],villageName:'中堰村',replayUrl:'/replay/002',desc:'高山富硒黄桃，现场品尝，采摘体验',cancelReason:'',createdAt:'2026-07-16 14:00'},
-  {id:3,title:'澳洲龙虾烹饪秀',host:'李婶',phone:'137****2345',manager:'刘管理员',time:'2026-07-19 15:00',duration:'预计3小时',views:8900,orders:142,sales:35800,status:'living',platform:'快手',products:['澳洲淡水龙虾','农特产礼盒'],villageName:'中堰村',replayUrl:'',desc:'现场烹饪澳洲淡水龙虾，展示养殖环境',cancelReason:'',createdAt:'2026-07-17 08:00'}
+  {id:1,title:'中堰蜂糖李专场',host:'赵大哥',phone:'139****6789',manager:'刘管理员',time:'2026-07-20 19:00',duration:'预计2小时',views:3200,orders:38,sales:12800,status:'pending',platform:'微信视频号',products:['蜂糖李'],villageName:'中堰村',cover:'',desc:'介绍蜂糖李种植过程，现场采摘展示，限时优惠',replayUrl:'',cancelReason:'',createdAt:'2026-07-18 09:00',peakViews:860,refunds:0,timeline:[{time:'2026-07-18 09:00',action:'创建直播',operator:'刘管理员'},{time:'2026-07-18 10:00',action:'关联商品：蜂糖李',operator:'刘管理员'}]},
+  {id:2,title:'富硒黄桃采摘直播',host:'赵大哥',phone:'138****8901',manager:'刘管理员',time:'2026-07-18 10:00',duration:'预计1.5小时',views:5600,orders:85,sales:25600,status:'ended',platform:'抖音',products:['富硒黄桃'],villageName:'中堰村',replayUrl:'/replay/002',desc:'高山富硒黄桃，现场品尝，采摘体验',cancelReason:'',createdAt:'2026-07-16 14:00',replayAt:'2026-07-19 10:00',peakViews:1200,refunds:1,timeline:[{time:'2026-07-16 14:00',action:'创建直播',operator:'刘管理员'},{time:'2026-07-18 10:00',action:'开播',operator:'赵大哥'},{time:'2026-07-18 11:30',action:'结束直播',operator:'赵大哥'},{time:'2026-07-19 10:00',action:'上传回放',operator:'刘管理员'}]},
+  {id:3,title:'澳洲龙虾烹饪秀',host:'李婶',phone:'137****2345',manager:'刘管理员',time:'2026-07-19 15:00',duration:'预计3小时',views:8900,orders:142,sales:35800,status:'living',platform:'快手',products:['澳洲淡水龙虾','农特产礼盒'],villageName:'中堰村',replayUrl:'',desc:'现场烹饪澳洲淡水龙虾，展示养殖环境',cancelReason:'',createdAt:'2026-07-17 08:00',peakViews:1800,refunds:0,timeline:[{time:'2026-07-17 08:00',action:'创建直播',operator:'刘管理员'},{time:'2026-07-19 15:00',action:'开播',operator:'李婶'}]}
 ])
 const liveDrawerOpen=ref(false),liveDetail=ref(null)
 function liveStatusLabel(s){const m={draft:'草稿',pending:'待开播',living:'直播中',ended:'已结束',cancelled:'已取消'};return m[s]||s}
@@ -888,6 +934,7 @@ const filteredLives=computed(()=>{
   return l
 })
 function showLiveDetail(l){liveDetail.value=l;liveDrawerOpen.value=true}
+function getProdByName(name){return prods.find(p=>p.name===name)}
 
 // Live form drawer
 const liveFormOpen=ref(false),liveEditId=ref(null)
