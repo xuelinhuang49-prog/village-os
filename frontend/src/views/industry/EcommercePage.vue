@@ -350,11 +350,40 @@
 
 <template v-if="cur==='live'">
 <div>
-<div class="sr"><div class="sc"><div class="sv">{{lives.length}}</div><div class="sl">直播场次</div></div><div class="sc g"><div class="sv">{{lives.reduce((s,l)=>s+(l.views||0),0).toLocaleString()}}</div><div class="sl">累计观看</div></div><div class="sc y"><div class="sv">{{(lives.reduce((s,l)=>s+(l.sales||0),0)/10000).toFixed(1)}}万</div><div class="sl">成交金额</div></div></div>
-<div class="pn"><div class="tt">快捷操作</div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="bp" @click="addLive">+ 创建直播</button><button class="bo" @click="startSimLive">模拟开播</button><button class="bo" @click="exportLives">导出数据</button></div></div>
-<div class="pn"><div class="tt">直播间管理</div>
-<table class="tb"><thead><tr><th>主题</th><th>主播</th><th>时间</th><th>时长</th><th>观看</th><th>点赞</th><th>销售</th><th>状态</th><th>操作</th></tr></thead>
-<tbody><tr v-for="l in lives" :key="l.id"><td style="color:#fff;font-weight:600">{{l.title}}</td><td>{{l.host}}</td><td>{{l.time}}</td><td>{{l.duration}}</td><td>{{(l.views||0).toLocaleString()}}</td><td>{{(l.likes||0).toLocaleString()}}</td><td style="color:#28C76F">{{(l.sales||0).toLocaleString()}}</td><td><span :class="'t '+(l.status==='预告'?'y':l.status==='进行中'?'g':'dim')">{{l.status}}</span></td><td><button class="bp bps" @click="editLive(l.id)">编辑</button><button class="bo bps" @click="showLiveDetail(l)">详情</button><button class="bd bps" @click="delLive(l.id)">删除</button></td></tr></tbody></table>
+<!-- 统计卡片 -->
+<div class="sr">
+<div class="sc"><div class="sc-title">直播场次</div><div class="sv">{{lives.length}}</div><div class="sl">全部直播</div></div>
+<div class="sc g"><div class="sc-title">累计观看人数</div><div class="sv">{{lives.reduce((s,l)=>s+(l.views||0),0).toLocaleString()}}</div><div class="sl">消费者观看</div></div>
+<div class="sc y"><div class="sc-title">直播成交额</div><div class="sv">{{(lives.reduce((s,l)=>s+(l.sales||0),0)/10000).toFixed(1)}}万</div><div class="sl">直播渠道成交</div></div>
+</div>
+
+<!-- 直播管理 -->
+<div class="pn"><div class="tt" style="justify-content:space-between"><span>📺 直播管理（共{{lives.length}}场）</span><div style="display:flex;gap:6px"><button class="bp bps" @click="addLive">+ 创建直播</button><button class="bo bps" @click="toast('回放管理','info')">直播回放</button><button class="bo bps" @click="exportLives">导出数据</button></div></div>
+<table class="tb"><thead><tr><th>直播主题</th><th>主播</th><th>时间</th><th>关联商品</th><th>观看人数</th><th>成交金额</th><th>状态</th><th>操作</th></tr></thead>
+<tbody><tr v-for="l in lives" :key="l.id" class="order-row" @click="showLiveDetail(l)" style="cursor:pointer"><td style="color:#fff;font-weight:600">{{l.title}}</td><td>{{l.host}}</td><td><div>{{l.time}}</div><div class="pd">{{l.duration}}</div></td>
+<td><div v-if="l.products&&l.products.length"><span v-for="p in l.products" :key="p" class="t g" style="margin-right:2px;font-size:8px">{{p}}</span></div><span v-else style="color:#6F91A8;font-size:10px">未关联</span></td>
+<td>{{(l.views||0).toLocaleString()}}</td><td style="color:#28C76F;font-weight:600">¥{{(l.sales||0).toLocaleString()}}</td>
+<td><span :class="'t '+liveStatusCls(l.status)" style="font-size:8px">{{liveStatusLabel(l.status)}}</span></td>
+<td style="white-space:nowrap" @click.stop><button v-for="a in getLiveActions(l)" :key="a.k" :class="a.k==='cancel'?'bd bps':a.k==='enter'||a.k==='end'?'bp bps':'bo bps'" style="margin-right:2px" @click="a.k==='detail'?showLiveDetail(l):a.k==='edit'?editLive(l.id):a.k==='cancel'?cancelLive(l.id):a.k==='enter'?toast('进入直播中...','ok'):a.k==='end'?endLive(l.id):a.k==='replay'?toast('查看回放','info'):null">{{a.l}}</button><button class="bo bps" @click="linkProducts(l.id)">关联商品</button></td></tr></tbody></table>
+</div>
+</div>
+
+<!-- 直播详情抽屉 -->
+<div class="dov2" :class="{on:liveDrawerOpen}" @click="liveDrawerOpen=false"></div>
+<div class="dw2" :class="{on:liveDrawerOpen}">
+<div class="dwh2"><h3>{{liveDetail?.title}}</h3><button class="mc" @click="liveDrawerOpen=false">✕</button></div>
+<div class="dwb2" v-if="liveDetail">
+<div class="ds-title">📋 基本信息</div>
+<div class="dg3"><span class="dl3">直播主题</span><div style="color:#fff;font-weight:600">{{liveDetail.title}}</div></div>
+<div class="dg3"><span class="dl3">主播</span><div>{{liveDetail.host}} · {{liveDetail.phone||''}}</div></div>
+<div class="dg3"><span class="dl3">时间</span><div>{{liveDetail.time}} · {{liveDetail.duration}}</div></div>
+<div class="dg3"><span class="dl3">状态</span><div><span :class="'t '+liveStatusCls(liveDetail.status)">{{liveStatusLabel(liveDetail.status)}}</span></div></div>
+<div class="ds-title">📦 关联商品</div>
+<div class="dg3"><span class="dl3">商品</span><div><span v-for="p in (liveDetail.products||[])" :key="p" class="t g" style="margin-right:3px">{{p}}</span><span v-if="!(liveDetail.products||[]).length" style="color:#6F91A8">无</span></div></div>
+<div class="ds-title">📊 销售情况</div>
+<div class="dg3"><span class="dl3">观看人数</span><div>{{(liveDetail.views||0).toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">成交金额</span><div style="color:#28C76F;font-weight:600">¥{{(liveDetail.sales||0).toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">直播说明</span><div>{{liveDetail.desc||'无'}}</div></div>
 </div>
 </div>
 </template>
@@ -379,7 +408,6 @@
 <div class="fl"><label>物流单号</label><input v-model="of2.logistics" class="fin"></div>
 <div class="ma"><button class="bp" @click="saveOrder">保存</button><button class="bo" @click="modal=false">取消</button></div>
 </div>
-<div v-if="modalType==='liveDetail'"><div class="dg2"><span class="dl2">主题</span><div style="color:#fff;font-weight:600">{{ld?.title}}</div></div><div class="dg2"><span class="dl2">主播</span><div>{{ld?.host}}</div></div><div class="dg2"><span class="dl2">时间</span><div>{{ld?.time}} . {{ld?.duration}}</div></div><div class="dg2"><span class="dl2">观看/点赞</span><div>{{(ld?.views||0).toLocaleString()}}/{{(ld?.likes||0).toLocaleString()}}</div></div><div class="dg2"><span class="dl2">销售</span><div style="color:#28C76F;font-weight:600">{{(ld?.sales||0).toLocaleString()}}</div></div><div class="ma"><button class="bo" @click="modal=false">关闭</button></div></div>
 </div></div>
 
 <div class="toast-area"><div v-for="t in toasts" :key="t.id" :class="'to '+t.type">{{t.msg}}</div></div>
@@ -795,18 +823,44 @@ function exportTraces(){
   downloadCSV('﻿'+csv,'溯源数据_'+new Date().toISOString().slice(0,10)+'.csv')
 }
 
+// ===== API预留 =====
+// GET    /api/ecommerce/lives               直播列表
+// GET    /api/ecommerce/lives/:id           直播详情
+// POST   /api/ecommerce/lives               创建直播
+// PUT    /api/ecommerce/lives/:id           编辑直播
+// PATCH  /api/ecommerce/lives/:id/start     开播
+// PATCH  /api/ecommerce/lives/:id/end       结束直播
+// POST   /api/ecommerce/lives/:id/products  关联商品
+// POST   /api/ecommerce/lives/:id/replay    上传回放
+// GET    /api/ecommerce/lives/export        导出
+
 const lives=reactive([
-  {id:1,title:'中堰蜂糖李专场',host:'黄雪琳书记',time:'2026-07-20 19:00',duration:'2h',views:3200,likes:15800,sales:12800,status:'预告'},
-  {id:2,title:'富硒黄桃采摘直播',host:'赵大哥',time:'2026-07-18 10:00',duration:'1.5h',views:5600,likes:23400,sales:25600,status:'已结束'},
-  {id:3,title:'澳洲龙虾烹饪秀',host:'李婶',time:'2026-07-19 15:00',duration:'3h',views:8900,likes:42000,sales:35800,status:'进行中'}
+  {id:1,title:'中堰蜂糖李专场',host:'黄雪琳书记',phone:'139****6789',time:'2026-07-20 19:00',duration:'2h',views:3200,sales:12800,status:'待开播',products:['蜂糖李'],villageName:'中堰村',cover:'',desc:'介绍蜂糖李种植过程，现场采摘展示，限时优惠',createdAt:'2026-07-18 09:00'},
+  {id:2,title:'富硒黄桃采摘直播',host:'赵大哥',phone:'138****8901',time:'2026-07-18 10:00',duration:'1.5h',views:5600,sales:25600,status:'已结束',products:['富硒黄桃'],villageName:'中堰村',replayUrl:'',desc:'高山富硒黄桃，现场品尝，采摘体验',createdAt:'2026-07-16 14:00'},
+  {id:3,title:'澳洲龙虾烹饪秀',host:'李婶',phone:'137****2345',time:'2026-07-19 15:00',duration:'3h',views:8900,sales:35800,status:'直播中',products:['澳洲淡水龙虾'],villageName:'中堰村',desc:'现场烹饪澳洲淡水龙虾，展示养殖环境',createdAt:'2026-07-17 08:00'}
 ])
-const ld=ref(null)
-function addLive(){const n=prompt('直播主题：');if(!n)return;lives.unshift({id:uid(),title:n,host:prompt('主播：')||'管理员',time:prompt('时间：',new Date().toISOString().slice(0,16))||'',duration:'2h',views:0,likes:0,sales:0,status:'预告'});toast('已创建','ok')}
-function editLive(id){const l=lives.find(x=>x.id===id);if(!l)return;l.title=prompt('主题：',l.title)||l.title;l.host=prompt('主播：',l.host)||l.host;l.status=prompt('状态：',l.status)||l.status;toast('已更新','ok')}
-function delLive(id){if(!confirm('确定删除？'))return;const i=lives.findIndex(x=>x.id===id);if(i>=0){lives.splice(i,1);toast('已删除','ok')}}
-function showLiveDetail(l){ld.value=l;modalTitle.value='直播详情';modalType.value='liveDetail';modal.value=true}
-function startSimLive(){const live=lives.find(l=>l.status==='预告');if(live){live.status='进行中';live.views=100;live.likes=500;const t=setInterval(()=>{if(live.status!=='进行中')clearInterval(t);else{live.views+=Math.floor(Math.random()*50);live.likes+=Math.floor(Math.random()*200);live.sales+=Math.floor(Math.random()*500)}},3000);toast(live.title+' 已开播！','ok')}else{toast('没有预告中的直播','warn')}}
-function exportLives(){const csv='主题,主播,时间,时长,观看,点赞,销售,状态\n'+lives.map(l=>[l.title,l.host,l.time,l.duration,l.views,l.likes,l.sales,l.status].join(',')).join('\n');downloadCSV('﻿'+csv,'直播数据_'+new Date().toISOString().slice(0,10)+'.csv')}
+const liveDrawerOpen=ref(false),liveDetail=ref(null)
+function liveStatusLabel(s){const m={pending:'待开播',living:'直播中',ended:'已结束',cancelled:'已取消'};return m[s]||s}
+function liveStatusCls(s){const m={pending:'y',living:'g',ended:'dim',cancelled:'r'};return m[s]||'dim'}
+function getLiveActions(l){
+  const a=[]
+  a.push({k:'detail',l:'查看详情'})
+  if(l.status==='待开播'){a.push({k:'edit',l:'编辑'});a.push({k:'cancel',l:'取消直播'})}
+  if(l.status==='直播中'){a.push({k:'enter',l:'进入直播'});a.push({k:'end',l:'结束直播'})}
+  if(l.status==='已结束'){a.push({k:'replay',l:'查看回放'})}
+  return a
+}
+function showLiveDetail(l){liveDetail.value=l;liveDrawerOpen.value=true}
+function addLive(){
+  const n=prompt('直播主题：');if(!n)return
+  lives.unshift({id:uid(),title:n,host:prompt('主播：')||'管理员',phone:prompt('联系电话：')||'',time:prompt('时间：',new Date().toISOString().slice(0,16))||'',duration:prompt('预计时长：','2h')||'2h',views:0,sales:0,status:'待开播',products:[],villageName:'中堰村',cover:'',desc:prompt('直播说明：')||'',createdAt:new Date().toISOString().replace('T',' ').slice(0,16)})
+  toast('已创建','ok')
+}
+function editLive(id){const l=lives.find(x=>x.id===id);if(!l)return;l.title=prompt('主题：',l.title)||l.title;l.host=prompt('主播：',l.host)||l.host;l.time=prompt('时间：',l.time)||l.time;l.status=prompt('状态(待开播/直播中/已结束/已取消)：',l.status)||l.status;toast('已更新','ok')}
+function cancelLive(id){const l=lives.find(x=>x.id===id);if(!l)return;if(!confirm('确定取消该直播？'))return;l.status='已取消';toast('已取消','ok')}
+function endLive(id){const l=lives.find(x=>x.id===id);if(!l)return;if(!confirm('确定结束直播？'))return;l.status='已结束';toast('已结束','ok')}
+function exportLives(){const csv='主题,主播,时间,时长,观看,成交,状态,关联商品\n'+lives.map(l=>[l.title,l.host,l.time,l.duration,l.views,l.sales,l.status,(l.products||[]).join(';')].join(',')).join('\n');downloadCSV('﻿'+csv,'直播数据_'+new Date().toISOString().slice(0,10)+'.csv')}
+function linkProducts(id){const l=lives.find(x=>x.id===id);if(!l)return;const names=prods.map(p=>p.name).join('\n');const sel=prompt('关联商品（用逗号分隔）：\n可选商品：\n'+names,(l.products||[]).join(','));if(sel!==null){l.products=sel.split(',').map(s=>s.trim()).filter(Boolean);toast('已关联','ok')}}
 
 const topProds=computed(()=>[...prods].sort((a,b)=>b.sales-a.sales).slice(0,5))
 const areaDist=[{n:'安康市',c:58},{n:'西安市',c:42},{n:'武汉市',c:28},{n:'重庆市',c:22},{n:'成都市',c:16}]
