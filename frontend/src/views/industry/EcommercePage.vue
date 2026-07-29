@@ -551,6 +551,7 @@ function toast(m,t='info'){const id=Date.now();toasts.push({id,msg:m,type:t});se
 
 const clock=ref('')
 onMounted(()=>{setInterval(()=>{const d=new Date();clock.value=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')},1000);nextTick(()=>initCharts())})
+watch(cur,v=>{if(v==='analytics')nextTick(()=>initAnalyticsChart())})
 
 const tabs=[{k:'products',i:'📦',l:'商品管理'},{k:'orders',i:'📋',l:'订单管理'},{k:'trace',i:'🏷️',l:'产品溯源'},{k:'live',i:'📺',l:'直播中心'},{k:'analytics',i:'📊',l:'经营分析'}]
 const cur=ref('products')
