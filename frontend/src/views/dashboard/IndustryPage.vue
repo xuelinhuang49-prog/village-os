@@ -4,7 +4,7 @@
 <div class="mod-tabs"><button v-for="m in modules" :key="m.key" :class="{on:curMod===m.key}" @click="switchMod(m.key)">{{m.icon}} {{m.label}}</button></div>
 <div class="sub-tabs"><button v-for="s in subTabs" :key="s" :class="{on:curSub===s}" @click="switchSub(s)">{{subLabels[s]}}</button></div>
 <div class="content" ref="contentRef">
-<h2 class="pg-tt">{{subLabels[curSub]}}</h2>
+<h2 class="pg-tt" v-if="curMod!=='ecommerce'">{{subLabels[curSub]}}</h2>
 
 <template v-if="curMod==='ecommerce'"><EcommercePage :embedded="true" :activeTab="curSub"/></template>
 <template v-else-if="curSub==='pest'"><PestDashboard :embedded="true" /></template>
@@ -70,7 +70,7 @@ function toast(msg, type = 'info') { const id = Date.now(); toasts.push({ id, ms
 // Modules
 const modules = [{ key: 'farming', icon: '🌾', label: '智慧农业' }, { key: 'ecommerce', icon: '🛒', label: '农产品电商' }, { key: 'tourism', icon: '🏞️', label: '乡村文旅' }, { key: 'livestock', icon: '🐖', label: '智慧养殖' }]
 const modLabels = { farming: '智慧农业', ecommerce: '农产品电商', tourism: '乡村文旅', livestock: '智慧养殖' }
-const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '品牌溯源', live: '直播营销', analytics: '经营分析', spots: '景区管理', bnbs: '民宿管理', activities: '活动管理', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
+const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '产品溯源', live: '直播中心', analytics: '经营分析', spots: '景区管理', bnbs: '民宿管理', activities: '活动管理', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
 const subMap = { farming: ['lands', 'crops', 'records', 'monitor', 'irrigation', 'pest'], ecommerce: ['products', 'orders', 'trace', 'live', 'analytics'], tourism: ['spots', 'bnbs', 'activities'], livestock: ['records2', 'env', 'feed', 'disease', 'slaughter'] }
 const addBtnLabels = { lands: '新增地块', crops: '新增作物', records: '新增记录', irrigation: '新增计划', pest: '新增预警', products: '新增商品', orders: '新增订单', trace: '新增溯源', live: '创建直播', analytics: '导出报表', records2: '新增养殖批次', feed: '新增投喂计划', slaughter: '新增出栏记录' }
 const chartTitles = { lands: '地块分布分析', crops: '作物阶段分布', records: '农事类型分布', products: '商品销量分布', records2: '养殖存栏统计' }
@@ -667,12 +667,12 @@ function handleHash() {
 .hdr-r a { color: #6F91A8; text-decoration: none; }
 
 .mod-tabs { flex-shrink: 0; display: flex; background: rgba(8,28,58,0.65); border-bottom: 1px solid rgba(40,199,111,0.08); padding: 0 16px; }
-.mod-tabs button { padding: 10px 18px; font-size: 12px; font-weight: 600; cursor: pointer; color: #6F91A8; border-bottom: 2px solid transparent; transition: all .2s; background: none; border-top: none; border-left: none; border-right: none; letter-spacing: .5px; font-family: inherit; }
+.mod-tabs button { padding: 8px 18px; font-size: 12px; font-weight: 600; cursor: pointer; color: #6F91A8; border-bottom: 2px solid transparent; transition: all .2s; background: none; border-top: none; border-left: none; border-right: none; letter-spacing: .5px; font-family: inherit; }
 .mod-tabs button:hover { color: #B7D3E8; }
 .mod-tabs button.on { color: #28C76F; border-bottom-color: #39D98A; }
 
 .sub-tabs { flex-shrink: 0; display: flex; padding: 0 16px; background: rgba(10,36,68,0.55); }
-.sub-tabs button { padding: 7px 14px; font-size: 11px; font-weight: 500; cursor: pointer; color: #6F91A8; transition: all .2s; background: none; border: none; border-bottom: 2px solid transparent; font-family: inherit; }
+.sub-tabs button { padding: 4px 14px; font-size: 11px; font-weight: 500; cursor: pointer; color: #6F91A8; transition: all .2s; background: none; border: none; border-bottom: 2px solid transparent; font-family: inherit; }
 .sub-tabs button:hover { color: #B7D3E8; }
 .sub-tabs button.on { color: #28C76F; border-bottom-color: #39D98A; }
 
