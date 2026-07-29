@@ -469,10 +469,10 @@
 <div>
 <!-- 概览卡片 -->
 <div class="sr">
-<div class="sc"><div class="sc-title">累计销售额</div><div class="sv">&yen;{{analyticsTotalSales.toLocaleString()}}</div><div class="sl">商城 + 直播全部成交</div></div>
-<div class="sc g"><div class="sc-title">成交订单</div><div class="sv">{{analyticsTotalOrders}}笔</div><div class="sl">已完成订单</div></div>
-<div class="sc"><div class="sc-title">销售产品</div><div class="sv">{{prods.filter(p=>p.sales>0).length}}种</div><div class="sl">已销售商品</div></div>
-<div class="sc y"><div class="sc-title">直播成交</div><div class="sv">&yen;{{analyticsLiveSales.toLocaleString()}}</div><div class="sl">直播渠道</div></div>
+<div class="sc"><div class="sc-title">累计销售额</div><div class="sv">&yen;{{analyticsTotalSales.toLocaleString()}}</div><div class="sl">商城 + 直播 + 线下全部成交</div></div>
+<div class="sc g"><div class="sc-title">成交订单</div><div class="sv">{{analyticsCompletedOrders}}笔</div><div class="sl">已完成订单</div></div>
+<div class="sc"><div class="sc-title">销售产品</div><div class="sv">{{prods.filter(p=>p.sales>0).length}}种</div><div class="sl">已产生销售的商品</div></div>
+<div class="sc y"><div class="sc-title">直播成交</div><div class="sv">&yen;{{analyticsLiveSales.toLocaleString()}}</div><div class="sl">直播渠道成交</div></div>
 </div>
 
 <!-- 时间筛选 -->
@@ -485,7 +485,7 @@
 <div style="display:flex;gap:10px;margin-bottom:10px">
 <div class="pn" style="flex:1"><div class="tt">📈 销售趋势</div>
 <div v-if="analyticsHasSalesData" id="chart_analytics_sales" style="height:180px"></div>
-<div v-else style="color:#6F91A8;font-size:10px;text-align:center;padding:40px 0">暂无销售趋势<br>完成订单后生成统计</div>
+<div v-else style="color:#6F91A8;font-size:10px;text-align:center;padding:40px 0">暂无销售数据<br>完成订单后生成趋势统计</div>
 </div>
 <div class="pn" style="flex:1"><div class="tt">📦 商品销售情况</div>
 <div v-for="(p,i) in analyticsTopProds.slice(0,5)" :key="p.id" class="ri"><span class="rn" :style="{color:i===0?'#F5B83D':i===1?'#8FA8C0':i===2?'#C08A5C':'#6F91A8'}">{{i+1}}</span><span>{{p.name}}</span><span class="rc" style="color:#28C76F">¥{{(p.price*p.sales).toLocaleString()}}</span><span class="rc">{{p.sales}}件</span></div>
@@ -496,15 +496,15 @@
 <!-- 渠道 + 订单 -->
 <div style="display:flex;gap:10px;margin-bottom:10px">
 <div class="pn" style="flex:1"><div class="tt">📡 销售渠道</div>
-<div class="dg3"><span class="dl3">线上商城</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsChannelOnline.toLocaleString()}}</div></div>
-<div class="dg3"><span class="dl3">直播销售</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsLiveSales.toLocaleString()}}</div></div>
-<div class="dg3"><span class="dl3">线下销售</span><div>¥0</div></div>
+<div class="channel-row"><span class="dl3">线上商城</span><div class="channel-bar-wrap"><div class="channel-bar" :style="{width:(analyticsChannelOnline/analyticsMaxChannelSales*100)+'%',background:'#28C76F'}"></div></div><span style="color:#28C76F;font-weight:600;font-size:11px">&yen;{{analyticsChannelOnline.toLocaleString()}}</span></div>
+<div class="channel-row"><span class="dl3">直播销售</span><div class="channel-bar-wrap"><div class="channel-bar" :style="{width:(analyticsLiveSales/analyticsMaxChannelSales*100)+'%',background:'#28C76F'}"></div></div><span style="color:#28C76F;font-weight:600;font-size:11px">&yen;{{analyticsLiveSales.toLocaleString()}}</span></div>
+<div class="channel-row"><span class="dl3">线下销售</span><div class="channel-bar-wrap"><div class="channel-bar" style="width:0%"></div></div><span style="color:#6F91A8;font-size:11px">¥0</span></div>
 </div>
 <div class="pn" style="flex:1"><div class="tt">📋 订单情况</div>
-<div class="dg3"><span class="dl3">待处理订单</span><div style="color:#F5B83D;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_payment').length}}笔</div></div>
-<div class="dg3"><span class="dl3">待发货订单</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_shipment').length}}笔</div></div>
-<div class="dg3"><span class="dl3">已完成订单</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='completed').length}}笔</div></div>
-<div class="dg3"><span class="dl3">退款订单</span><div style="color:#E74C3C">{{allOrders.filter(o=>o.afterSaleStatus==='completed'||o.orderStatus==='cancelled').length}}笔</div></div>
+<div class="dg3"><span class="dl3">待支付订单</span><div style="color:#F5B83D;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_payment').length}}笔<span style="font-size:9px;color:#6F91A8;font-weight:400"> · 等待用户付款</span></div></div>
+<div class="dg3"><span class="dl3">已付款待发货</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_shipment').length}}笔</div></div>
+<div class="dg3"><span class="dl3">签收完成</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='completed').length}}笔</div></div>
+<div class="dg3"><span class="dl3">退款订单</span><div style="color:#E74C3C;font-weight:600">{{allOrders.filter(o=>o.afterSaleStatus==='completed'||o.orderStatus==='cancelled').length}}笔</div></div>
 </div>
 </div>
 
@@ -1036,13 +1036,15 @@ const areaDist=[{n:'安康市',c:58},{n:'西安市',c:42},{n:'武汉市',c:28},{
 const analyticsPeriod=ref('all')
 const analyticsPeriods=[{k:'7d',label:'近7天'},{k:'30d',label:'近30天'},{k:'all',label:'全部'}]
 const analyticsPaidOrders=computed(()=>allOrders.filter(o=>o.paymentStatus==='paid'))
-const analyticsTotalSales=computed(()=>analyticsPaidOrders.value.reduce((s,o)=>s+(o.paidAmount||0),0))
-const analyticsTotalOrders=computed(()=>analyticsPaidOrders.value.length)
-const analyticsTopProds=computed(()=>[...prods].filter(p=>p.sales>0).sort((a,b)=>b.sales-a.sales))
 const analyticsLiveSales=computed(()=>lives.reduce((s,l)=>s+(l.sales||0),0))
+const analyticsTotalSales=computed(()=>analyticsPaidOrders.value.reduce((s,o)=>s+(o.paidAmount||0),0)+analyticsLiveSales.value)
+const analyticsCompletedOrders=computed(()=>allOrders.filter(o=>o.orderStatus==='completed').length)
+const analyticsTotalOrders=computed(()=>allOrders.length)
+const analyticsTopProds=computed(()=>[...prods].filter(p=>p.sales>0).sort((a,b)=>b.sales-a.sales))
 const analyticsChannelOnline=computed(()=>analyticsPaidOrders.value.filter(o=>o.source!=='直播').reduce((s,o)=>s+(o.paidAmount||0),0))
 const analyticsLinkedTraces=computed(()=>traces.filter(t=>prods.some(p=>t.productName&&p.name&&(t.productName.includes(p.name)||p.name.includes(t.productName)))).length)
-const analyticsHasSalesData=computed(()=>analyticsPaidOrders.value.length>0)
+const analyticsHasSalesData=computed(()=>analyticsPaidOrders.value.length>0||lives.some(l=>l.sales>0))
+const analyticsMaxChannelSales=computed(()=>Math.max(analyticsChannelOnline.value,analyticsLiveSales.value,1))
 function initAnalyticsChart(){
   const el=document.getElementById('chart_analytics_sales');if(!el){if(window._analyticsCharts)window._analyticsCharts.forEach(x=>{try{x.dispose()}catch(e){}});window._analyticsCharts=[];return}
   const c=echarts.init(el)
@@ -1091,6 +1093,8 @@ function initCharts(){
 .ds-title{font-size:11px;font-weight:700;color:#28C76F;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(40,199,111,.1)}
 .img-placeholder{width:100%;height:36px;border:1px dashed rgba(40,199,111,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6F91A8;cursor:pointer;background:rgba(57,217,138,.03)}.img-placeholder:hover{border-color:#28C76F;color:#28C76F}
 .bo:disabled{opacity:.45;cursor:not-allowed}.bd:disabled{opacity:.45;cursor:not-allowed}
+.channel-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(14,165,233,.06)}.channel-row:last-child{border-bottom:0}
+.channel-bar-wrap{flex:1;height:6px;background:rgba(40,199,111,.08);border-radius:3px;overflow:hidden}.channel-bar{height:100%;border-radius:3px;transition:width .5s}
 .cert-tag{padding:3px 8px;border-radius:12px;font-size:9px;font-weight:500;cursor:pointer;background:transparent;border:1px solid rgba(111,145,168,.4);color:#6F91A8;font-family:inherit;transition:.15s}.cert-tag:hover{border-color:#28C76F;color:#B7D3E8}.cert-tag.on{background:#28C76F;border-color:#28C76F;color:#fff}
 .prod-form-drawer{position:fixed;top:0;right:0;bottom:0;width:640px;max-width:90vw;z-index:190;background:rgba(6,20,44,.98);border-left:1px solid rgba(40,199,111,.1);transform:translateX(100%);transition:.3s;display:flex;flex-direction:column}.prod-form-drawer.on{transform:translateX(0)}
 .prod-form-body{flex:1;overflow-y:auto;padding:0 20px 20px}.prod-form-footer{flex-shrink:0;padding:12px 20px;border-top:1px solid rgba(40,199,111,.1);display:flex;align-items:center;gap:10px;background:rgba(6,20,44,.98)}
