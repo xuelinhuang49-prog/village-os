@@ -359,7 +359,7 @@
 
 <!-- 直播管理 -->
 <div class="pn"><div class="tt" style="justify-content:space-between"><span>📺 直播管理（共{{lives.length}}场）</span><div style="display:flex;gap:6px"><button class="bp bps" @click="openLiveForm()">+ 创建直播</button><button class="bo bps" @click="toast('回放管理','info')">直播回放</button><button class="bo bps" @click="exportLives">导出数据</button></div></div>
-<div class="fb"><input v-model="liveFilter.keyword" placeholder="直播名称/主播..." class="fi" style="width:180px"><select v-model="liveFilter.status" class="fi"><option value="">全部状态</option><option value="pending">待开播</option><option value="living">直播中</option><option value="ended">已结束</option><option value="cancelled">已取消</option></select><button class="bp" style="padding:5px 12px;font-size:10px">查询</button><button class="bo" style="padding:5px 12px;font-size:10px" @click="liveFilter.keyword='';liveFilter.status=''">重置</button></div>
+<div class="fb"><input v-model="liveFilter.keyword" placeholder="直播名称/主播..." class="fi" style="width:180px"><select v-model="liveFilter.status" class="fi"><option value="">全部状态</option><option value="draft">草稿</option><option value="pending">待开播</option><option value="living">直播中</option><option value="ended">已结束</option><option value="cancelled">已取消</option></select><button class="bp" style="padding:5px 12px;font-size:10px">查询</button><button class="bo" style="padding:5px 12px;font-size:10px" @click="liveFilter.keyword='';liveFilter.status=''">重置</button></div>
 <table class="tb"><thead><tr><th>直播名称</th><th>主播</th><th>时间</th><th>关联商品</th><th>观看人数</th><th>成交金额</th><th>状态</th><th>操作</th></tr></thead>
 <tbody><tr v-for="l in filteredLives" :key="l.id" class="order-row" @click="showLiveDetail(l)" style="cursor:pointer"><td style="color:#fff;font-weight:600">{{l.title}}</td><td><div>{{l.host}}</div><div class="pd">{{l.manager||''}}</div></td><td><div>{{l.time}}</div><div class="pd">{{l.duration}}</div></td>
 <td><div v-if="l.products&&l.products.length"><span v-for="(p,i) in l.products.slice(0,2)" :key="p" class="t g" style="margin-right:2px;font-size:8px">{{p}}</span><span v-if="l.products.length>2" class="t dim" style="font-size:8px">+{{l.products.length-2}}</span></div><span v-else style="color:#6F91A8;font-size:10px">未关联</span></td>
@@ -376,21 +376,24 @@
 <div class="prod-form-body">
 <div class="fs-title">📋 基本信息</div>
 <div class="fl"><label>直播名称 *</label><input v-model="liveForm.title" class="fin" placeholder="例：中堰蜂糖李采摘专场"></div>
-<div class="fr3"><div class="fl"><label>主播</label><select v-model="liveForm.host" class="fin"><option v-for="h in hosts" :key="h" :value="h">{{h}}</option></select></div><div class="fl"><label>负责人</label><input v-model="liveForm.manager" class="fin"></div></div>
-<div class="fr3"><div class="fl"><label>开播时间</label><input v-model="liveForm.time" class="fin" placeholder="2026-07-30 19:00"></div><div class="fl"><label>预计时长</label><input v-model="liveForm.duration" class="fin" placeholder="预计2小时"></div></div>
-<div class="fl"><label>直播简介</label><textarea v-model="liveForm.desc" class="fin" rows="2" placeholder="介绍直播内容..." style="resize:vertical"></textarea></div>
-<div class="fs-title">📦 关联商品</div>
+<div class="fr3"><div class="fl"><label>主播 *</label><select v-model="liveForm.host" class="fin"><option v-for="h in hosts" :key="h" :value="h">{{h}}</option></select></div><div class="fl"><label>负责人</label><input v-model="liveForm.manager" class="fin"></div></div>
+<div class="fr3"><div class="fl"><label>开播时间</label><input v-model="liveForm.time" class="fin" placeholder="2026-07-30 19:00"></div><div class="fl"><label>预计时长</label><select v-model="liveForm.duration" class="fin"><option v-for="d in durationOptions" :key="d" :value="d">{{d}}</option></select></div></div>
+<div class="fl"><label>直播简介 <span style="font-size:9px;color:#6F91A8;font-weight:400">{{(liveForm.desc||'').length}}/{{descMaxLen}}</span></label><textarea v-model="liveForm.desc" class="fin" rows="2" :maxlength="descMaxLen" placeholder="介绍直播内容..." style="resize:vertical"></textarea></div>
+<div class="fl"><label>直播封面（可选）</label>
+<div v-if="liveForm.cover" style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div class="img-preview" :style="{background:'rgba(10,61,92,0.55)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'24px'}">🖼️</div><button class="bo bps" @click="liveForm.cover=''">删除</button></div>
+<button class="bo bps" @click="toast('封面上传功能预留','info')">📷 上传封面</button></div>
+<div class="fs-title">📦 关联商品（已选{{liveForm.products.length}}件）</div>
 <div style="display:flex;flex-wrap:wrap;gap:8px">
 <div v-for="p in prods" :key="p.id" class="live-prod-chip" :class="{on:liveForm.products.includes(p.name)}" @click="toggleLiveProduct(p.name)">
-<span>{{p._icon||'📦'}} {{p.name}}</span>
-<span v-if="liveForm.products.includes(p.name)" style="color:#28C76F;margin-left:4px">✓</span>
+<span>{{liveForm.products.includes(p.name)?'☑':'☐'}} {{p._icon||'📦'}} {{p.name}}</span>
 </div>
 </div>
 </div>
 <div class="prod-form-footer">
 <button class="bo" @click="liveFormOpen=false">取消</button>
 <span style="flex:1"></span>
-<button class="bp" style="padding:6px 16px;font-size:11px" @click="saveLive">{{liveEditId?'保存修改':'创建直播'}}</button>
+<button class="bo" style="padding:6px 16px;font-size:11px" @click="saveLive('draft')">保存草稿</button>
+<button class="bp" style="padding:6px 16px;font-size:11px" @click="saveLive('pending')">创建直播</button>
 </div>
 </div>
 
@@ -866,11 +869,12 @@ const lives=reactive([
   {id:3,title:'澳洲龙虾烹饪秀',host:'李婶',phone:'137****2345',manager:'刘管理员',time:'2026-07-19 15:00',duration:'预计3小时',views:8900,orders:142,sales:35800,status:'living',platform:'快手',products:['澳洲淡水龙虾','农特产礼盒'],villageName:'中堰村',replayUrl:'',desc:'现场烹饪澳洲淡水龙虾，展示养殖环境',cancelReason:'',createdAt:'2026-07-17 08:00'}
 ])
 const liveDrawerOpen=ref(false),liveDetail=ref(null)
-function liveStatusLabel(s){const m={pending:'待开播',living:'直播中',ended:'已结束',cancelled:'已取消'};return m[s]||s}
-function liveStatusCls(s){const m={pending:'y',living:'g',ended:'dim',cancelled:'r'};return m[s]||'dim'}
+function liveStatusLabel(s){const m={draft:'草稿',pending:'待开播',living:'直播中',ended:'已结束',cancelled:'已取消'};return m[s]||s}
+function liveStatusCls(s){const m={draft:'dim',pending:'y',living:'g',ended:'dim',cancelled:'r'};return m[s]||'dim'}
 function getLiveActions(l){
   const a=[]
   a.push({k:'detail',l:'直播详情'})
+  if(l.status==='draft'){a.push({k:'edit',l:'编辑'});a.push({k:'cancel',l:'取消直播'})}
   if(l.status==='pending'){a.push({k:'edit',l:'编辑'});a.push({k:'cancel',l:'取消直播'})}
   if(l.status==='living'){a.push({k:'enter',l:'进入直播'});a.push({k:'end',l:'结束直播'})}
   if(l.status==='ended'){if(l.replayUrl){a.push({k:'replay',l:'查看回放'})}else{a.push({k:'uploadReplay',l:'上传回放'})}}
@@ -887,26 +891,32 @@ function showLiveDetail(l){liveDetail.value=l;liveDrawerOpen.value=true}
 
 // Live form drawer
 const liveFormOpen=ref(false),liveEditId=ref(null)
-const liveForm=reactive({title:'',host:'赵大哥',time:'',duration:'预计2小时',products:[],desc:'',manager:'刘管理员'})
+const liveForm=reactive({title:'',host:'赵大哥',time:'',duration:'2小时',products:[],desc:'',manager:'刘管理员',cover:''})
 const hosts=['赵大哥','李婶','张大叔','刘阿姨','中堰村合作社','刘管理员']
+const durationOptions=['30分钟','1小时','1.5小时','2小时','3小时','4小时']
+const descMaxLen=300
 
 function openLiveForm(id){
   liveEditId.value=id||null
   if(id){
     const l=lives.find(x=>x.id===id)
-    if(l)Object.assign(liveForm,{title:l.title,host:l.host,time:l.time,duration:l.duration,products:[...l.products],desc:l.desc||'',manager:l.manager||''})
+    if(l)Object.assign(liveForm,{title:l.title,host:l.host,time:l.time.replace('T',' '),duration:l.duration,products:[...l.products],desc:l.desc||'',manager:l.manager||'',cover:l.cover||''})
   }else{
-    Object.assign(liveForm,{title:'',host:'赵大哥',time:new Date().toISOString().slice(0,16),duration:'预计2小时',products:[],desc:'',manager:'刘管理员'})
+    const now=new Date();const t=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')
+    Object.assign(liveForm,{title:'',host:'赵大哥',time:t,duration:'2小时',products:[],desc:'',manager:'刘管理员',cover:''})
   }
   liveFormOpen.value=true
 }
-function saveLive(){
+function saveLive(saveStatus){
   if(!liveForm.title.trim()){toast('请输入直播名称','warn');return}
-  const obj={title:liveForm.title,host:liveForm.host,time:liveForm.time,duration:liveForm.duration,products:[...liveForm.products],desc:liveForm.desc,manager:liveForm.manager}
+  if(!liveForm.host){toast('请选择主播','warn');return}
+  if(!liveForm.products.length){toast('请选择至少1件关联商品','warn');return}
+  const status=saveStatus||'pending'
+  const obj={title:liveForm.title,host:liveForm.host,time:liveForm.time,duration:liveForm.duration,products:[...liveForm.products],desc:(liveForm.desc||'').slice(0,descMaxLen),manager:liveForm.manager,cover:liveForm.cover}
   if(liveEditId.value){
     const l=lives.find(x=>x.id===liveEditId.value);if(l){Object.assign(l,obj);toast('已更新','ok')}
   }else{
-    lives.unshift({id:uid(),views:0,orders:0,sales:0,status:'pending',phone:'',villageName:'中堰村',platform:'',cover:'',replayUrl:'',cancelReason:'',createdAt:new Date().toISOString().replace('T',' ').slice(0,16),...obj})
+    lives.unshift({id:uid(),views:0,orders:0,sales:0,status,phone:'',villageName:'中堰村',platform:'',replayUrl:'',cancelReason:'',createdAt:new Date().toISOString().replace('T',' ').slice(0,16),...obj})
     toast('已创建','ok')
   }
   liveFormOpen.value=false
