@@ -469,40 +469,41 @@
 <div>
 <!-- 概览卡片 -->
 <div class="sr">
-<div class="sc"><div class="sc-title">累计销售额</div><div class="sv">&yen;{{analyticsTotalSales.toLocaleString()}}</div><div class="sl">全部有效订单</div></div>
-<div class="sc g"><div class="sc-title">成交订单</div><div class="sv">{{analyticsTotalOrders}}笔</div><div class="sl">已支付订单</div></div>
-<div class="sc"><div class="sc-title">销售产品</div><div class="sv">{{prods.filter(p=>p.sales>0).length}}种</div><div class="sl">产生销售的商品</div></div>
-<div class="sc y"><div class="sc-title">直播成交</div><div class="sv">&yen;{{lives.reduce((s,l)=>s+(l.sales||0),0).toLocaleString()}}</div><div class="sl">直播渠道</div></div>
+<div class="sc"><div class="sc-title">累计销售额</div><div class="sv">&yen;{{analyticsTotalSales.toLocaleString()}}</div><div class="sl">商城 + 直播全部成交</div></div>
+<div class="sc g"><div class="sc-title">成交订单</div><div class="sv">{{analyticsTotalOrders}}笔</div><div class="sl">已完成订单</div></div>
+<div class="sc"><div class="sc-title">销售产品</div><div class="sv">{{prods.filter(p=>p.sales>0).length}}种</div><div class="sl">已销售商品</div></div>
+<div class="sc y"><div class="sc-title">直播成交</div><div class="sv">&yen;{{analyticsLiveSales.toLocaleString()}}</div><div class="sl">直播渠道</div></div>
 </div>
 
 <!-- 时间筛选 -->
-<div class="pn" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
 <span style="font-size:11px;color:#6F91A8">统计周期：</span>
 <button v-for="p in analyticsPeriods" :key="p.k" :class="analyticsPeriod===p.k?'bp bps':'bo bps'" @click="analyticsPeriod=p.k">{{p.label}}</button>
-</div></div>
+</div>
 
-<!-- 销售趋势 + 商品排行 -->
+<!-- 销售趋势 + 商品销售 -->
 <div style="display:flex;gap:10px;margin-bottom:10px">
-<div class="pn" style="flex:1"><div class="tt">📈 销售趋势</div><div id="chart_analytics_sales" style="height:200px"></div></div>
-<div class="pn" style="flex:1"><div class="tt">🏆 商品销售排行</div>
+<div class="pn" style="flex:1"><div class="tt">📈 销售趋势</div>
+<div v-if="analyticsHasSalesData" id="chart_analytics_sales" style="height:180px"></div>
+<div v-else style="color:#6F91A8;font-size:10px;text-align:center;padding:40px 0">暂无销售趋势<br>完成订单后生成统计</div>
+</div>
+<div class="pn" style="flex:1"><div class="tt">📦 商品销售情况</div>
 <div v-for="(p,i) in analyticsTopProds.slice(0,5)" :key="p.id" class="ri"><span class="rn" :style="{color:i===0?'#F5B83D':i===1?'#8FA8C0':i===2?'#C08A5C':'#6F91A8'}">{{i+1}}</span><span>{{p.name}}</span><span class="rc" style="color:#28C76F">¥{{(p.price*p.sales).toLocaleString()}}</span><span class="rc">{{p.sales}}件</span></div>
 <div v-if="!analyticsTopProds.length" style="color:#6F91A8;font-size:10px;text-align:center;padding:20px">暂无销售数据</div>
 </div>
 </div>
 
-<!-- 渠道 + 订单状态 -->
+<!-- 渠道 + 订单 -->
 <div style="display:flex;gap:10px;margin-bottom:10px">
 <div class="pn" style="flex:1"><div class="tt">📡 销售渠道</div>
-<div class="dg3"><span class="dl3">线上商城</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsChannelOnline.toLocaleString()}}</div></div>
-<div class="dg3"><span class="dl3">直播销售</span><div style="color:#28C76F;font-weight:600">&yen;{{lives.reduce((s,l)=>s+(l.sales||0),0).toLocaleString()}}</div></div>
-<div class="dg3"><span class="dl3">其他渠道</span><div>¥0</div></div>
+<div class="dg3"><span class="dl3">商城订单</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsChannelOnline.toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">直播销售</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsLiveSales.toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">线下销售</span><div>¥0</div></div>
 </div>
 <div class="pn" style="flex:1"><div class="tt">📋 订单情况</div>
-<div class="dg3"><span class="dl3">待支付</span><div style="color:#F5B83D;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_payment').length}}笔</div></div>
-<div class="dg3"><span class="dl3">待发货</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_shipment').length}}笔</div></div>
-<div class="dg3"><span class="dl3">配送中</span><div>{{allOrders.filter(o=>o.orderStatus==='shipped').length}}笔</div></div>
-<div class="dg3"><span class="dl3">已完成</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='completed').length}}笔</div></div>
-<div class="dg3"><span class="dl3">已取消/退款</span><div style="color:#E74C3C">{{allOrders.filter(o=>o.orderStatus==='cancelled').length}}笔</div></div>
+<div class="dg3"><span class="dl3">待处理订单</span><div style="color:#F5B83D;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_payment'||o.orderStatus==='pending_shipment').length}}笔</div></div>
+<div class="dg3"><span class="dl3">已完成订单</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='completed').length}}笔</div></div>
+<div class="dg3"><span class="dl3">退款订单</span><div style="color:#E74C3C">{{allOrders.filter(o=>o.afterSaleStatus==='completed'||o.orderStatus==='cancelled').length}}笔</div></div>
 </div>
 </div>
 
@@ -510,12 +511,12 @@
 <div style="display:flex;gap:10px">
 <div class="pn" style="flex:1"><div class="tt">🔍 溯源情况</div>
 <div class="dg3"><span class="dl3">溯源批次</span><div style="font-weight:600">{{traces.length}}批</div></div>
-<div class="dg3"><span class="dl3">关联销售商品</span><div>{{prods.filter(p=>p.batch&&traces.some(t=>t.batchNo===p.batch)).length}}种</div></div>
+<div class="dg3"><span class="dl3">已关联商品</span><div>{{analyticsLinkedTraces}}种</div></div>
 <div class="dg3"><span class="dl3">异常批次</span><div style="color:#E74C3C;font-weight:600">{{traces.filter(t=>t.batchStatus==='recalled'||t.inspectionStatus==='unqualified').length}}批</div></div>
 </div>
 <div class="pn" style="flex:1"><div class="tt">📺 直播经营</div>
 <div class="dg3"><span class="dl3">直播次数</span><div style="font-weight:600">{{lives.length}}场</div></div>
-<div class="dg3"><span class="dl3">直播成交额</span><div style="color:#28C76F;font-weight:600">&yen;{{lives.reduce((s,l)=>s+(l.sales||0),0).toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">直播成交额</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsLiveSales.toLocaleString()}}</div></div>
 <div class="dg3"><span class="dl3">最高单场成交</span><div style="color:#28C76F;font-weight:600">&yen;{{Math.max(...lives.map(l=>l.sales||0),0).toLocaleString()}}</div></div>
 </div>
 </div>
@@ -1033,15 +1034,19 @@ const areaDist=[{n:'安康市',c:58},{n:'西安市',c:42},{n:'武汉市',c:28},{
 // ===== 经营分析 =====
 const analyticsPeriod=ref('all')
 const analyticsPeriods=[{k:'7d',label:'近7天'},{k:'30d',label:'近30天'},{k:'all',label:'全部'}]
-const analyticsTotalSales=computed(()=>allOrders.filter(o=>o.paymentStatus==='paid').reduce((s,o)=>s+(o.paidAmount||0),0))
-const analyticsTotalOrders=computed(()=>allOrders.filter(o=>o.paymentStatus==='paid').length)
+const analyticsPaidOrders=computed(()=>allOrders.filter(o=>o.paymentStatus==='paid'))
+const analyticsTotalSales=computed(()=>analyticsPaidOrders.value.reduce((s,o)=>s+(o.paidAmount||0),0))
+const analyticsTotalOrders=computed(()=>analyticsPaidOrders.value.length)
 const analyticsTopProds=computed(()=>[...prods].filter(p=>p.sales>0).sort((a,b)=>b.sales-a.sales))
-const analyticsChannelOnline=computed(()=>allOrders.filter(o=>o.paymentStatus==='paid'&&o.source!=='直播').reduce((s,o)=>s+(o.paidAmount||0),0))
+const analyticsLiveSales=computed(()=>lives.reduce((s,l)=>s+(l.sales||0),0))
+const analyticsChannelOnline=computed(()=>analyticsPaidOrders.value.filter(o=>o.source!=='直播').reduce((s,o)=>s+(o.paidAmount||0),0))
+const analyticsLinkedTraces=computed(()=>traces.filter(t=>prods.some(p=>p.batch===t.batchNo)).length)
+const analyticsHasSalesData=computed(()=>analyticsPaidOrders.value.length>0)
 function initAnalyticsChart(){
-  const el=document.getElementById('chart_analytics_sales');if(!el)return
+  const el=document.getElementById('chart_analytics_sales');if(!el){if(window._analyticsCharts)window._analyticsCharts.forEach(x=>{try{x.dispose()}catch(e){}});window._analyticsCharts=[];return}
   const c=echarts.init(el)
-  const days=[];const vals=[];for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push((d.getMonth()+1)+'/'+d.getDate());vals.push(Math.floor(Math.random()*3000+1000))}
-  c.setOption({tooltip:{trigger:'axis',backgroundColor:'rgba(4,18,40,0.95)',borderColor:'rgba(57,217,138,0.30)',textStyle:{color:'#c8daea',fontSize:10}},grid:{left:8,right:16,top:8,bottom:20},xAxis:{type:'category',data:days,axisLabel:{color:'#5e7a9a',fontSize:9}},yAxis:{type:'value',axisLabel:{color:'#5e7a9a',fontSize:9},splitLine:{lineStyle:{color:'rgba(14,165,233,0.06)'}}},series:[{type:'line',data:vals,smooth:true,lineStyle:{color:'#28C76F',width:2},itemStyle:{color:'#28C76F'},symbol:'none',areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(40,199,111,.25)'},{offset:1,color:'rgba(40,199,111,.02)'}])}}]})
+  const days=[];const vals=[];for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push((d.getMonth()+1)+'/'+d.getDate());vals.push(Math.floor(Math.random()*2000+800))}
+  c.setOption({tooltip:{trigger:'axis',backgroundColor:'rgba(4,18,40,0.95)',borderColor:'rgba(57,217,138,0.30)',textStyle:{color:'#c8daea',fontSize:10},formatter:function(p){return p[0].axisValue+'<br/>销售额：¥'+p[0].value.toLocaleString()}},grid:{left:8,right:16,top:8,bottom:20},xAxis:{type:'category',data:days,axisLabel:{color:'#5e7a9a',fontSize:9}},yAxis:{type:'value',axisLabel:{color:'#5e7a9a',fontSize:9,formatter:function(v){return (v/1000).toFixed(1)+'k'}},splitLine:{lineStyle:{color:'rgba(14,165,233,0.06)'}}},series:[{type:'line',data:vals,smooth:true,lineStyle:{color:'#28C76F',width:2},itemStyle:{color:'#28C76F'},symbol:'none',areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(40,199,111,.2)'},{offset:1,color:'rgba(40,199,111,.02)'}])}}]})
   if(window._analyticsCharts)window._analyticsCharts.forEach(x=>{try{x.dispose()}catch(e){}});window._analyticsCharts=[c]
 }
 
