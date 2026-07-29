@@ -358,14 +358,39 @@
 </div>
 
 <!-- 直播管理 -->
-<div class="pn"><div class="tt" style="justify-content:space-between"><span>📺 直播管理（共{{lives.length}}场）</span><div style="display:flex;gap:6px"><button class="bp bps" @click="addLive">+ 创建直播</button><button class="bo bps" @click="toast('回放管理','info')">直播回放</button><button class="bo bps" @click="exportLives">导出数据</button></div></div>
+<div class="pn"><div class="tt" style="justify-content:space-between"><span>📺 直播管理（共{{lives.length}}场）</span><div style="display:flex;gap:6px"><button class="bp bps" @click="openLiveForm()">+ 创建直播</button><button class="bo bps" @click="toast('回放管理','info')">直播回放</button><button class="bo bps" @click="exportLives">导出数据</button></div></div>
 <div class="fb"><input v-model="liveFilter.keyword" placeholder="直播名称/主播..." class="fi" style="width:180px"><select v-model="liveFilter.status" class="fi"><option value="">全部状态</option><option value="pending">待开播</option><option value="living">直播中</option><option value="ended">已结束</option><option value="cancelled">已取消</option></select><button class="bp" style="padding:5px 12px;font-size:10px">查询</button><button class="bo" style="padding:5px 12px;font-size:10px" @click="liveFilter.keyword='';liveFilter.status=''">重置</button></div>
 <table class="tb"><thead><tr><th>直播名称</th><th>主播</th><th>时间</th><th>关联商品</th><th>观看人数</th><th>成交金额</th><th>状态</th><th>操作</th></tr></thead>
 <tbody><tr v-for="l in filteredLives" :key="l.id" class="order-row" @click="showLiveDetail(l)" style="cursor:pointer"><td style="color:#fff;font-weight:600">{{l.title}}</td><td><div>{{l.host}}</div><div class="pd">{{l.manager||''}}</div></td><td><div>{{l.time}}</div><div class="pd">{{l.duration}}</div></td>
 <td><div v-if="l.products&&l.products.length"><span v-for="(p,i) in l.products.slice(0,2)" :key="p" class="t g" style="margin-right:2px;font-size:8px">{{p}}</span><span v-if="l.products.length>2" class="t dim" style="font-size:8px">+{{l.products.length-2}}</span></div><span v-else style="color:#6F91A8;font-size:10px">未关联</span></td>
 <td>{{(l.views||0).toLocaleString()}}</td><td style="color:#28C76F;font-weight:600">¥{{(l.sales||0).toLocaleString()}}<div v-if="l.orders" class="pd">共{{l.orders}}笔</div></td>
 <td><span :class="'t '+liveStatusCls(l.status)" style="font-size:8px">{{liveStatusLabel(l.status)}}</span><div v-if="l.status==='已结束'&&l.replayUrl" style="font-size:7px;color:#28C76F;margin-top:2px">已上传回放</div><div v-else-if="l.status==='已结束'&&!l.replayUrl" style="font-size:7px;color:#6F91A8;margin-top:2px">未上传回放</div><div v-if="l.status==='已取消'&&l.cancelReason" style="font-size:7px;color:#E74C3C;margin-top:2px">{{l.cancelReason}}</div></td>
-<td style="white-space:nowrap" @click.stop><button v-for="a in getLiveActions(l)" :key="a.k" :class="a.k==='cancel'?'bd bps':a.k==='enter'||a.k==='end'?'bp bps':'bo bps'" style="margin-right:2px" @click="a.k==='detail'?showLiveDetail(l):a.k==='edit'?editLive(l.id):a.k==='cancel'?cancelLive(l.id):a.k==='enter'?toast('进入直播中...','ok'):a.k==='end'?endLive(l.id):a.k==='replay'?toast('查看回放','info'):null">{{a.l}}</button><button :class="(l.products&&l.products.length)?'bo bps':'bo bps'" style="margin-right:2px" @click="linkProducts(l.id)">{{(l.products&&l.products.length)?'查看商品':'关联商品'}}</button></td></tr></tbody></table>
+<td style="white-space:nowrap" @click.stop><button v-for="a in getLiveActions(l)" :key="a.k" :class="a.k==='cancel'?'bd bps':a.k==='enter'||a.k==='end'?'bp bps':'bo bps'" style="margin-right:2px" @click="a.k==='detail'?showLiveDetail(l):a.k==='edit'?openLiveForm(l.id):a.k==='cancel'?cancelLive(l.id):a.k==='enter'?toast('进入直播中...','ok'):a.k==='end'?endLive(l.id):a.k==='replay'?toast('查看回放','info'):null">{{a.l}}</button><button :class="(l.products&&l.products.length)?'bo bps':'bo bps'" style="margin-right:2px" @click="openLiveForm(l.id)">{{(l.products&&l.products.length)?'管理商品':'关联商品'}}</button></td></tr></tbody></table>
+</div>
+</div>
+
+<!-- 创建/编辑直播抽屉 -->
+<div class="dov2" :class="{on:liveFormOpen}" @click="liveFormOpen=false"></div>
+<div class="prod-form-drawer" :class="{on:liveFormOpen}">
+<div class="dwh2"><h3>{{liveEditId?'编辑直播':'创建直播'}}</h3><button class="mc" @click="liveFormOpen=false">✕</button></div>
+<div class="prod-form-body">
+<div class="fs-title">📋 基本信息</div>
+<div class="fl"><label>直播名称 *</label><input v-model="liveForm.title" class="fin" placeholder="例：中堰蜂糖李采摘专场"></div>
+<div class="fr3"><div class="fl"><label>主播</label><select v-model="liveForm.host" class="fin"><option v-for="h in hosts" :key="h" :value="h">{{h}}</option></select></div><div class="fl"><label>负责人</label><input v-model="liveForm.manager" class="fin"></div></div>
+<div class="fr3"><div class="fl"><label>开播时间</label><input v-model="liveForm.time" class="fin" placeholder="2026-07-30 19:00"></div><div class="fl"><label>预计时长</label><input v-model="liveForm.duration" class="fin" placeholder="预计2小时"></div></div>
+<div class="fl"><label>直播简介</label><textarea v-model="liveForm.desc" class="fin" rows="2" placeholder="介绍直播内容..." style="resize:vertical"></textarea></div>
+<div class="fs-title">📦 关联商品</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<div v-for="p in prods" :key="p.id" class="live-prod-chip" :class="{on:liveForm.products.includes(p.name)}" @click="toggleLiveProduct(p.name)">
+<span>{{p._icon||'📦'}} {{p.name}}</span>
+<span v-if="liveForm.products.includes(p.name)" style="color:#28C76F;margin-left:4px">✓</span>
+</div>
+</div>
+</div>
+<div class="prod-form-footer">
+<button class="bo" @click="liveFormOpen=false">取消</button>
+<span style="flex:1"></span>
+<button class="bp" style="padding:6px 16px;font-size:11px" @click="saveLive">{{liveEditId?'保存修改':'创建直播'}}</button>
 </div>
 </div>
 
@@ -859,16 +884,40 @@ const filteredLives=computed(()=>{
   return l
 })
 function showLiveDetail(l){liveDetail.value=l;liveDrawerOpen.value=true}
-function addLive(){
-  const n=prompt('直播主题：');if(!n)return
-  lives.unshift({id:uid(),title:n,host:prompt('主播：')||'管理员',phone:prompt('联系电话：')||'',time:prompt('时间：',new Date().toISOString().slice(0,16))||'',duration:prompt('预计时长：','预计2小时')||'预计2小时',views:0,sales:0,status:'pending',products:[],villageName:'中堰村',manager:'刘管理员',cover:'',desc:prompt('直播说明：')||'',createdAt:new Date().toISOString().replace('T',' ').slice(0,16)})
-  toast('已创建','ok')
+
+// Live form drawer
+const liveFormOpen=ref(false),liveEditId=ref(null)
+const liveForm=reactive({title:'',host:'赵大哥',time:'',duration:'预计2小时',products:[],desc:'',manager:'刘管理员'})
+const hosts=['赵大哥','李婶','张大叔','刘阿姨','中堰村合作社','刘管理员']
+
+function openLiveForm(id){
+  liveEditId.value=id||null
+  if(id){
+    const l=lives.find(x=>x.id===id)
+    if(l)Object.assign(liveForm,{title:l.title,host:l.host,time:l.time,duration:l.duration,products:[...l.products],desc:l.desc||'',manager:l.manager||''})
+  }else{
+    Object.assign(liveForm,{title:'',host:'赵大哥',time:new Date().toISOString().slice(0,16),duration:'预计2小时',products:[],desc:'',manager:'刘管理员'})
+  }
+  liveFormOpen.value=true
 }
-function editLive(id){const l=lives.find(x=>x.id===id);if(!l)return;l.title=prompt('主题：',l.title)||l.title;l.host=prompt('主播：',l.host)||l.host;l.time=prompt('时间：',l.time)||l.time;l.status=prompt('状态(pending/living/ended/cancelled)：',l.status)||l.status;toast('已更新','ok')}
+function saveLive(){
+  if(!liveForm.title.trim()){toast('请输入直播名称','warn');return}
+  const obj={title:liveForm.title,host:liveForm.host,time:liveForm.time,duration:liveForm.duration,products:[...liveForm.products],desc:liveForm.desc,manager:liveForm.manager}
+  if(liveEditId.value){
+    const l=lives.find(x=>x.id===liveEditId.value);if(l){Object.assign(l,obj);toast('已更新','ok')}
+  }else{
+    lives.unshift({id:uid(),views:0,orders:0,sales:0,status:'pending',phone:'',villageName:'中堰村',platform:'',cover:'',replayUrl:'',cancelReason:'',createdAt:new Date().toISOString().replace('T',' ').slice(0,16),...obj})
+    toast('已创建','ok')
+  }
+  liveFormOpen.value=false
+}
+function toggleLiveProduct(name){
+  const i=liveForm.products.indexOf(name)
+  if(i>=0)liveForm.products.splice(i,1);else liveForm.products.push(name)
+}
 function cancelLive(id){const l=lives.find(x=>x.id===id);if(!l)return;const reasons=['天气原因','设备故障','主播请假','商品问题','其他'];const r=prompt('取消原因：\n1.天气原因 2.设备故障 3.主播请假 4.商品问题 5.其他','');if(r===null)return;const idx=parseInt(r);l.cancelReason=idx?reasons[idx-1]:r||'未填写';l.status='cancelled';toast('已取消：'+l.cancelReason,'warn')}
 function endLive(id){const l=lives.find(x=>x.id===id);if(!l)return;if(!confirm('确定结束直播？'))return;l.status='ended';toast('已结束','ok')}
 function exportLives(){const csv='主题,主播,时间,时长,观看,成交,状态,关联商品\n'+lives.map(l=>[l.title,l.host,l.time,l.duration,l.views,l.sales,l.status,(l.products||[]).join(';')].join(',')).join('\n');downloadCSV('﻿'+csv,'直播数据_'+new Date().toISOString().slice(0,10)+'.csv')}
-function linkProducts(id){const l=lives.find(x=>x.id===id);if(!l)return;const names=prods.map(p=>p.name).join('\n');const sel=prompt('关联商品（用逗号分隔）：\n可选商品：\n'+names,(l.products||[]).join(','));if(sel!==null){l.products=sel.split(',').map(s=>s.trim()).filter(Boolean);toast('已关联','ok')}}
 
 const topProds=computed(()=>[...prods].sort((a,b)=>b.sales-a.sales).slice(0,5))
 const areaDist=[{n:'安康市',c:58},{n:'西安市',c:42},{n:'武汉市',c:28},{n:'重庆市',c:22},{n:'成都市',c:16}]
@@ -949,6 +998,7 @@ function initCharts(){
 .flow-dot{width:7px;height:7px;border-radius:50%;background:rgba(111,145,168,.3);flex-shrink:0}.trace-flow-step.active .flow-dot{background:#28C76F;box-shadow:0 0 6px rgba(40,199,111,.4)}.trace-flow-step.active .flow-label{color:#fff;font-weight:600}.trace-flow-step.done .flow-dot{background:#28C76F}.trace-flow-step.done .flow-label{color:#B7D3E8}.trace-flow-step.warn .flow-dot{background:#E74C3C;box-shadow:0 0 6px rgba(231,76,60,.4)}.trace-flow-step.warn .flow-label{color:#E74C3C;font-weight:600}
 .completeness-bar{height:4px;background:rgba(40,199,111,.08);border-radius:2px;overflow:hidden;width:48px}.completeness-fill{height:100%;border-radius:2px;transition:width .5s}
 .trace-row-abnormal{border-left:3px solid #E74C3C!important}.trace-row-abnormal:hover td{background:rgba(231,76,60,.06)!important}
+.live-prod-chip{padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;background:rgba(10,36,68,.55);border:1px solid rgba(111,145,168,.3);color:#B7D3E8;transition:.15s;user-select:none}.live-prod-chip:hover{border-color:#28C76F}.live-prod-chip.on{background:rgba(40,199,111,.15);border-color:#28C76F;color:#fff}
 .order-row:hover td{background:rgba(14,165,233,.06)!important}
 :deep(.el-date-editor--daterange.el-input__inner){background:rgba(57,217,138,.06);border:1px solid rgba(40,199,111,.1);border-radius:6px;height:auto;width:240px}:deep(.el-date-editor .el-range-input){background:transparent;color:#B7D3E8;font-size:11px;width:80px}:deep(.el-date-editor .el-range-separator){color:#8FA8C0;font-size:11px;line-height:22px}:deep(.el-date-editor .el-range__close-icon){display:none}:deep(.el-picker-panel){background:rgba(10,28,50,.98);border:1px solid rgba(40,199,111,.15);color:#B7D3E8;box-shadow:0 4px 20px rgba(0,0,0,.5)}:deep(.el-date-range-picker__header){color:#B7D3E8}:deep(.el-date-table th){color:#6F91A8;border:0}:deep(.el-date-table td){border:0}:deep(.el-date-table td.available:hover){color:#28C76F}:deep(.el-date-table td.in-range div){background:rgba(40,199,111,.15)}:deep(.el-date-table td.end-date div),:deep(.el-date-table td.start-date div){background:#28C76F;color:#fff}:deep(.el-date-table td.current:not(.disabled) div){color:#28C76F}:deep(.el-picker-panel__icon-btn:hover){color:#28C76F}:deep(.el-date-range-picker__header div){color:#B7D3E8;font-size:13px}:deep(.el-date-range-picker__content){padding:8px}:deep(.el-month-table td.current div){color:#28C76F}:deep(.el-year-table td.current div){color:#28C76F}
 .toast-area{position:fixed;top:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:6px;pointer-events:none}.to{padding:8px 14px;border-radius:6px;font-size:11px;font-weight:600;color:#fff;animation:ti .3s,to2 .3s 2s forwards}.to.ok{background:linear-gradient(135deg,#059669,#39D98A)}.to.info{background:linear-gradient(135deg,#39D98A,#28C76F)}.to.warn{background:linear-gradient(135deg,#d97706,#f59e0b)}@keyframes ti{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes to2{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
