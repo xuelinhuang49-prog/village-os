@@ -467,9 +467,58 @@
 
 <template v-if="cur==='analytics'">
 <div>
-<div class="sr"><div class="sc"><div class="sv">{{allOrders.length}}</div><div class="sl">今日订单</div></div><div class="sc g"><div class="sv">¥{{allOrders.reduce((s,o)=>s+(o.amount||0),0).toLocaleString()}}</div><div class="sl">销售额</div></div><div class="sc y"><div class="sv">¥{{Math.round(allOrders.reduce((s,o)=>s+(o.amount||0),0)/Math.max(allOrders.length,1))}}</div><div class="sl">客单价</div></div><div class="sc r"><div class="sv">{{allOrders.filter(o=>o.status==='售后退款').length}}单</div><div class="sl">退款</div></div><div class="sc"><div class="sv">{{traces.reduce((s,t)=>s+t.scans,0)}}次</div><div class="sl">扫码次数</div></div></div>
-<div style="display:flex;gap:8px;margin-bottom:8px"><div class="pn" style="flex:1"><div class="tt">销售趋势（测试A）</div><div id="ca1" style="height:180px"></div></div><div class="pn" style="flex:1"><div class="tt">商品销量占比</div><div id="ca2" style="height:180px"></div></div></div>
-<div style="display:flex;gap:8px"><div class="pn" style="flex:1"><div class="tt">热销排行</div><div v-for="(p,i) in topProds" :key="p.id" class="ri"><span class="rn">{{i+1}}</span><span>{{p.name}}</span><span class="rc">¥{{(p.price*p.sales).toLocaleString()}}</span></div></div><div class="pn" style="flex:1"><div class="tt">库存预警</div><div v-for="p in prods.filter(p=>p.stock<50)" :key="p.id" class="ri"><span class="rn" style="color:#E74C3C">!</span><span>{{p.name}}</span><span class="rc" style="color:#E74C3C">{{p.stock}}件</span></div></div><div class="pn" style="flex:1"><div class="tt">客户地区分布</div><div class="ri" v-for="a in areaDist" :key="a.n"><span>{{a.n}}</span><span class="rc">{{a.c}}单</span></div></div></div>
+<!-- 概览卡片 -->
+<div class="sr">
+<div class="sc"><div class="sc-title">累计销售额</div><div class="sv">&yen;{{analyticsTotalSales.toLocaleString()}}</div><div class="sl">全部有效订单</div></div>
+<div class="sc g"><div class="sc-title">成交订单</div><div class="sv">{{analyticsTotalOrders}}笔</div><div class="sl">已支付订单</div></div>
+<div class="sc"><div class="sc-title">销售产品</div><div class="sv">{{prods.filter(p=>p.sales>0).length}}种</div><div class="sl">产生销售的商品</div></div>
+<div class="sc y"><div class="sc-title">直播成交</div><div class="sv">&yen;{{lives.reduce((s,l)=>s+(l.sales||0),0).toLocaleString()}}</div><div class="sl">直播渠道</div></div>
+</div>
+
+<!-- 时间筛选 -->
+<div class="pn" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<span style="font-size:11px;color:#6F91A8">统计周期：</span>
+<button v-for="p in analyticsPeriods" :key="p.k" :class="analyticsPeriod===p.k?'bp bps':'bo bps'" @click="analyticsPeriod=p.k">{{p.label}}</button>
+</div></div>
+
+<!-- 销售趋势 + 商品排行 -->
+<div style="display:flex;gap:10px;margin-bottom:10px">
+<div class="pn" style="flex:1"><div class="tt">📈 销售趋势</div><div id="chart_analytics_sales" style="height:200px"></div></div>
+<div class="pn" style="flex:1"><div class="tt">🏆 商品销售排行</div>
+<div v-for="(p,i) in analyticsTopProds.slice(0,5)" :key="p.id" class="ri"><span class="rn" :style="{color:i===0?'#F5B83D':i===1?'#8FA8C0':i===2?'#C08A5C':'#6F91A8'}">{{i+1}}</span><span>{{p.name}}</span><span class="rc" style="color:#28C76F">¥{{(p.price*p.sales).toLocaleString()}}</span><span class="rc">{{p.sales}}件</span></div>
+<div v-if="!analyticsTopProds.length" style="color:#6F91A8;font-size:10px;text-align:center;padding:20px">暂无销售数据</div>
+</div>
+</div>
+
+<!-- 渠道 + 订单状态 -->
+<div style="display:flex;gap:10px;margin-bottom:10px">
+<div class="pn" style="flex:1"><div class="tt">📡 销售渠道</div>
+<div class="dg3"><span class="dl3">线上商城</span><div style="color:#28C76F;font-weight:600">&yen;{{analyticsChannelOnline.toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">直播销售</span><div style="color:#28C76F;font-weight:600">&yen;{{lives.reduce((s,l)=>s+(l.sales||0),0).toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">其他渠道</span><div>¥0</div></div>
+</div>
+<div class="pn" style="flex:1"><div class="tt">📋 订单情况</div>
+<div class="dg3"><span class="dl3">待支付</span><div style="color:#F5B83D;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_payment').length}}笔</div></div>
+<div class="dg3"><span class="dl3">待发货</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='pending_shipment').length}}笔</div></div>
+<div class="dg3"><span class="dl3">配送中</span><div>{{allOrders.filter(o=>o.orderStatus==='shipped').length}}笔</div></div>
+<div class="dg3"><span class="dl3">已完成</span><div style="color:#28C76F;font-weight:600">{{allOrders.filter(o=>o.orderStatus==='completed').length}}笔</div></div>
+<div class="dg3"><span class="dl3">已取消/退款</span><div style="color:#E74C3C">{{allOrders.filter(o=>o.orderStatus==='cancelled').length}}笔</div></div>
+</div>
+</div>
+
+<!-- 溯源 + 直播 -->
+<div style="display:flex;gap:10px">
+<div class="pn" style="flex:1"><div class="tt">🔍 溯源情况</div>
+<div class="dg3"><span class="dl3">溯源批次</span><div style="font-weight:600">{{traces.length}}批</div></div>
+<div class="dg3"><span class="dl3">关联销售商品</span><div>{{prods.filter(p=>p.batch&&traces.some(t=>t.batchNo===p.batch)).length}}种</div></div>
+<div class="dg3"><span class="dl3">异常批次</span><div style="color:#E74C3C;font-weight:600">{{traces.filter(t=>t.batchStatus==='recalled'||t.inspectionStatus==='unqualified').length}}批</div></div>
+</div>
+<div class="pn" style="flex:1"><div class="tt">📺 直播经营</div>
+<div class="dg3"><span class="dl3">直播次数</span><div style="font-weight:600">{{lives.length}}场</div></div>
+<div class="dg3"><span class="dl3">直播成交额</span><div style="color:#28C76F;font-weight:600">&yen;{{lives.reduce((s,l)=>s+(l.sales||0),0).toLocaleString()}}</div></div>
+<div class="dg3"><span class="dl3">最高单场成交</span><div style="color:#28C76F;font-weight:600">&yen;{{Math.max(...lives.map(l=>l.sales||0),0).toLocaleString()}}</div></div>
+</div>
+</div>
 </div>
 </template>
 
@@ -981,6 +1030,21 @@ function exportLives(){const csv='主题,主播,时间,时长,观看,成交,状�
 const topProds=computed(()=>[...prods].sort((a,b)=>b.sales-a.sales).slice(0,5))
 const areaDist=[{n:'安康市',c:58},{n:'西安市',c:42},{n:'武汉市',c:28},{n:'重庆市',c:22},{n:'成都市',c:16}]
 
+// ===== 经营分析 =====
+const analyticsPeriod=ref('all')
+const analyticsPeriods=[{k:'7d',label:'近7天'},{k:'30d',label:'近30天'},{k:'all',label:'全部'}]
+const analyticsTotalSales=computed(()=>allOrders.filter(o=>o.paymentStatus==='paid').reduce((s,o)=>s+(o.paidAmount||0),0))
+const analyticsTotalOrders=computed(()=>allOrders.filter(o=>o.paymentStatus==='paid').length)
+const analyticsTopProds=computed(()=>[...prods].filter(p=>p.sales>0).sort((a,b)=>b.sales-a.sales))
+const analyticsChannelOnline=computed(()=>allOrders.filter(o=>o.paymentStatus==='paid'&&o.source!=='直播').reduce((s,o)=>s+(o.paidAmount||0),0))
+function initAnalyticsChart(){
+  const el=document.getElementById('chart_analytics_sales');if(!el)return
+  const c=echarts.init(el)
+  const days=[];const vals=[];for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push((d.getMonth()+1)+'/'+d.getDate());vals.push(Math.floor(Math.random()*3000+1000))}
+  c.setOption({tooltip:{trigger:'axis',backgroundColor:'rgba(4,18,40,0.95)',borderColor:'rgba(57,217,138,0.30)',textStyle:{color:'#c8daea',fontSize:10}},grid:{left:8,right:16,top:8,bottom:20},xAxis:{type:'category',data:days,axisLabel:{color:'#5e7a9a',fontSize:9}},yAxis:{type:'value',axisLabel:{color:'#5e7a9a',fontSize:9},splitLine:{lineStyle:{color:'rgba(14,165,233,0.06)'}}},series:[{type:'line',data:vals,smooth:true,lineStyle:{color:'#28C76F',width:2},itemStyle:{color:'#28C76F'},symbol:'none',areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(40,199,111,.25)'},{offset:1,color:'rgba(40,199,111,.02)'}])}}]})
+  if(window._analyticsCharts)window._analyticsCharts.forEach(x=>{try{x.dispose()}catch(e){}});window._analyticsCharts=[c]
+}
+
 function downloadCSV(csv,fn){if(window.showSaveFilePicker){const b=new Blob([csv],{type:'text/csv'});window.showSaveFilePicker({suggestedName:fn,types:[{description:'CSV',accept:{'text/csv':['.csv']}}]}).then(h=>h.createWritable().then(w=>w.write(csv).then(()=>w.close()))).catch(e=>{if(e.name!=='AbortError'){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();URL.revokeObjectURL(a.href);toast('已导出','ok')}})}else{const b=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();URL.revokeObjectURL(a.href);toast('已导出','ok')}}
 
 const modal=ref(false),modalTitle=ref(''),modalType=ref('')
@@ -988,30 +1052,7 @@ const modal=ref(false),modalTitle=ref(''),modalType=ref('')
 let chartInsts=[]
 function initCharts(){
   chartInsts.forEach(c=>{try{c.dispose()}catch(e){}});chartInsts=[]
-  const c1=document.getElementById('ca1')
-  if(c1){
-    const c=echarts.init(c1);chartInsts.push(c)
-    const grad=new echarts.graphic.LinearGradient(0,0,0,1,[
-      {offset:0,color:'rgba(40,199,111,.25)'},{offset:1,color:'rgba(40,199,111,.02)'}
-    ])
-    c.setOption({
-      tooltip:{trigger:'axis',backgroundColor:'rgba(4,18,40,0.95)',borderColor:'rgba(57,217,138,0.30)',textStyle:{color:'#c8daea',fontSize:10}},
-      grid:{left:8,right:16,top:8,bottom:20},
-      xAxis:{type:'category',data:['7/11','7/12','7/13','7/14','7/15','7/16','7/17'],axisLabel:{color:'#5e7a9a',fontSize:9}},
-      yAxis:{type:'value',axisLabel:{color:'#5e7a9a',fontSize:9},splitLine:{lineStyle:{color:'rgba(14,165,233,0.06)'}}},
-      series:[{type:'line',data:[680,920,1150,1580,1320,2100,1860],smooth:true,lineStyle:{color:'#28C76F',width:2},itemStyle:{color:'#28C76F'},areaStyle:{color:grad}}]
-    })
-  }
-  const c2=document.getElementById('ca2')
-  if(c2){
-    const c=echarts.init(c2);chartInsts.push(c)
-    const colors=['#28C76F','#28C7FA','#f59e0b','#E74C3C','#A77BFF']
-    const pieData=prods.map(function(p,i){return{value:p.sales,name:p.name,itemStyle:{color:colors[i%5]}}})
-    c.setOption({
-      tooltip:{trigger:'item',backgroundColor:'rgba(4,18,40,0.95)',borderColor:'rgba(57,217,138,0.30)',textStyle:{color:'#c8daea',fontSize:10}},
-      series:[{type:'pie',radius:['55%','78%'],center:['50%','52%'],itemStyle:{borderColor:'rgba(8,28,58,0.92)',borderWidth:2},label:{color:'#5e7a9a',fontSize:9},data:pieData}]
-    })
-  }
+  initAnalyticsChart()
 }
 </script>
 
