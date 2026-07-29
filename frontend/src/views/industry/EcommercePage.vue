@@ -412,6 +412,7 @@
 
 <div class="ds-title">📋 基本信息</div>
 <div class="dg3"><span class="dl3">直播名称</span><div style="color:#fff;font-weight:600">{{liveDetail.title}}</div></div>
+<div class="dg3"><span class="dl3">所属村庄</span><div>{{liveDetail.villageName||'中堰村'}}</div></div>
 <div class="dg3"><span class="dl3">主播</span><div>{{liveDetail.host}}</div></div>
 <div class="dg3"><span class="dl3">负责人</span><div>{{liveDetail.manager||'--'}}</div></div>
 <div class="dg3"><span class="dl3">开播时间</span><div>{{liveDetail.time}}</div></div>
@@ -419,12 +420,12 @@
 <div class="dg3"><span class="dl3">创建时间</span><div>{{liveDetail.createdAt}}</div></div>
 <div class="dg3" v-if="liveDetail.desc"><span class="dl3">直播简介</span><div>{{liveDetail.desc}}</div></div>
 
-<div class="ds-title" style="display:flex;justify-content:space-between;align-items:center"><span>📦 关联商品（{{(liveDetail.products||[]).length}}件）</span></div>
+<div class="ds-title">📦 关联商品（{{(liveDetail.products||[]).length}}种）</div>
 <div v-for="pName in (liveDetail.products||[])" :key="pName" class="dg3" style="cursor:default">
 <span class="dl3">{{pName}}</span>
 <div>
-<div v-if="getProdByName(pName)" style="color:#28C76F;font-weight:500">¥{{getProdByName(pName)?.price}} / {{getProdByName(pName)?.unit||'件'}}</div>
-<div style="font-size:10px;color:#6F91A8">来源：{{getProdByName(pName)?.origin||'--'}}</div>
+<div v-if="getProdByName(pName)" style="color:#28C76F;font-weight:500">¥{{getProdByName(pName)?.price}} / {{getProdByName(pName)?.unit||'件'}} · 库存{{getProdByName(pName)?.stock||0}}</div>
+<div style="font-size:10px;color:#6F91A8">已售{{getProdByName(pName)?.sales||0}} · 来源：{{getProdByName(pName)?.origin||'--'}}</div>
 </div>
 </div>
 <div v-if="!(liveDetail.products||[]).length" style="color:#6F91A8;font-size:10px;padding:6px">未关联商品</div>
@@ -433,7 +434,7 @@
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
 <div class="dg3"><span class="dl3">成交金额</span><div style="color:#28C76F;font-weight:600;font-size:15px">¥{{(liveDetail.sales||0).toLocaleString()}}</div></div>
 <div class="dg3"><span class="dl3">成交订单</span><div style="color:#fff;font-weight:600;font-size:15px">{{liveDetail.orders||0}}笔</div></div>
-<div class="dg3"><span class="dl3">销售商品</span><div>{{(liveDetail.products||[]).length}}件</div></div>
+<div class="dg3"><span class="dl3">销售品类</span><div>{{(liveDetail.products||[]).length}}种</div></div>
 <div class="dg3"><span class="dl3">退款订单</span><div style="color:#E74C3C">{{liveDetail.refunds||0}}笔</div></div>
 </div>
 
@@ -441,20 +442,21 @@
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
 <div class="dg3"><span class="dl3">累计观看人数</span><div style="color:#fff;font-weight:600">{{(liveDetail.views||0).toLocaleString()}}</div></div>
 <div class="dg3"><span class="dl3">最高在线人数</span><div>{{liveDetail.peakViews||'--'}}</div></div>
+<div class="dg3"><span class="dl3">平均观看时长</span><div>{{liveDetail.avgWatch||'8分钟'}}</div></div>
 </div>
 
 <div class="ds-title">🎬 直播回放</div>
-<div v-if="liveDetail.replayUrl" class="dg3"><span class="dl3">回放状态</span><div style="color:#28C76F">✓ 已上传</div></div>
-<div v-if="liveDetail.replayUrl" class="dg3"><span class="dl3">上传时间</span><div>{{liveDetail.replayAt||'--'}}</div></div>
+<div v-if="liveDetail.replayUrl" class="dg3"><span class="dl3">回放状态</span><div style="color:#28C76F">✓ 已上传 · {{liveDetail.replayAt||''}}</div></div>
 <div v-if="liveDetail.replayUrl" style="display:flex;gap:6px;margin-top:8px"><button class="bp bps" @click="toast('查看回放','info')">▶ 查看</button><button class="bo bps" @click="toast('回放已更新','ok')">更新</button><button class="bd bps" @click="liveDetail.replayUrl='';liveDetail.replayAt='';toast('已删除','ok')">删除</button></div>
-<div v-if="!liveDetail.replayUrl" class="dg3"><span class="dl3">回放状态</span><div style="color:#6F91A8">暂无回放</div></div>
+<div v-if="!liveDetail.replayUrl" class="dg3"><span class="dl3">回放状态</span><div style="color:#6F91A8">待上传 · 直播结束后可上传</div></div>
 <div v-if="!liveDetail.replayUrl" style="margin-top:6px"><button class="bo bps" @click="liveDetail.replayUrl='/replay/'+liveDetail.id;liveDetail.replayAt=new Date().toISOString().replace('T',' ').slice(0,16);toast('回放已上传','ok')">📤 上传回放</button></div>
 
 <div class="ds-title">📝 操作记录</div>
 <div v-for="(log,i) in (liveDetail.timeline||[{time:liveDetail.createdAt,action:'创建直播',operator:liveDetail.manager||'管理员'}])" :key="i" class="dg3"><span class="dl3">{{log.time||liveDetail.createdAt}}</span><div>{{log.operator||'管理员'}} · {{log.action}}</div></div>
 
 <div style="display:flex;gap:8px;margin-top:14px">
-<button v-if="liveDetail.status==='draft'||liveDetail.status==='pending'" class="bp bps" @click="openLiveForm(liveDetail.id);liveDrawerOpen=false">编辑直播</button>
+<button v-if="liveDetail.status==='draft'||liveDetail.status==='pending'" class="bp bps" @click="toast('进入直播中...','ok')">开始直播</button>
+<button v-if="liveDetail.status==='draft'||liveDetail.status==='pending'" class="bo bps" @click="openLiveForm(liveDetail.id);liveDrawerOpen=false">编辑直播</button>
 <button v-if="liveDetail.status==='draft'||liveDetail.status==='pending'" class="bd bps" @click="cancelLive(liveDetail.id);liveDrawerOpen=false">取消直播</button>
 <button v-if="liveDetail.status==='living'" class="bp bps" @click="endLive(liveDetail.id);liveDrawerOpen=false">结束直播</button>
 <button v-if="liveDetail.status==='ended'" class="bo bps" @click="toast('查看回放','info')">查看回放</button>
