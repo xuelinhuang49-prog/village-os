@@ -359,8 +359,8 @@
 
 <!-- 直播管理 -->
 <div class="pn"><div class="tt" style="justify-content:space-between"><span>📺 直播管理（共{{lives.length}}场）</span><div style="display:flex;gap:6px"><button class="bp bps" @click="addLive">+ 创建直播</button><button class="bo bps" @click="toast('回放管理','info')">直播回放</button><button class="bo bps" @click="exportLives">导出数据</button></div></div>
-<div class="fb"><input v-model="liveFilter.keyword" placeholder="直播主题/主播..." class="fi" style="width:180px"><select v-model="liveFilter.status" class="fi"><option value="">全部状态</option><option value="pending">待开播</option><option value="living">直播中</option><option value="ended">已结束</option><option value="cancelled">已取消</option></select><button class="bp" style="padding:5px 12px;font-size:10px">查询</button><button class="bo" style="padding:5px 12px;font-size:10px" @click="liveFilter.keyword='';liveFilter.status=''">重置</button></div>
-<table class="tb"><thead><tr><th>直播主题</th><th>主播</th><th>时间</th><th>关联商品</th><th>观看人数</th><th>成交金额</th><th>状态</th><th>操作</th></tr></thead>
+<div class="fb"><input v-model="liveFilter.keyword" placeholder="直播名称/主播..." class="fi" style="width:180px"><select v-model="liveFilter.status" class="fi"><option value="">全部状态</option><option value="pending">待开播</option><option value="living">直播中</option><option value="ended">已结束</option><option value="cancelled">已取消</option></select><button class="bp" style="padding:5px 12px;font-size:10px">查询</button><button class="bo" style="padding:5px 12px;font-size:10px" @click="liveFilter.keyword='';liveFilter.status=''">重置</button></div>
+<table class="tb"><thead><tr><th>直播名称</th><th>主播</th><th>时间</th><th>关联商品</th><th>观看人数</th><th>成交金额</th><th>状态</th><th>操作</th></tr></thead>
 <tbody><tr v-for="l in filteredLives" :key="l.id" class="order-row" @click="showLiveDetail(l)" style="cursor:pointer"><td style="color:#fff;font-weight:600">{{l.title}}</td><td><div>{{l.host}}</div><div class="pd">{{l.manager||''}}</div></td><td><div>{{l.time}}</div><div class="pd">{{l.duration}}</div></td>
 <td><div v-if="l.products&&l.products.length"><span v-for="(p,i) in l.products.slice(0,2)" :key="p" class="t g" style="margin-right:2px;font-size:8px">{{p}}</span><span v-if="l.products.length>2" class="t dim" style="font-size:8px">+{{l.products.length-2}}</span></div><span v-else style="color:#6F91A8;font-size:10px">未关联</span></td>
 <td>{{(l.views||0).toLocaleString()}}</td><td style="color:#28C76F;font-weight:600">¥{{(l.sales||0).toLocaleString()}}<div v-if="l.orders" class="pd">共{{l.orders}}笔</div></td>
@@ -836,9 +836,9 @@ function exportTraces(){
 // GET    /api/ecommerce/lives/export        导出
 
 const lives=reactive([
-  {id:1,title:'中堰蜂糖李专场',host:'黄雪琳书记',phone:'139****6789',manager:'刘管理员',time:'2026-07-20 19:00',duration:'2h',views:3200,orders:38,sales:12800,status:'pending',platform:'微信视频号',products:['蜂糖李'],villageName:'中堰村',cover:'',desc:'介绍蜂糖李种植过程，现场采摘展示，限时优惠',replayUrl:'',cancelReason:'',createdAt:'2026-07-18 09:00'},
-  {id:2,title:'富硒黄桃采摘直播',host:'赵大哥',phone:'138****8901',manager:'刘管理员',time:'2026-07-18 10:00',duration:'1.5h',views:5600,orders:85,sales:25600,status:'ended',platform:'抖音',products:['富硒黄桃'],villageName:'中堰村',replayUrl:'/replay/002',desc:'高山富硒黄桃，现场品尝，采摘体验',cancelReason:'',createdAt:'2026-07-16 14:00'},
-  {id:3,title:'澳洲龙虾烹饪秀',host:'李婶',phone:'137****2345',manager:'刘管理员',time:'2026-07-19 15:00',duration:'3h',views:8900,orders:142,sales:35800,status:'living',platform:'快手',products:['澳洲淡水龙虾','农特产礼盒'],villageName:'中堰村',replayUrl:'',desc:'现场烹饪澳洲淡水龙虾，展示养殖环境',cancelReason:'',createdAt:'2026-07-17 08:00'}
+  {id:1,title:'中堰蜂糖李专场',host:'赵大哥',phone:'139****6789',manager:'刘管理员',time:'2026-07-20 19:00',duration:'预计2小时',views:3200,orders:38,sales:12800,status:'pending',platform:'微信视频号',products:['蜂糖李'],villageName:'中堰村',cover:'',desc:'介绍蜂糖李种植过程，现场采摘展示，限时优惠',replayUrl:'',cancelReason:'',createdAt:'2026-07-18 09:00'},
+  {id:2,title:'富硒黄桃采摘直播',host:'赵大哥',phone:'138****8901',manager:'刘管理员',time:'2026-07-18 10:00',duration:'预计1.5小时',views:5600,orders:85,sales:25600,status:'ended',platform:'抖音',products:['富硒黄桃'],villageName:'中堰村',replayUrl:'/replay/002',desc:'高山富硒黄桃，现场品尝，采摘体验',cancelReason:'',createdAt:'2026-07-16 14:00'},
+  {id:3,title:'澳洲龙虾烹饪秀',host:'李婶',phone:'137****2345',manager:'刘管理员',time:'2026-07-19 15:00',duration:'预计3小时',views:8900,orders:142,sales:35800,status:'living',platform:'快手',products:['澳洲淡水龙虾','农特产礼盒'],villageName:'中堰村',replayUrl:'',desc:'现场烹饪澳洲淡水龙虾，展示养殖环境',cancelReason:'',createdAt:'2026-07-17 08:00'}
 ])
 const liveDrawerOpen=ref(false),liveDetail=ref(null)
 function liveStatusLabel(s){const m={pending:'待开播',living:'直播中',ended:'已结束',cancelled:'已取消'};return m[s]||s}
@@ -861,7 +861,7 @@ const filteredLives=computed(()=>{
 function showLiveDetail(l){liveDetail.value=l;liveDrawerOpen.value=true}
 function addLive(){
   const n=prompt('直播主题：');if(!n)return
-  lives.unshift({id:uid(),title:n,host:prompt('主播：')||'管理员',phone:prompt('联系电话：')||'',time:prompt('时间：',new Date().toISOString().slice(0,16))||'',duration:prompt('预计时长：','2h')||'2h',views:0,sales:0,status:'pending',products:[],villageName:'中堰村',manager:'刘管理员',cover:'',desc:prompt('直播说明：')||'',createdAt:new Date().toISOString().replace('T',' ').slice(0,16)})
+  lives.unshift({id:uid(),title:n,host:prompt('主播：')||'管理员',phone:prompt('联系电话：')||'',time:prompt('时间：',new Date().toISOString().slice(0,16))||'',duration:prompt('预计时长：','预计2小时')||'预计2小时',views:0,sales:0,status:'pending',products:[],villageName:'中堰村',manager:'刘管理员',cover:'',desc:prompt('直播说明：')||'',createdAt:new Date().toISOString().replace('T',' ').slice(0,16)})
   toast('已创建','ok')
 }
 function editLive(id){const l=lives.find(x=>x.id===id);if(!l)return;l.title=prompt('主题：',l.title)||l.title;l.host=prompt('主播：',l.host)||l.host;l.time=prompt('时间：',l.time)||l.time;l.status=prompt('状态(pending/living/ended/cancelled)：',l.status)||l.status;toast('已更新','ok')}
