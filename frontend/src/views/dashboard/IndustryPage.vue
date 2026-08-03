@@ -58,7 +58,27 @@
 </div>
 
 <div class="drawer-overlay" :class="{on:drawerOpen}" @click="drawerOpen=false"></div>
-<div class="drawer" :class="{on:drawerOpen}"><div class="drawer-hd"><h3>{{drawerTitle}}</h3><button class="drawer-close" @click="drawerOpen=false">&#10005;</button></div><div class="drawer-bd"><template v-if="drawerData"><div style="display:grid;grid-template-columns:1fr 2fr;gap:4px 16px;font-size:12px;margin-bottom:14px"><template v-for="(v,k) in drawerData" :key="k"><span v-if="k!=='id'&&k!=='rooms2'&&k!=='reviews'&&k!=='trend'&&k!=='sources'&&k!=='_hover'" style="color:#6F91A8">{{k}}</span><span v-if="k!=='id'&&k!=='rooms2'&&k!=='reviews'&&k!=='trend'&&k!=='sources'&&k!=='_hover'" style="color:#fff;font-weight:500">{{v||'--'}}</span></template></div><div style="display:flex;gap:6px;margin-top:12px"><button class="btn btn-p btn-s" @click="editItem(drawerData.id);drawerOpen=false">编辑</button><button class="btn btn-d btn-s" @click="delItem(drawerData.id);drawerOpen=false">删除</button></div></template></div></div>
+<div class="drawer" :class="{on:drawerOpen}"><div class="drawer-hd"><h3>{{drawerTitle}}</h3><button class="drawer-close" @click="drawerOpen=false">&#10005;</button></div><div class="drawer-bd">
+<template v-if="spotDetailData&&curSub==='spots'">
+<div class="spot-detail-cover" :style="{background:'linear-gradient(135deg,'+spotCatColor(spotDetailData.type)+'22,rgba(10,61,92,.6))'}"><div class="spot-detail-icon">{{spotCatIcon(spotDetailData.type)}}</div></div>
+<div style="text-align:center;padding:8px 0"><div style="font-size:16px;font-weight:700;color:#fff">{{spotDetailData.name}}</div><div style="color:#F5B83D;font-size:11px;margin-top:2px">{{starRating(spotDetailData.rating)}} {{spotDetailData.rating||'4.5'}}</div><div class="spot-tag" style="margin-top:4px;color:#28C76F;border-color:#28C76F">{{spotDetailData.type}}</div></div>
+<div class="ds-title">📋 游览信息</div>
+<div class="dg3"><span class="dl3">开放状态</span><div>{{spotDetailData.openStatus==='open'?'🟢 开放中':spotDetailData.openStatus==='paused'?'🔴 暂停开放':'🟡 维护中'}}</div></div>
+<div class="dg3"><span class="dl3">开放时间</span><div>{{spotDetailData.openingTime||'--'}}</div></div>
+<div class="dg3"><span class="dl3">门票</span><div>{{(spotDetailData.ticketType||'免费')+' · '+(spotDetailData.ticketPrice||'')}}</div></div>
+<div class="dg3"><span class="dl3">预计游玩</span><div>{{spotDetailData.duration||'2小时'}}</div></div>
+<div class="dg3"><span class="dl3">联系电话</span><div><span v-if="spotDetailData._showPhone" style="color:#28C76F">{{spotDetailData.contact||'--'}}</span><span v-else style="color:#28C76F;cursor:pointer" @click="spotDetailData._showPhone=true;toast('联系方式已显示','info')">点击查看</span></div></div>
+<div class="dg3"><span class="dl3">📍 位置</span><div>{{spotDetailData.address||'--'}}</div></div>
+<div class="ds-title">📝 景区简介</div>
+<div style="color:#B7D3E8;font-size:12px;line-height:1.7;padding:6px 0">{{spotDetailData.desc||'暂无介绍'}}</div>
+<div class="ds-title">🏗 配套设施</div>
+<div class="dg3"><span class="dl3">设施</span><div>{{(spotDetailData.facilities||[]).join('、')||'暂未完善'}}</div></div>
+<div class="ds-title">📊 参考信息</div>
+<div class="dg3"><span class="dl3">评分</span><div style="color:#F5B83D">{{starRating(spotDetailData.rating)}} {{spotDetailData.rating||'4.5'}}</div></div>
+<div class="dg3"><span class="dl3">累计游客</span><div>{{(spotDetailData.visitors||0).toLocaleString()}}次</div></div>
+<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-p btn-s" @click="toast('导航到：'+spotDetailData.address,'info')">📍 导航</button><button class="btn btn-o btn-s" @click="toast('链接已复制','ok')">📤 分享</button><button class="btn btn-o btn-s" @click="spotDetailData._fav=!spotDetailData._fav;toast(spotDetailData._fav?'已收藏':'已取消','ok')">{{spotDetailData._fav?'❤️ 已收藏':'♡ 收藏'}}</button></div>
+</template>
+<template v-else-if="drawerData"><div style="display:grid;grid-template-columns:1fr 2fr;gap:4px 16px;font-size:12px;margin-bottom:14px"><template v-for="(v,k) in drawerData" :key="k"><span v-if="k!=='id'&&k!=='rooms2'&&k!=='reviews'&&k!=='trend'&&k!=='sources'&&k!=='_hover'" style="color:#6F91A8">{{k}}</span><span v-if="k!=='id'&&k!=='rooms2'&&k!=='reviews'&&k!=='trend'&&k!=='sources'&&k!=='_hover'" style="color:#fff;font-weight:500">{{v||'--'}}</span></template></div><div style="display:flex;gap:6px;margin-top:12px"><button class="btn btn-p btn-s" @click="editItem(drawerData.id);drawerOpen=false">编辑</button><button class="btn btn-d btn-s" @click="delItem(drawerData.id);drawerOpen=false">删除</button></div></template></div></div>
 
 <div class="drawer-overlay" :class="{on:formOpen}" @click="formOpen=false"></div>
 <div class="drawer" :class="{on:formOpen}"><div class="drawer-hd"><h3>{{formTitle}}</h3><button class="drawer-close" @click="formOpen=false">&#10005;</button></div><div class="drawer-bd">
@@ -322,7 +342,9 @@ const spotFilterText = ref('')
 const spotFilterCat = ref('')
 const spotCategories = [{v:'',label:'全部'},{v:'自然风光',l:'🌳 自然风光'},{v:'采摘体验',l:'🍑 采摘体验'},{v:'休闲娱乐',l:'🏕 休闲娱乐'},{v:'研学教育',l:'🎓 研学教育'},{v:'人文文化',l:'🏛 人文文化'}]
 const filteredSpots = computed(()=>{let l=tSpots;const f=spotFilterText.value.toLowerCase();if(f)l=l.filter(s=>s.name.toLowerCase().includes(f)||(s.summary||'').toLowerCase().includes(f)||(s.desc||'').toLowerCase().includes(f));if(spotFilterCat.value)l=l.filter(s=>s.type===spotFilterCat.value);return l})
-function showSpotDetail(s){drawerData.value={景区名称:s.name,类型:spotCategories.find(c=>c.v===s.type)?.l||s.type,位置:'📍 '+s.address,简介:s.desc,开放状态:s.openStatus==='open'?'🟢 开放中':s.openStatus==='paused'?'🟡 暂停开放':'🔴 关闭',开放时间:s.openingTime,门票:(s.ticketType||'免费')+' · '+(s.ticketPrice||''),联系电话:s.contact||'',配套设施:(s.facilities||[]).join('、')||'暂无',累计游客:s.visitors+'次',评分:s.rating||'4.5',预计游玩:s.duration||'2小时'};drawerTitle.value=s.name;drawerOpen.value=true}
+const spotDetailData=ref(null)
+function showSpotDetail(s){spotDetailData.value=s;drawerTitle.value=s.name;drawerOpen.value=true}
+function starRating(r){const n=Math.round(parseFloat(r)||0);return '★'.repeat(n)+'☆'.repeat(5-n)}
 function spotCatIcon(t){const m={'自然风光':'🌳','采摘体验':'🍑','休闲娱乐':'🏕','研学教育':'🎓','人文文化':'🏛','乡村文化':'🏛'};return m[t]||'📍'}
 function spotCatColor(t){const m={'自然风光':'#28C76F','采摘体验':'#F5B83D','休闲娱乐':'#28C7FA','研学教育':'#A77BFF','人文文化':'#E74C3C','乡村文化':'#A77BFF'};return m[t]||'#28C76F'}
 function spotBadge(s){if(s.tag==='HOT')return {icon:'🔥',label:'热门',cls:'hot'};if(s.tag==='RECOMMEND')return {icon:'⭐',label:'推荐',cls:'rec'};if(s.tag==='NEW')return {icon:'🆕',label:'新上线',cls:'new'};if(s.visitors>5000)return {icon:'🔥',label:'热门',cls:'hot'};return null}
@@ -882,4 +904,5 @@ tr:hover td { background: rgba(14,165,233,0.05); cursor: pointer; }
 .spot-card-rating{font-size:10px;color:#F5B83D;font-weight:600;margin-bottom:6px}
 .spot-card-desc{font-size:11px;color:#6F91A8;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
 .spot-card{display:flex;flex-direction:column}
+.spot-detail-cover{height:120px;display:flex;align-items:center;justify-content:center;border-radius:8px;margin-bottom:10px}.spot-detail-icon{font-size:48px;opacity:.5}
 </style>
