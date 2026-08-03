@@ -18,17 +18,16 @@
 </div>
 </div>
 </template>
-<template v-else-if="curMod==='tourism'&&curSub==='spots'">
-<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏞️ 景点游览 · 发现美丽乡村<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 当前村庄：中堰村</span></div>
-<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center"><input v-model="spotFilterText" placeholder="🔍 搜索景点名称、特色..." style="padding:8px 12px;border-radius:8px;border:1px solid rgba(40,199,111,.1);background:rgba(57,217,138,.06);color:#B7D3E8;font-size:12px;width:240px;font-family:inherit;outline:none"><div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in spotCategories" :key="c.v" :class="spotFilterCat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="spotFilterCat=c.v">{{c.label}}</button></div></div>
+<template v-else-if="curMod==='tourism'&&curSub==='bnbs'">
+<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏡 特色民宿 · 发现美丽乡村<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 当前村庄：中堰村</span></div>
+<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center"><span style="position:relative;display:inline-flex;align-items:center"><input v-model="bnbFilterText" placeholder="🔍 搜索民宿..." style="padding:6px 30px 6px 12px;border-radius:8px;border:1px solid rgba(40,199,111,.1);background:rgba(57,217,138,.06);color:#B7D3E8;font-size:12px;width:240px;font-family:inherit;outline:none"><span v-if="bnbFilterText" @click="bnbFilterText=''" style="position:absolute;right:6px;cursor:pointer;color:#6F91A8;font-size:14px;line-height:1" title="清空">x</span></span><div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in bnbCats" :key="c.v" :class="bnbCat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="bnbCat=c.v">{{c.l}}<span v-if="c.v" style="font-size:9px;opacity:.7;margin-left:2px">({{tBnBs.filter(b=>bnbType(b)===c.v).length}})</span></button></div></div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-<div v-for="s in filteredSpots" :key="s.id" class="spot-card" @click="showSpotDetail(s)">
-<div class="spot-cover" :style="{background:s.coverUrl?'url('+s.coverUrl+') center/cover':'linear-gradient(135deg,rgba(40,199,111,.15),rgba(10,61,92,.5))'}"><div class="spot-cover-tag">{{s.type}}</div><div class="spot-cover-status" :class="s.openStatus==='open'?'g':''">{{s.openStatus==='open'?'开放中':'暂停'}}</div></div>
-<div style="padding:12px 14px 14px"><div class="spot-card-name">{{s.name}}</div><div class="spot-card-desc">{{s.summary||s.desc||''}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{s.address}}</span><span>{{s.ticketType||'免费'}}</span></div><div style="display:flex;gap:6px"><button class="btn btn-p btn-s" @click.stop="showSpotDetail(s)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+s.address,'info')">🗺️ 导航</button></div></div>
+<div v-for="b in filteredBnbs" :key="b.id" class="spot-card" @click="showBnbDetail(b.id)">
+<div class="spot-cover" style="background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(10,61,92,.6))"><div class="spot-cover-icon">🏡</div><div class="spot-badge" style="background:rgba(40,199,111,.88)" v-if="b.rating>=4.8">⭐ 高分</div><div class="spot-cover-status" style="background:rgba(40,199,111,.7)">营业中</div></div>
+<div style="padding:12px 14px 14px;display:flex;flex-direction:column;flex:1"><div class="spot-card-name">{{b.name}}</div><div class="spot-tag" style="color:#A77BFF;border-color:#A77BFF;margin-bottom:4px;display:inline-block;width:fit-content">{{bnbType(b)}}</div><div class="spot-card-rating">⭐ {{b.rating}} · {{b.rooms||0}}间房</div><div style="font-size:13px;color:#28C76F;font-weight:700;margin:4px 0">¥{{b.price}}<span style="font-size:10px;color:#6F91A8;font-weight:400"> 起/晚</span></div><div class="spot-card-desc">{{(b.desc||'').slice(0,50)}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{b.address||'中堰村'}}</span></div><div style="display:flex;gap:4px;margin-top:auto"><button class="btn btn-p btn-s" @click.stop="showBnbDetail(b.id)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+(b.address||'中堰村'),'info')">🗺️ 导航</button></div></div>
 </div>
 </div>
-</template>
-<template v-else-if="isDataPage">
+</template><template v-else-if="isDataPage">
 <div v-if="curSub==='lands'" class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🌍 地块管理 · 中堰村农业地块信息总览</div>
 <div v-if="curSub==='crops'" class="tbanner" style="border-left-color:#28C7FA;color:#28C7FA">🌱 作物档案 · 品种信息与生长周期追溯</div>
 <div v-if="curSub==='records'" class="tbanner" style="border-left-color:#F5B83D;color:#F5B83D">📝 农事记录 · 施肥/灌溉/打药/修剪操作日志</div>
@@ -102,7 +101,7 @@ function toast(msg, type = 'info') { const id = Date.now(); toasts.push({ id, ms
 // Modules
 const modules = [{ key: 'farming', icon: '🌾', label: '智慧农业' }, { key: 'ecommerce', icon: '🛒', label: '农产品电商' }, { key: 'tourism', icon: '🏞️', label: '乡村文旅' }, { key: 'livestock', icon: '🐖', label: '智慧养殖' }]
 const modLabels = { farming: '智慧农业', ecommerce: '农产品电商', tourism: '乡村文旅', livestock: '智慧养殖' }
-const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '产品溯源', live: '直播中心', analytics: '经营分析', spots: '景点游览', bnbs: '民宿管理', activities: '活动管理', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
+const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '产品溯源', live: '直播中心', analytics: '经营分析', spots: '景点游览', bnbs: '特色民宿', activities: '活动管理', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
 const subMap = { farming: ['lands', 'crops', 'records', 'monitor', 'irrigation', 'pest'], ecommerce: ['products', 'orders', 'trace', 'live', 'analytics'], tourism: ['spots', 'bnbs', 'activities'], livestock: ['records2', 'env', 'feed', 'disease', 'slaughter'] }
 const addBtnLabels = { lands: '新增地块', crops: '新增作物', records: '新增记录', irrigation: '新增计划', pest: '新增预警', products: '新增商品', orders: '新增订单', trace: '新增溯源', live: '创建直播', analytics: '导出报表', records2: '新增养殖批次', feed: '新增投喂计划', slaughter: '新增出栏记录' }
 const chartTitles = { lands: '地块分布分析', crops: '作物阶段分布', records: '农事类型分布', products: '商品销量分布', records2: '养殖存栏统计' }
@@ -150,15 +149,15 @@ const tSpots = reactive([
   { id: 4, name: '荷虾混养观光区', type: '生态休闲', address: '中堰村北区', villageName: '中堰村', desc: '荷花观赏与澳洲淡水龙虾生态养殖观光', cover: '', openStatus: 'paused', bookingType: '无需预约', manager: '李婶', contact: '136****3456', openingTime: '07:00-19:00', tickets: 0, visitors: 2400, createdAt: '2026-03-01', updatedAt: '2026-07-01' },
   { id: 5, name: '灯光音乐节广场', type: '文化活动', address: '中堰村中心', villageName: '中堰村', desc: '定期举办乡村音乐节和灯光秀活动', cover: '', openStatus: 'open', bookingType: '无需预约', manager: '刘管理员', contact: '135****4567', openingTime: '18:00-23:00', tickets: 30, visitors: 5200, createdAt: '2026-05-01', updatedAt: '2026-07-20' }
 ])
-const tBnBs = reactive([{ id: 1, name: '田园居', owner: '王大爷', phone: '139****6789', rooms: 6, price: 188, rating: 4.8, bookings: 320, revenue: '¥3.8万', occupancy: '82%', status: '营业中', since: '2023-03', desc: '独栋小院，自带菜园，采摘体验，农家餐饮', tags: '采摘/农家饭', license: '陕旅备2024001', openTime: '07:00-22:00', todayIn: 4, monthOrders: 68, rooms2: [{ type: '标准间', area: '28㎡', beds: '2人', price: 188 },
+const tBnBs = reactive([{ id: 1, name: '田园居', address:'中堰村一组', owner: '王大爷', phone: '139****6789', rooms: 6, price: 188, rating: 4.8, bookings: 320, revenue: '¥3.8万', occupancy: '82%', status: '营业中', since: '2023-03', desc: '独栋小院，自带菜园，采摘体验，农家餐饮', tags: '采摘/农家饭', license: '陕旅备2024001', openTime: '07:00-22:00', todayIn: 4, monthOrders: 68, rooms2: [{ type: '标准间', area: '28㎡', beds: '2人', price: 188 },
   { type: '家庭房', area: '45㎡', beds: '4人', price: 288 }], reviews: [{ name: '张女士', text: '带孩子来体验采摘，很不错', stars: 5 },
   { name: '王先生', text: '农家菜很地道，蔬菜都是自己种的', stars: 5 },
   { name: '刘阿姨', text: '房间干净整洁，老板热情', stars: 4 }], trend: [60, 45, 55, 70, 82, 85, 90, 88, 78, 72, 65, 58] },
-  { id: 2, name: '山景阁', owner: '李婶', phone: '138****8901', rooms: 4, price: 258, rating: 4.9, bookings: 186, revenue: '¥3.2万', occupancy: '76%', status: '营业中', since: '2023-06', desc: '半山腰观景民宿，山景观景台，日出观赏', tags: '山景/摄影', license: '陕旅备2024002', openTime: '06:00-21:00', todayIn: 3, monthOrders: 52, rooms2: [{ type: '标准间', area: '26㎡', beds: '2人', price: 258 },
+  { id: 2, name: '山景阁', address:'中堰村半山', owner: '李婶', phone: '138****8901', rooms: 4, price: 258, rating: 4.9, bookings: 186, revenue: '¥3.2万', occupancy: '76%', status: '营业中', since: '2023-06', desc: '半山腰观景民宿，山景观景台，日出观赏', tags: '山景/摄影', license: '陕旅备2024002', openTime: '06:00-21:00', todayIn: 3, monthOrders: 52, rooms2: [{ type: '标准间', area: '26㎡', beds: '2人', price: 258 },
   { type: '景观房', area: '38㎡', beds: '2人', price: 328 }], reviews: [{ name: '李先生', text: '山景房景色非常好，早上看日出太美了', stars: 5 },
   { name: '赵女士', text: '房间很大，阳台直接可以看到群山', stars: 5 },
   { name: '陈先生', text: '适合摄影爱好者，位置绝佳', stars: 5 }], trend: [40, 35, 50, 65, 72, 78, 82, 76, 68, 55, 48, 42] },
-  { id: 3, name: '果园人家', owner: '赵大哥', phone: '137****2345', rooms: 8, price: 158, rating: 4.6, bookings: 450, revenue: '¥4.2万', occupancy: '88%', status: '营业中', since: '2022-09', desc: '紧邻苹果园，含农家早餐，亲子采摘', tags: '亲子/采摘', license: '陕旅备2024003', openTime: '07:30-21:00', todayIn: 5, monthOrders: 86, rooms2: [{ type: '标准间', area: '30㎡', beds: '2人', price: 158 },
+  { id: 3, name: '果园人家', address:'中堰村果园旁', owner: '赵大哥', phone: '137****2345', rooms: 8, price: 158, rating: 4.6, bookings: 450, revenue: '¥4.2万', occupancy: '88%', status: '营业中', since: '2022-09', desc: '紧邻苹果园，含农家早餐，亲子采摘', tags: '亲子/采摘', license: '陕旅备2024003', openTime: '07:30-21:00', todayIn: 5, monthOrders: 86, rooms2: [{ type: '标准间', area: '30㎡', beds: '2人', price: 158 },
   { type: '家庭房', area: '48㎡', beds: '4人', price: 248 },
   { type: '亲子房', area: '42㎡', beds: '3人', price: 208 }], reviews: [{ name: '周女士', text: '果园采摘太有意思了', stars: 5 },
   { name: '吴先生', text: '早餐很丰盛', stars: 4 },
@@ -336,6 +335,9 @@ const filteredSpots = computed(()=>{let l=tSpots;const f=spotFilterText.value.to
 const spotDetailData=ref(null)
 function showSpotDetail(s){spotDetailData.value=s;drawerTitle.value=s.name;drawerOpen.value=true}
 function starRating(r){const n=Math.round(parseFloat(r)||0);return '★'.repeat(n)+'☆'.repeat(5-n)}
+const bnbFilterText=ref(''),bnbCat=ref(''),bnbCats=[{v:'',l:'全部'},{v:'精品民宿',l:'精品民宿'},{v:'特色农家',l:'特色农家'},{v:'亲子家庭',l:'亲子家庭'}]
+function bnbType(b){if(b.tags&&b.tags.includes('亲子'))return'亲子家庭';if(b.rating>=4.8)return'精品民宿';if(b.price<200)return'特色农家';return'精品民宿'}
+const filteredBnbs=computed(()=>{let l=tBnBs;const f=bnbFilterText.value.toLowerCase();if(f)l=l.filter(b=>b.name.toLowerCase().includes(f)||(b.desc||'').toLowerCase().includes(f));if(bnbCat.value)l=l.filter(b=>bnbType(b)===bnbCat.value);return l})
 function spotCatIcon(t){const m={'自然风光':'🌳','采摘体验':'🍑','休闲娱乐':'🏕','研学教育':'🎓','人文文化':'🏛','乡村文化':'🏛'};return m[t]||'📍'}
 function spotCatColor(t){const m={'自然风光':'#28C76F','采摘体验':'#F5B83D','休闲娱乐':'#28C7FA','研学教育':'#A77BFF','人文文化':'#E74C3C','乡村文化':'#A77BFF'};return m[t]||'#28C76F'}
 function spotBadge(s){if(s.tag==='HOT')return {icon:'🔥',label:'热门',cls:'hot'};if(s.tag==='RECOMMEND')return {icon:'⭐',label:'推荐',cls:'rec'};if(s.tag==='NEW')return {icon:'🆕',label:'新上线',cls:'new'};if(s.visitors>5000)return {icon:'🔥',label:'热门',cls:'hot'};return null}
