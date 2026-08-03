@@ -9,11 +9,23 @@
 <template v-if="curMod==='ecommerce'"><EcommercePage :embedded="true" :activeTab="curSub"/></template>
 <template v-else-if="curSub==='pest'"><PestDashboard :embedded="true" /></template>
 <template v-else-if="curMod==='tourism'&&curSub==='spots'">
-<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏞️ 景区管理 · 中堰村旅游资源管理</div>
-<div class="srow"><div class="scard"><div class="sv">{{tSpots.length}}个</div><div class="sl">景区总数</div></div><div class="scard g"><div class="sv">{{tSpots.filter(s=>s.openStatus==='open').length}}个</div><div class="sl">开放景区</div></div><div class="scard y"><div class="sv">{{tSpots.filter(s=>s.openStatus==='paused').length}}个</div><div class="sl">暂停开放</div></div><div class="scard"><div class="sv">{{tSpots.reduce((s,x)=>s+(x.visitors||0),0).toLocaleString()}}次</div><div class="sl">游客总数</div></div></div>
-<div class="panel"><div class="toolbar"><button class="btn btn-p btn-s" @click="openSpotForm()">+ 新增景区</button><input v-model="spotFilterText" placeholder="🔍 搜索景区..." style="margin-left:8px"><span class="spacer"></span><button class="btn btn-o btn-s" @click="exportSpots">导出</button></div>
-<table><thead><tr><th>景区名称</th><th>类型</th><th>位置</th><th>负责人</th><th>开放状态</th><th>累计游客</th><th>更新时间</th><th>操作</th></tr></thead>
-<tbody><tr v-for="s in filteredSpots" :key="s.id" @click="showSpotDetail(s)" style="cursor:pointer"><td style="color:#fff;font-weight:600">{{s.name}}</td><td>{{s.type}}</td><td>{{s.address}}</td><td>{{s.manager||'--'}}</td><td><span :class="'tag '+(s.openStatus==='open'?'g':s.openStatus==='paused'?'y':'dim')">{{s.openStatus==='open'?'开放':s.openStatus==='paused'?'暂停':'关闭'}}</span></td><td>{{(s.visitors||0).toLocaleString()}}次</td><td style="font-size:10px;color:#6F91A8">{{(s.updatedAt||'').slice(0,10)}}</td><td @click.stop><button class="btn btn-p btn-s" @click="showSpotDetail(s)">查看</button><button class="btn btn-o btn-s" @click="openSpotForm(s.id)">编辑</button><button v-if="s.openStatus==='open'" class="btn btn-o btn-s" @click="toggleSpotStatus(s.id)" style="color:#F5B83D">暂停</button><button v-if="s.openStatus==='paused'" class="btn btn-o btn-s" @click="toggleSpotStatus(s.id)" style="color:#28C76F">恢复</button></td></tr></tbody></table>
+<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏞️ 景点游览 · 发现中堰村美景</div>
+<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center"><input v-model="spotFilterText" placeholder="🔍 搜索景点名称、特色..." style="padding:6px 12px;border-radius:8px;border:1px solid rgba(40,199,111,.1);background:rgba(57,217,138,.06);color:#B7D3E8;font-size:12px;width:240px;font-family:inherit;outline:none"><div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in spotCategories" :key="c.v" :class="spotFilterCat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="spotFilterCat=c.v">{{c.label}}</button></div></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+<div v-for="s in filteredSpots" :key="s.id" class="spot-card" @click="showSpotDetail(s)">
+<div class="spot-cover" :style="{background:'linear-gradient(135deg,rgba(40,199,111,.15),rgba(10,61,92,.5))'}"><div class="spot-cover-tag">{{s.type}}</div><div class="spot-cover-status" :class="s.openStatus==='open'?'g':''">{{s.openStatus==='open'?'开放中':'暂停'}}</div></div>
+<div style="padding:12px 14px 14px"><div class="spot-card-name">{{s.name}}</div><div class="spot-card-desc">{{s.summary||(s.desc||'').slice(0,40)}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{s.address}}</span><span>{{s.ticketType||'免费'}}</span></div><div style="display:flex;gap:6px"><button class="btn btn-p btn-s" @click.stop="showSpotDetail(s)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+s.address,'info')">🗺️ 导航</button></div></div>
+</div>
+</div>
+</template>
+<template v-else-if="curMod==='tourism'&&curSub==='spots'">
+<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏞️ 景点游览 · 发现中堰村美景</div>
+<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center"><input v-model="spotFilterText" placeholder="🔍 搜索景点名称、特色..." style="padding:8px 12px;border-radius:8px;border:1px solid rgba(40,199,111,.1);background:rgba(57,217,138,.06);color:#B7D3E8;font-size:12px;width:240px;font-family:inherit;outline:none"><div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in spotCategories" :key="c.v" :class="spotFilterCat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="spotFilterCat=c.v">{{c.label}}</button></div></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+<div v-for="s in filteredSpots" :key="s.id" class="spot-card" @click="showSpotDetail(s)">
+<div class="spot-cover" :style="{background:s.coverUrl?'url('+s.coverUrl+') center/cover':'linear-gradient(135deg,rgba(40,199,111,.15),rgba(10,61,92,.5))'}"><div class="spot-cover-tag">{{s.type}}</div><div class="spot-cover-status" :class="s.openStatus==='open'?'g':''">{{s.openStatus==='open'?'开放中':'暂停'}}</div></div>
+<div style="padding:12px 14px 14px"><div class="spot-card-name">{{s.name}}</div><div class="spot-card-desc">{{s.summary||s.desc||''}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{s.address}}</span><span>{{s.ticketType||'免费'}}</span></div><div style="display:flex;gap:6px"><button class="btn btn-p btn-s" @click.stop="showSpotDetail(s)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+s.address,'info')">🗺️ 导航</button></div></div>
+</div>
 </div>
 </template>
 <template v-else-if="isDataPage">
@@ -79,7 +91,7 @@ function toast(msg, type = 'info') { const id = Date.now(); toasts.push({ id, ms
 // Modules
 const modules = [{ key: 'farming', icon: '🌾', label: '智慧农业' }, { key: 'ecommerce', icon: '🛒', label: '农产品电商' }, { key: 'tourism', icon: '🏞️', label: '乡村文旅' }, { key: 'livestock', icon: '🐖', label: '智慧养殖' }]
 const modLabels = { farming: '智慧农业', ecommerce: '农产品电商', tourism: '乡村文旅', livestock: '智慧养殖' }
-const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '产品溯源', live: '直播中心', analytics: '经营分析', spots: '景区管理', bnbs: '民宿管理', activities: '活动管理', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
+const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '产品溯源', live: '直播中心', analytics: '经营分析', spots: '景点游览', bnbs: '民宿管理', activities: '活动管理', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
 const subMap = { farming: ['lands', 'crops', 'records', 'monitor', 'irrigation', 'pest'], ecommerce: ['products', 'orders', 'trace', 'live', 'analytics'], tourism: ['spots', 'bnbs', 'activities'], livestock: ['records2', 'env', 'feed', 'disease', 'slaughter'] }
 const addBtnLabels = { lands: '新增地块', crops: '新增作物', records: '新增记录', irrigation: '新增计划', pest: '新增预警', products: '新增商品', orders: '新增订单', trace: '新增溯源', live: '创建直播', analytics: '导出报表', records2: '新增养殖批次', feed: '新增投喂计划', slaughter: '新增出栏记录' }
 const chartTitles = { lands: '地块分布分析', crops: '作物阶段分布', records: '农事类型分布', products: '商品销量分布', records2: '养殖存栏统计' }
@@ -307,16 +319,10 @@ const feedData = reactive([{ id: 1, name: '养猪场A区', type: '自动投喂',
 const slaughterData = reactive([{ id: 1, name: '养猪场A区', breed: '杜长大三元', count: 48, date: '2026-07-05', weight: '110kg/头', price: '15元/kg', status: '已出栏' }, { id: 2, name: '养鸡场1号', breed: '海兰褐', count: 200, date: '2026-07-10', weight: '2.1kg/只', price: '12元/kg', status: '待出栏' }, { id: 3, name: '养牛场', breed: '西门塔尔', count: 5, date: '2026-08-01', weight: '650kg/头', price: '28元/kg', status: '育肥中' }])
 // Spot management state & computed
 const spotFilterText = ref('')
-const filteredSpots = computed(()=>{const f=spotFilterText.value.toLowerCase();if(!f)return tSpots;return tSpots.filter(s=>s.name.toLowerCase().includes(f)||s.type.toLowerCase().includes(f)||(s.address||'').toLowerCase().includes(f))})
-function openSpotForm(id){
-  if(id){const s=tSpots.find(x=>x.id===id);if(s){Object.assign(form,{name:s.name,type:s.type||'',address:s.address||'',manager:s.manager||'',contact:s.contact||'',openingTime:s.openingTime||'',openStatus:s.openStatus||'open',desc:s.desc||'',cover:s.cover||''});formEditId.value=id}else{return}}
-  else{Object.assign(form,{name:'',type:'产业园区',address:'',manager:'',contact:'',openingTime:'08:00-18:00',openStatus:'open',desc:'',cover:''});formEditId.value=null}
-  formTitle.value=id?'编辑景区':'新增景区';formMode.value='add';formOpen.value=true
-}
-function showSpotDetail(s){drawerData.value={...s,景区名称:s.name,所属村庄:s.villageName||'中堰村',类型:s.type,位置:s.address,负责人:s.manager,联系方式:s.contact,开放时间:s.openingTime,预约方式:s.bookingType||'无需预约',状态:s.openStatus==='open'?'开放':s.openStatus==='paused'?'暂停':'关闭',介绍:s.desc||'暂无',累计游客:s.visitors+'次',创建时间:s.createdAt,更新时间:s.updatedAt};drawerTitle.value=s.name;drawerOpen.value=true}
-function toggleSpotStatus(id){const s=tSpots.find(x=>x.id===id);if(!s)return;s.openStatus=s.openStatus==='open'?'paused':'open';s.updatedAt=new Date().toISOString().slice(0,10);toast(s.openStatus==='open'?'已恢复开放':'已暂停开放','info')}
-// Extend submitForm for spots
-const _origSubmitForm = null
+const spotFilterCat = ref('')
+const spotCategories = [{v:'',label:'全部'},{v:'自然风光',label:'自然风光'},{v:'采摘体验',label:'采摘体验'},{v:'乡村文化',label:'乡村文化'},{v:'休闲游玩',label:'休闲游玩'}]
+const filteredSpots = computed(()=>{let l=tSpots;const f=spotFilterText.value.toLowerCase();if(f)l=l.filter(s=>s.name.toLowerCase().includes(f)||(s.summary||'').toLowerCase().includes(f)||(s.desc||'').toLowerCase().includes(f));if(spotFilterCat.value)l=l.filter(s=>s.type===spotFilterCat.value);return l})
+function showSpotDetail(s){drawerData.value={景区名称:s.name,类型:s.type,位置:s.address,简介:s.desc,开放状态:s.openStatus==='open'?'开放中':'暂停开放',开放时间:s.openingTime,门票:(s.ticketType||'免费')+' · '+(s.ticketPrice||''),联系电话:s.contact||'',配套设施:(s.facilities||[]).join('、')||'暂无',累计游客:s.visitors+'次'};drawerTitle.value=s.name;drawerOpen.value=true}
 
 const dataMap = { lands, crops, records, irrigation: lands, pest: diseaseAlerts, overview: products, records2: livestock, feed: feedData, slaughter: slaughterData, products, spots: tSpots, bnbs: tBnBs, activities }
 const currentData = computed(() => dataMap[curSub.value] || [])
@@ -863,4 +869,10 @@ tr:hover td { background: rgba(14,165,233,0.05); cursor: pointer; }
 .stat-grid {
   gap: 14px !important;
 }
+.spot-card{background:rgba(5,25,48,.96);border:1px solid rgba(190,214,234,.55);border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s}.spot-card:hover{border-color:rgba(72,193,255,.95);transform:translateY(-2px)}
+.spot-cover{height:140px;position:relative;display:flex;align-items:flex-end}
+.spot-cover-tag{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:2px 8px;border-radius:10px}
+.spot-cover-status{position:absolute;top:8px;right:8px;background:rgba(231,76,60,.7);color:#fff;font-size:9px;padding:2px 8px;border-radius:10px}.spot-cover-status.g{background:rgba(40,199,111,.7)}
+.spot-card-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px}
+.spot-card-desc{font-size:11px;color:#6F91A8;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
