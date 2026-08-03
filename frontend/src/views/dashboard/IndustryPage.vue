@@ -600,7 +600,7 @@ function fallbackDownload(blob, filename) {
 
 // Detail/Drawer
 function showDetail(r) { drawerData.value = r; drawerTitle.value = subLabels[curSub.value] + ' — ' + (r.name || r.title || r.type || ''); drawerOpen.value = true }
-function showBnbDetail(id) { const b = tBnBs.find(x => x.id === id); if (!b) return; drawerData.value = b; drawerTitle.value = b.name; drawerOpen.value = true }
+function showBnbDetail(id) { const b = tBnBs.find(x => x.id === id); if (!b) return; drawerData.value = {'民宿名称':b.name,'类型':bnbType(b),'⭐ 评分':starRating(b.rating)+' '+b.rating,'💰 价格':'¥'+b.price+' 起/晚','🕗 营业时间':b.openTime||'--','👥 可住人数':'2-4人 · '+b.rooms+'间房','📍 地址':b.address||'中堰村','👤 房东':b.owner||'--','📞 联系电话':b.phone||'--','📝 介绍':b.desc||'--','🏷 特色':(b.tags||'--'),'🚗 距景区':b._dist||'--','📊 累计入住':(b.bookings||0)+'人'}; drawerTitle.value = b.name; drawerOpen.value = true }
 
 // ECharts
 
