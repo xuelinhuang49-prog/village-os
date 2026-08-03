@@ -61,22 +61,13 @@
 <div class="drawer" :class="{on:drawerOpen}"><div class="drawer-hd"><h3>{{drawerTitle}}</h3><button class="drawer-close" @click="drawerOpen=false">&#10005;</button></div><div class="drawer-bd">
 <template v-if="spotDetailData&&curSub==='spots'">
 <div class="spot-detail-cover" :style="{background:'linear-gradient(135deg,'+spotCatColor(spotDetailData.type)+'22,rgba(10,61,92,.6))'}"><div class="spot-detail-icon">{{spotCatIcon(spotDetailData.type)}}</div></div>
-<div style="text-align:center;padding:8px 0"><div style="font-size:16px;font-weight:700;color:#fff">{{spotDetailData.name}}</div><div style="color:#F5B83D;font-size:11px;margin-top:2px">{{starRating(spotDetailData.rating)}} {{spotDetailData.rating||'4.5'}}</div><div class="spot-tag" style="margin-top:4px;color:#28C76F;border-color:#28C76F">{{spotDetailData.type}}</div></div>
-<div class="ds-title">📋 游览信息</div>
-<div class="dg3"><span class="dl3">开放状态</span><div>{{spotDetailData.openStatus==='open'?'🟢 开放中':spotDetailData.openStatus==='paused'?'🔴 暂停开放':'🟡 维护中'}}</div></div>
-<div class="dg3"><span class="dl3">开放时间</span><div>{{spotDetailData.openingTime||'--'}}</div></div>
-<div class="dg3"><span class="dl3">门票</span><div>{{(spotDetailData.ticketType||'免费')+' · '+(spotDetailData.ticketPrice||'')}}</div></div>
-<div class="dg3"><span class="dl3">预计游玩</span><div>{{spotDetailData.duration||'2小时'}}</div></div>
-<div class="dg3"><span class="dl3">联系电话</span><div><span v-if="spotDetailData._showPhone" style="color:#28C76F">{{spotDetailData.contact||'--'}}</span><span v-else style="color:#28C76F;cursor:pointer" @click="spotDetailData._showPhone=true;toast('联系方式已显示','info')">点击查看</span></div></div>
-<div class="dg3"><span class="dl3">📍 位置</span><div>{{spotDetailData.address||'--'}}</div></div>
-<div class="ds-title">📝 景区简介</div>
-<div style="color:#B7D3E8;font-size:12px;line-height:1.7;padding:6px 0">{{spotDetailData.desc||'暂无介绍'}}</div>
-<div class="ds-title">🏗 配套设施</div>
-<div class="dg3"><span class="dl3">设施</span><div>{{(spotDetailData.facilities||[]).join('、')||'暂未完善'}}</div></div>
-<div class="ds-title">📊 参考信息</div>
-<div class="dg3"><span class="dl3">评分</span><div style="color:#F5B83D">{{starRating(spotDetailData.rating)}} {{spotDetailData.rating||'4.5'}}</div></div>
-<div class="dg3"><span class="dl3">累计游客</span><div>{{(spotDetailData.visitors||0).toLocaleString()}}次</div></div>
-<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-p btn-s" @click="toast('导航到：'+spotDetailData.address,'info')">📍 导航</button><button class="btn btn-o btn-s" @click="toast('链接已复制','ok')">📤 分享</button><button class="btn btn-o btn-s" @click="spotDetailData._fav=!spotDetailData._fav;toast(spotDetailData._fav?'已收藏':'已取消','ok')">{{spotDetailData._fav?'❤️ 已收藏':'♡ 收藏'}}</button></div>
+<div style="text-align:center;padding:10px 0 14px"><div style="font-size:17px;font-weight:700;color:#fff">{{spotDetailData.name}}</div><div style="color:#F5B83D;font-size:11px;margin-top:3px">{{starRating(spotDetailData.rating)}} {{spotDetailData.rating||'4.5'}}</div><div class="spot-tag" style="margin-top:4px;color:#28C76F;border-color:#28C76F">{{spotDetailData.type}}</div></div>
+<div class="spot-info-grid"><div class="spot-info-item"><div class="spot-info-icon">{{spotDetailData.openStatus==='open'?'🟢':spotDetailData.openStatus==='paused'?'🔴':'🟡'}}</div><div class="spot-info-label">{{spotDetailData.openStatus==='open'?'开放中':spotDetailData.openStatus==='paused'?'暂停':'维护'}}</div></div><div class="spot-info-item"><div class="spot-info-icon">🕗</div><div class="spot-info-label">{{spotDetailData.openingTime||'--'}}</div></div><div class="spot-info-item"><div class="spot-info-icon">🎫</div><div class="spot-info-label">{{spotDetailData.ticketType||'免费'}}</div></div><div class="spot-info-item"><div class="spot-info-icon">⏱</div><div class="spot-info-label">{{spotDetailData.duration||'2小时'}}</div></div></div>
+<div class="spot-contact-row"><div style="display:flex;align-items:center;gap:6px"><span>📍</span><span style="font-size:11px;color:#B7D3E8">{{spotDetailData.address||'--'}}</span></div><div style="display:flex;align-items:center;gap:6px;cursor:pointer" @click="spotDetailData._showPhone?null:spotDetailData._showPhone=true"><span>📞</span><span style="font-size:11px" :style="{color:spotDetailData._showPhone?'#28C76F':'#28C76F'}">{{spotDetailData._showPhone?(spotDetailData.contact||'--'):'点击查看电话'}}</span></div></div>
+<div v-if="spotDetailData.desc" style="color:#8FA8C0;font-size:11px;line-height:1.7;padding:8px 0">{{spotDetailData.desc}}</div>
+<div v-if="spotDetailData.facilities&&spotDetailData.facilities.length" style="display:flex;gap:10px;flex-wrap:wrap;padding:6px 0"><span v-for="f in spotDetailData.facilities" :key="f" class="spot-fac-icon">{{f==='停车场'?'🅿':f==='卫生间'?'🚻':f==='餐饮'?'🍴':f==='休息区'?'☕':'📡'}} <span style="font-size:9px;color:#6F91A8">{{f}}</span></span></div>
+<div style="display:flex;gap:8px;margin-top:10px"><div class="spot-stat-card"><div style="font-size:14px;color:#F5B83D">{{starRating(spotDetailData.rating)}}</div><div style="font-size:9px;color:#6F91A8;margin-top:2px">{{spotDetailData.rating||'4.5'}} 评分</div></div><div class="spot-stat-card"><div style="font-size:14px;color:#fff">{{(spotDetailData.visitors||0).toLocaleString()}}</div><div style="font-size:9px;color:#6F91A8;margin-top:2px">累计游客</div></div></div>
+<div class="spot-detail-actions"><button class="btn btn-p btn-s" @click="toast('导航到：'+spotDetailData.address,'info')">📍 导航</button><button class="btn btn-o btn-s" @click="toast('链接已复制','ok')">📤 分享</button><button class="btn btn-o btn-s" @click="spotDetailData._fav=!spotDetailData._fav;toast(spotDetailData._fav?'已收藏':'已取消','ok')">{{spotDetailData._fav?'❤️':'♡'}} 收藏</button><button class="btn btn-o btn-s" @click="drawerOpen=false">✕ 关闭</button></div>
 </template>
 <template v-else-if="drawerData"><div style="display:grid;grid-template-columns:1fr 2fr;gap:4px 16px;font-size:12px;margin-bottom:14px"><template v-for="(v,k) in drawerData" :key="k"><span v-if="k!=='id'&&k!=='rooms2'&&k!=='reviews'&&k!=='trend'&&k!=='sources'&&k!=='_hover'" style="color:#6F91A8">{{k}}</span><span v-if="k!=='id'&&k!=='rooms2'&&k!=='reviews'&&k!=='trend'&&k!=='sources'&&k!=='_hover'" style="color:#fff;font-weight:500">{{v||'--'}}</span></template></div><div style="display:flex;gap:6px;margin-top:12px"><button class="btn btn-p btn-s" @click="editItem(drawerData.id);drawerOpen=false">编辑</button><button class="btn btn-d btn-s" @click="delItem(drawerData.id);drawerOpen=false">删除</button></div></template></div></div>
 
@@ -905,4 +896,10 @@ tr:hover td { background: rgba(14,165,233,0.05); cursor: pointer; }
 .spot-card-desc{font-size:11px;color:#6F91A8;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
 .spot-card{display:flex;flex-direction:column}
 .spot-detail-cover{height:120px;display:flex;align-items:center;justify-content:center;border-radius:8px;margin-bottom:10px}.spot-detail-icon{font-size:48px;opacity:.5}
+.spot-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.spot-info-item{background:rgba(10,36,68,.55);border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px}.spot-info-icon{font-size:18px;flex-shrink:0}.spot-info-label{font-size:11px;color:#B7D3E8}
+.spot-contact-row{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid rgba(40,199,111,.08);border-bottom:1px solid rgba(40,199,111,.08);margin:10px 0}
+.spot-fac-icon{display:inline-flex;align-items:center;gap:3px;font-size:14px}
+.spot-stat-card{flex:1;background:rgba(10,36,68,.55);border-radius:8px;padding:10px 12px;text-align:center}
+.spot-detail-actions{display:flex;gap:8px;padding-top:10px;border-top:1px solid rgba(40,199,111,.08);margin-top:10px;flex-wrap:wrap}
 </style>
