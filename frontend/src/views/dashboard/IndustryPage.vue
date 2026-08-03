@@ -9,17 +9,17 @@
 <template v-if="curMod==='ecommerce'"><EcommercePage :embedded="true" :activeTab="curSub"/></template>
 <template v-else-if="curSub==='pest'"><PestDashboard :embedded="true" /></template>
 <template v-else-if="curMod==='tourism'&&curSub==='spots'">
-<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏞️ 景点游览 · 发现中堰村美景</div>
+<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏞️ 景点游览 · 发现美丽乡村<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 当前村庄：中堰村</span></div>
 <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center"><input v-model="spotFilterText" placeholder="🔍 搜索景点名称、特色..." style="padding:6px 12px;border-radius:8px;border:1px solid rgba(40,199,111,.1);background:rgba(57,217,138,.06);color:#B7D3E8;font-size:12px;width:240px;font-family:inherit;outline:none"><div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in spotCategories" :key="c.v" :class="spotFilterCat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="spotFilterCat=c.v">{{c.l||c.label}}</button></div></div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
 <div v-for="s in filteredSpots" :key="s.id" class="spot-card" @click="showSpotDetail(s)">
-<div class="spot-cover" :style="{background:'linear-gradient(135deg,rgba(40,199,111,.2),rgba(10,61,92,.6))'}"><div class="spot-badge" v-if="s.visitors>5000">🔥 热门</div><div class="spot-badge new" v-if="s.id>=5">NEW</div><div class="spot-cover-status" :class="s.openStatus==='open'?'g':s.openStatus==='paused'?'y':'r'">{{s.openStatus==='open'?'🟢 开放中':s.openStatus==='paused'?'🟡 暂停':'🔴 关闭'}}</div></div>
-<div style="padding:12px 14px 14px"><div class="spot-card-name">{{spotCatIcon(s.type)}} {{s.name}}</div><div class="spot-card-rating" v-if="s.rating||s.visitors">⭐ {{s.rating||'4.5'}} <span style="color:#6F91A8;font-weight:400">· {{(s.visitors||0).toLocaleString()}}次访问</span></div><div class="spot-card-desc">{{s.summary||(s.desc||'').slice(0,50)}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{(s.address||'').replace('中堰村','中堰村 · ')}}</span></div><div style="display:flex;gap:6px"><button class="btn btn-p btn-s" @click.stop="showSpotDetail(s)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+s.address,'info')">🗺️ 导航</button></div></div>
+<div class="spot-cover" :style="{background:s.coverUrl?'url('+s.coverUrl+') center/cover':'linear-gradient(135deg,'+(s.type==='自然风光'?'rgba(40,199,111,.25),rgba(10,61,92,.55)':s.type==='采摘体验'?'rgba(245,158,11,.2),rgba(10,61,92,.5)':s.type==='乡村文化'?'rgba(139,92,246,.2),rgba(10,61,92,.5)':'rgba(14,165,233,.2),rgba(10,61,92,.5)')+')'}"><div class="spot-cover-icon">{{s.type==='自然风光'?'🌿':s.type==='采摘体验'?'🍑':s.type==='乡村文化'?'🏛':'🏞'}}</div><div class="spot-badge hot" v-if="s.tag==='HOT'||s.visitors>5000">🔥 热门</div><div class="spot-badge rec" v-if="s.tag==='RECOMMEND'">⭐ 推荐</div><div class="spot-badge new" v-if="s.tag==='NEW'">🆕 新上线</div><div class="spot-cover-status" :class="s.openStatus">{{s.openStatus==='open'?'🟢 开放中':s.openStatus==='paused'?'🔴 暂停开放':'🟡 维护中'}}</div></div>
+<div style="padding:12px 14px 14px;display:flex;flex-direction:column;flex:1"><div class="spot-card-name">{{s.name}}</div><div class="spot-card-rating" v-if="s.rating">⭐ {{s.rating}} <span style="color:#6F91A8;font-weight:400">· {{(s.visitors||0).toLocaleString()}}次浏览</span></div><div class="spot-card-desc">{{s.summary||(s.desc||'').slice(0,50)}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{(s.address||'').replace('中堰村','中堰村 · ')}}</span></div><div style="display:flex;gap:6px;margin-top:auto"><button class="btn btn-p btn-s" @click.stop="showSpotDetail(s)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+s.address,'info')">🗺️ 导航</button><span style="flex:1"></span><button class="btn btn-o btn-s" style="font-size:14px;padding:2px 6px" @click.stop="toast('已收藏','ok')" :title="(s.favorites||0)+'人已收藏'">♡</button></div></div>
 </div>
 </div>
 </template>
 <template v-else-if="curMod==='tourism'&&curSub==='spots'">
-<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏞️ 景点游览 · 发现中堰村美景</div>
+<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🏞️ 景点游览 · 发现美丽乡村<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 当前村庄：中堰村</span></div>
 <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center"><input v-model="spotFilterText" placeholder="🔍 搜索景点名称、特色..." style="padding:8px 12px;border-radius:8px;border:1px solid rgba(40,199,111,.1);background:rgba(57,217,138,.06);color:#B7D3E8;font-size:12px;width:240px;font-family:inherit;outline:none"><div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in spotCategories" :key="c.v" :class="spotFilterCat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="spotFilterCat=c.v">{{c.label}}</button></div></div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
 <div v-for="s in filteredSpots" :key="s.id" class="spot-card" @click="showSpotDetail(s)">
@@ -871,10 +871,12 @@ tr:hover td { background: rgba(14,165,233,0.05); cursor: pointer; }
   gap: 14px !important;
 }
 .spot-card{background:rgba(5,25,48,.96);border:1px solid rgba(190,214,234,.55);border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s}.spot-card:hover{border-color:rgba(72,193,255,.95);transform:translateY(-2px)}
-.spot-cover{height:150px;position:relative;display:flex;align-items:flex-end;border-radius:10px 10px 0 0}
-.spot-badge{position:absolute;top:8px;left:8px;background:rgba(245,158,11,.85);color:#fff;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600}.spot-badge.new{background:rgba(40,199,111,.85)}
-.spot-cover-status{position:absolute;bottom:8px;right:8px;font-size:10px;padding:3px 10px;border-radius:10px;background:rgba(0,0,0,.5);color:#fff}.spot-cover-status.g{}.spot-cover-status.y{}.spot-cover-status.r{}
+.spot-cover{height:160px;position:relative;display:flex;align-items:center;justify-content:center;border-radius:10px 10px 0 0;overflow:hidden}
+.spot-cover-icon{font-size:52px;opacity:.6}
+.spot-badge{position:absolute;top:8px;left:8px;color:#fff;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600}.spot-badge.hot{background:rgba(245,158,11,.85)}.spot-badge.rec{background:rgba(40,199,111,.85)}.spot-badge.new{background:rgba(14,165,233,.85)}
+.spot-cover-status{position:absolute;bottom:8px;right:8px;font-size:10px;padding:3px 10px;border-radius:10px;background:rgba(0,0,0,.55);color:#fff}
 .spot-card-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
 .spot-card-rating{font-size:10px;color:#F5B83D;font-weight:600;margin-bottom:6px}
 .spot-card-desc{font-size:11px;color:#6F91A8;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
+.spot-card{display:flex;flex-direction:column}
 </style>
