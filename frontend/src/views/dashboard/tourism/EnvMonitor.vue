@@ -3,17 +3,17 @@
 <div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🌡 环境监测 · 养殖区当前状态<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 中堰村</span></div>
 
 <!-- 统计卡 -->
-<div class="srow" style="margin-bottom:10px"><div class="scard"><div class="sv">{{areas.length}}个</div><div class="sl">监测区域</div></div><div class="scard g"><div class="sv">{{areas.filter(a=>a.status==='正常').length}}个</div><div class="sl">正常区域</div></div><div class="scard r"><div class="sv">{{areas.filter(a=>a.status!=='正常').length}}个</div><div class="sl">异常区域</div></div><div class="scard"><div class="sv">{{records.length}}条</div><div class="sl">今日采集</div></div></div>
+<div class="srow" style="margin-bottom:10px"><div class="scard"><div class="sv">{{areas.length}}个</div><div class="sl">监测区域</div></div><div class="scard g"><div class="sv">{{areas.filter(a=>a.status==='正常').length}}个</div><div class="sl">正常区域</div></div><div class="scard r"><div class="sv">{{areas.filter(a=>a.status!=='正常').length}}个</div><div class="sl">需要处理</div></div><div class="scard"><div class="sv">{{records.length}}条</div><div class="sl">今日采集</div></div></div>
 
 <!-- 操作区 -->
-<div style="display:flex;gap:10px;margin-bottom:10px"><button class="btn btn-p btn-s" @click="openAdd">+ 新增监测</button><span style="flex:1"></span></div>
+<div style="display:flex;gap:10px;margin-bottom:10px"><button class="btn btn-p btn-s" @click="openAdd">记录监测</button><span style="flex:1"></span></div>
 
 <!-- 区域卡片 -->
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px">
 <div v-for="a in areas" :key="a.key" class="panel" style="padding:14px;margin:0;cursor:pointer" @click="showDetail(a)">
 <div style="display:flex;justify-content:space-between;margin-bottom:10px"><div><span style="font-size:15px;font-weight:700;color:#fff">{{a.area}}</span><span style="font-size:10px;color:#6F91A8;margin-left:6px">{{a.batchName}}</span></div><span :class="'tag '+(a.status==='正常'?'g':'r')" style="font-size:9px">{{a.status==='正常'?'🟢 正常':'🔴 预警'}}</span></div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px"><div><span style="color:#6F91A8">🌡 水温</span> <span :style="{color:a.waterTemp>30||a.waterTemp<20?'#E74C3C':'#fff'}">{{a.waterTemp}}℃</span></div><div><span style="color:#6F91A8">🧪 pH</span> <span :style="{color:a.ph>9||a.ph<6?'#E74C3C':a.ph>8.5||a.ph<6.5?'#F5B83D':'#fff'}">{{a.ph}}</span></div><div><span style="color:#6F91A8">💧 溶氧</span> <span :style="{color:a.oxygen<4?'#E74C3C':a.oxygen<5?'#F5B83D':'#fff'}">{{a.oxygen}}mg/L</span></div><div><span style="color:#6F91A8">⚠️ 氨氮</span> <span :style="{color:a.ammonia>0.5?'#E74C3C':a.ammonia>0.3?'#F5B83D':'#fff'}">{{a.ammonia}}mg/L</span></div></div>
-<div style="margin-top:8px;font-size:9px;color:#6F91A8">🕐 {{a.recordTime?.slice(5,16)}} · {{a.source==='传感器自动采集'?'🤖自动':a.source==='农户手工记录'?'👨手工':'👨‍💼补录'}}</div>
+<div style="margin-top:8px;font-size:9px;color:#6F91A8">👤 {{a.manager||'--'}} · 🕐 {{a.recordTime?.slice(5,16)}} · {{a.source==='传感器自动采集'?'🤖自动':a.source==='农户手工记录'?'👨手工':'👨‍💼补录'}}</div>
 <div v-if="a.status!=='正常'" style="margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(245,158,11,.1);font-size:10px;color:#F5B83D">💡 {{a.suggestion||'请检查水质'}}</div>
 </div>
 </div>
@@ -23,7 +23,7 @@
 <div class="drawer" :class="{on:detailOpen}">
 <div class="drawer-hd"><h3>🌡 {{detailData?.area}}</h3><button class="drawer-close" @click="detailOpen=false">✕</button></div>
 <div class="drawer-bd" v-if="detailData">
-<div style="text-align:center;padding:10px 0 14px"><span :class="'tag '+(detailData.status==='正常'?'g':'r')" style="font-size:11px;padding:4px 14px">{{detailData.status==='正常'?'🟢 当前正常':'🔴 需要关注'}}</span><div style="font-size:11px;color:#6F91A8;margin-top:6px">更新时间 {{detailData.recordTime?.slice(0,16)}}</div></div>
+<div style="text-align:center;padding:10px 0 14px"><span :class="'tag '+(detailData.status==='正常'?'g':'r')" style="font-size:11px;padding:4px 14px">{{detailData.status==='正常'?'🟢 当前正常':'🔴 需要关注'}}</span><div style="font-size:11px;color:#6F91A8;margin-top:6px">{{detailData.statusNote||'更新时间 '+detailData.recordTime?.slice(0,16)}}</div></div>
 <div class="ds-title">🌡 监测指标</div>
 <div class="dg3"><span class="dl3">水温</span><div :style="{color:detailData.waterTemp>30||detailData.waterTemp<20?'#E74C3C':'#fff'}">{{detailData.waterTemp}}℃</div></div>
 <div class="dg3"><span class="dl3">pH</span><div :style="{color:detailData.ph>9||detailData.ph<6?'#E74C3C':detailData.ph>8.5||detailData.ph<6.5?'#F5B83D':'#fff'}">{{detailData.ph}}</div></div>
@@ -73,7 +73,7 @@ const records=reactive([
 {id:3,archiveId:3,batchNo:'ZY-SC-202605-001',batchName:'2026年罗非鱼育成批次',area:'智慧渔业车间2号池',waterTemp:25.8,ph:7.6,oxygen:6.8,ammonia:0.12,turbidity:4.1,waterLevel:92,status:'正常',source:'农户手工记录',recordTime:'2026-08-04 16:00',remark:''}
 ])
 
-const areas=computed(()=>{const seen=new Set();const result=[];records.forEach(r=>{if(!seen.has(r.archiveId)){seen.add(r.archiveId);const s=r.status;result.push({key:r.archiveId,archiveId:r.archiveId,area:r.area,batchName:r.batchName,batchNo:r.batchNo,waterTemp:r.waterTemp,ph:r.ph,oxygen:r.oxygen,ammonia:r.ammonia,turbidity:r.turbidity,waterLevel:r.waterLevel,status:r.status,recordTime:r.recordTime,source:r.source,suggestion:r.status==='预警'?'溶解氧偏低，建议开启增氧机':r.status==='异常'?'请立即检查水质':''})}});return result})
+const areas=computed(()=>{const seen=new Set();const result=[];records.forEach(r=>{if(!seen.has(r.archiveId)){seen.add(r.archiveId);const bl=breedingList.find(l=>l.id===r.archiveId);result.push({key:r.archiveId,archiveId:r.archiveId,area:r.area,batchName:r.batchName,batchNo:r.batchNo,manager:bl?.manager||'--',waterTemp:r.waterTemp,ph:r.ph,oxygen:r.oxygen,ammonia:r.ammonia,turbidity:r.turbidity,waterLevel:r.waterLevel,status:r.status,recordTime:r.recordTime,source:r.source,suggestion:r.status==='预警'?'溶解氧偏低，建议开启增氧机':r.status==='异常'?'请立即检查水质':'',statusNote:r.status==='正常'?'当前水质适宜，无需处理':r.status==='预警'?'建议30分钟后重新检测':'请立即联系技术人员'})}});return result})
 
 const detailOpen=ref(false),detailData=ref(null),addOpen=ref(false)
 function showDetail(a){detailData.value=a;detailOpen.value=true}
