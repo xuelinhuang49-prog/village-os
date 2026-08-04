@@ -134,8 +134,8 @@ function toast(msg, type = 'info') { const id = Date.now(); toasts.push({ id, ms
 // Modules
 const modules = [{ key: 'farming', icon: '🌾', label: '智慧农业' }, { key: 'ecommerce', icon: '🛒', label: '农产品电商' }, { key: 'tourism', icon: '🏞️', label: '乡村文旅' }, { key: 'livestock', icon: '🐖', label: '智慧养殖' }]
 const modLabels = { farming: '智慧农业', ecommerce: '农产品电商', tourism: '乡村文旅', livestock: '智慧养殖' }
-const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '产品溯源', live: '直播中心', analytics: '经营分析', spots: '景点游览', bnbs: '特色民宿', activities: '活动体验', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
-const subMap = { farming: ['lands', 'crops', 'records', 'monitor', 'irrigation', 'pest'], ecommerce: ['products', 'orders', 'trace', 'live', 'analytics'], tourism: ['spots', 'bnbs', 'activities'], livestock: ['records2', 'env', 'feed', 'disease', 'slaughter'] }
+const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '产品溯源', live: '直播中心', analytics: '经营分析', spots: '景点游览', bnbs: '特色民宿', activities: '活动体验', foods: '美食推荐', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
+const subMap = { farming: ['lands', 'crops', 'records', 'monitor', 'irrigation', 'pest'], ecommerce: ['products', 'orders', 'trace', 'live', 'analytics'], tourism: ['spots', 'bnbs', 'activities', 'foods'], livestock: ['records2', 'env', 'feed', 'disease', 'slaughter'] }
 const addBtnLabels = { lands: '新增地块', crops: '新增作物', records: '新增记录', irrigation: '新增计划', pest: '新增预警', products: '新增商品', orders: '新增订单', trace: '新增溯源', live: '创建直播', analytics: '导出报表', records2: '新增养殖批次', feed: '新增投喂计划', slaughter: '新增出栏记录' }
 const chartTitles = { lands: '地块分布分析', crops: '作物阶段分布', records: '农事类型分布', products: '商品销量分布', records2: '养殖存栏统计' }
 const secondaryTitles = { lands: '地块概况', crops: '种植日历', records: '最近农事', irrigation: '灌溉状态', pest: '病虫害监测', records2: '养殖概况', feed: '投喂状态', slaughter: '出栏记录' }
@@ -145,7 +145,7 @@ const contentRef = ref(null)
 let chartInstance = null
 
 const subTabs = computed(() => subMap[curMod.value] || [])
-const isDataPage = computed(() => ['lands', 'crops', 'records', 'irrigation', 'records2', 'feed', 'slaughter'].includes(curSub.value))
+const isDataPage = computed(() => ['lands', 'crops', 'records', 'irrigation', 'records2', 'feed', 'slaughter', 'foods'].includes(curSub.value))
 const showChart = computed(() => ['lands', 'crops', 'records', 'pest', 'products'].includes(curSub.value))
 const hasSecondary = computed(() => ['lands', 'crops', 'records', 'irrigation'].includes(curSub.value))
 const isMgmtPage = computed(() => ['products', 'orders', 'spots', 'bnbs', 'activities', 'trace', 'analytics', 'heritage', 'guide', 'planning'].includes(curSub.value))
@@ -640,6 +640,7 @@ function actStatusLabel(s){const m={open:'🟢 报名中',upcoming:'🟡 即将�
 const filteredActs=computed(()=>{let l=activities;const f=actFilterText.value.toLowerCase();if(f)l=l.filter(a=>a.name.toLowerCase().includes(f)||(a.desc||'').toLowerCase().includes(f));if(actCat.value==='_open')l=l.filter(a=>a.status==='open');else if(actCat.value)l=l.filter(a=>a.type===actCat.value);return l})
 const actDetail=ref(null)
 function showActDetail(a){actDetail.value=a;drawerTitle.value=a.name;drawerOpen.value=true}
+const foods=reactive([{id:1,name:'中堰农家乐',type:'农家菜',address:'中堰村中心',villageName:'中堰村',desc:'主打土灶炖鸡和蜂蜜烤鸡，食材均来自本村产业园。',pricePer:'68',phone:'139****6789',openTime:'10:00-21:00',specialDishes:['蜂蜜烤鸡','土灶炖鸡','蜂蜜李子','农家豆腐'],facilities:['停车','包厢','可团餐'],rating:'4.8',status:'开放',visitors:5600},{id:2,name:'李子农庄',type:'采摘体验',address:'中堰村产业园东区',villageName:'中堰村',desc:'集采摘和农家餐饮于一体，可体验蜂糖李采摘。',pricePer:'88',phone:'138****8901',openTime:'08:00-18:00',specialDishes:['蜂糖李鲜果','李子果酱','农家小炒'],facilities:['停车','儿童座椅'],rating:'4.6',status:'开放',visitors:3800},{id:3,name:'蜂蜜主题餐厅',type:'特色小吃',address:'中堰村产业园南区',villageName:'中堰村',desc:'以蜂蜜为主题的特色餐厅，蜂蜜系列甜品和饮品。',pricePer:'45',phone:'137****2345',openTime:'09:00-20:00',specialDishes:['蜂蜜蛋糕','蜂蜜柚子茶','蜂糖李冰沙'],facilities:['停车','WiFi'],rating:'4.9',status:'开放',visitors:7200},{id:4,name:'荷塘渔家',type:'农家菜',address:'中堰村北区',villageName:'中堰村',desc:'主打澳洲淡水龙虾和荷花鱼，可体验垂钓后现场加工。',pricePer:'98',phone:'136****3456',openTime:'11:00-22:00',specialDishes:['清蒸澳洲龙虾','荷花鱼汤','荷叶蒸鸡'],facilities:['停车','包厢','可团餐','儿童座椅'],rating:'4.7',status:'开放',visitors:4100}])
 
 const signupOpen=ref(false),signupSuccess=ref(false),signupForm=reactive({name:"",phone:"",count:1,remark:"",agree:false})
 function openSignup(a){if(!a||a.status!=='open'){toast(a&&a.limitPeople&&a.currentPeople>=a.limitPeople?'人数已满':'暂未开放报名','warn');return}Object.assign(signupForm,{name:"",phone:"",count:1,remark:"",agree:false});signupSuccess.value=false;signupOpen.value=true}
