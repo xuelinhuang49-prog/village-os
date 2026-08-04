@@ -655,9 +655,9 @@ function showDetail(r) {
   if (curSub.value === 'records2') {
     const stageColor={'成长期':'#28C76F','育成期':'#28C7FA','幼苗期':'#A77BFF','育肥期':'#F5B83D','待出栏':'#E74C3C'};const healthColor={'正常':'#28C76F','观察中':'#F5B83D','异常':'#E74C3C'}
     drawerData.value = {
-      '📋 基本信息': '', '档案编号':r.batchNo||'--','批次名称':r.batchName||'--','所属村庄':r.villageName||'中堰村','负责人':r.manager+'（'+r.phone+'）',
-      '🐟 养殖信息': '', '养殖类别':r.category||'--','品种':r.type+'（'+r.breed+'）','养殖区域':r.area||'--','初始数量':(r.initialCount||0).toLocaleString()+' '+(r.unit||'尾'),'当前存栏':(r.count||0).toLocaleString()+' '+(r.unit||'尾'),'入栏日期':r.startDate||'--','预计出栏':r.expectDate||'--',
-      '📈 当前状态': '', '生长阶段':r.stage||'--','健康状态':r.health||'--','来源':r.source||'--','备注':r.remark||'--','更新时间':(r.updatedAt||'--')
+      '📋 档案编号':r.batchNo||'--','📋 批次名称':r.batchName||'--','📋 所属村庄':r.villageName||'中堰村','📋 负责人':r.manager+'（'+r.phone+'）',
+      '🐟 养殖类别':r.category||'--','🐟 品种':r.type+'（'+r.breed+'）','🐟 养殖区域':r.area||'--','🐟 初始数量':(r.initialCount||0).toLocaleString()+' '+(r.unit||'尾'),'🐟 当前存栏':(r.count||0).toLocaleString()+' '+(r.unit||'尾'),'🐟 入栏日期':r.startDate||'--','🐟 预计出栏':r.expectDate||'--',
+      '📈 生长阶段':r.stage||'--','📈 健康状态':r.health||'--','📈 来源':r.source||'--','📈 备注':r.remark||'--','📈 更新时间':(r.updatedAt||'--')
     }
   } else {
     drawerData.value = r
