@@ -4,17 +4,7 @@
 <div class="mod-tabs"><button v-for="m in modules" :key="m.key" :class="{on:curMod===m.key}" @click="switchMod(m.key)">{{m.icon}} {{m.label}}</button></div>
 <div class="sub-tabs"><button v-for="s in subTabs" :key="s" :class="{on:curSub===s}" @click="switchSub(s)">{{subLabels[s]}}</button></div>
 <div class="content" ref="contentRef">
-<div v-if="curMod==='tourism'&&curSub==='foods'" style="padding:14px 18px">
-<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🍽 美食推荐 · 品味乡村特色<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 当前村庄：中堰村</span></div>
-<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center"><span style="position:relative;display:inline-flex;align-items:center"><input v-model="foodFilterText" placeholder="🔍 搜索餐馆、菜品..." style="padding:6px 30px 6px 12px;border-radius:8px;border:1px solid rgba(40,199,111,.1);background:rgba(57,217,138,.06);color:#B7D3E8;font-size:12px;width:240px;font-family:inherit;outline:none"><span v-if="foodFilterText" @click="foodFilterText=''" style="position:absolute;right:6px;cursor:pointer;color:#6F91A8;font-size:14px;line-height:1" title="清空">x</span></span>
-<div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in foodCats" :key="c.v" :class="foodCat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="foodCat=c.v">{{c.l}}<span v-if="c.v" style="font-size:9px;opacity:.7;margin-left:2px">({{foods.filter(f=>f.type===c.v).length}})</span></button></div></div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-<div v-for="f in filteredFoods" :key="f.id" class="spot-card" @click="showFoodDetail(f)">
-<div class="spot-cover" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(10,61,92,.6))"><div class="spot-cover-icon">🍽</div><div class="spot-cover-status" style="background:rgba(40,199,111,.7)">营业中</div></div>
-<div style="padding:12px 14px 14px;display:flex;flex-direction:column;flex:1"><div class="spot-card-name">{{f.name}}</div><div class="spot-tag" style="color:#F5B83D;border-color:#F5B83D;margin-bottom:4px;display:inline-block;width:fit-content">{{f.type}}</div><div class="spot-card-rating">⭐ {{f.rating}} <span style="color:#6F91A8;font-weight:400">· ¥{{f.pricePer}}/人</span></div><div class="spot-card-desc">{{(f.specialDishes||[]).slice(0,3).join(',')}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{f.address||'中堰村'}}</span></div><div style="display:flex;gap:4px;margin-top:auto"><button class="btn btn-p btn-s" @click.stop="showFoodDetail(f)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+(f.address||'中堰村'),'info')">🗺️ 导航</button><button class="btn btn-o btn-s" @click.stop="toast('链接已复制','ok')">📤</button><button class="btn btn-o btn-s" style="font-size:13px;padding:2px 6px" @click.stop="f._fav=!f._fav;toast(f._fav?'已收藏':'已取消','ok')">{{f._fav?'❤️':'♡'}}</button></div></div>
-</div>
-</div>
-</div>
+<FoodList v-if="curMod==='tourism'&&curSub==='foods'" @detail="showFoodDetail" />
 <h2 class="pg-tt" v-if="curMod!=='ecommerce'">{{subLabels[curSub]}}</h2>
 
 <template v-if="curMod==='ecommerce'"><EcommercePage :embedded="true" :activeTab="curSub"/></template>
@@ -127,6 +117,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import FoodList from '@/views/dashboard/tourism/FoodList.vue'
 import * as echarts from 'echarts'
 import EcommercePage from '@/views/industry/EcommercePage.vue'
 import PestDashboard from '@/views/pest/PestDashboard.vue'
