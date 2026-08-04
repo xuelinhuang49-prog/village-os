@@ -6,9 +6,9 @@
 <div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in cats" :key="c.v" :class="cat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="cat=c.v">{{c.l}}<span v-if="c.v" style="font-size:9px;opacity:.7;margin-left:2px">({{foods.filter(f=>f.type===c.v).length}})</span></button></div>
 </div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-<div v-for="f in filteredList" :key="f.id" class="spot-card" @click="$emit('detail',f)">
+<div v-for="f in filteredList" :key="f.id" class="spot-card" @click="openDetail(f)">
 <div class="spot-cover" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(10,61,92,.6))"><div class="spot-cover-icon">🍽</div><div class="spot-cover-status" style="background:rgba(40,199,111,.7)">营业中</div></div>
-<div style="padding:12px 14px 14px;display:flex;flex-direction:column;flex:1"><div class="spot-card-name">{{f.name}}</div><div class="spot-tag" style="color:#F5B83D;border-color:#F5B83D;margin-bottom:4px;display:inline-block;width:fit-content">{{f.type}}</div><div class="spot-card-rating">⭐ {{f.rating}} <span style="color:#6F91A8;font-weight:400">· ¥{{f.pricePer}}/人</span></div><div class="spot-card-desc">{{(f.specialDishes||[]).slice(0,3).join('、')}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{f.address||'中堰村'}}</span></div><div style="display:flex;gap:4px;margin-top:auto"><button class="btn btn-p btn-s" @click.stop="$emit('detail',f)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+(f.address||'中堰村'))">🗺️ 导航</button><button class="btn btn-o btn-s" @click.stop="toast('链接已复制')">📤</button><button class="btn btn-o btn-s" style="font-size:13px;padding:2px 6px" @click.stop="f._fav=!f._fav;toast(f._fav?'已收藏':'已取消')">{{f._fav?'❤️':'♡'}}</button></div></div>
+<div style="padding:12px 14px 14px;display:flex;flex-direction:column;flex:1"><div class="spot-card-name">{{f.name}}</div><div class="spot-tag" style="color:#F5B83D;border-color:#F5B83D;margin-bottom:4px;display:inline-block;width:fit-content">{{f.type}}</div><div class="spot-card-rating">⭐ {{f.rating}} <span style="color:#6F91A8;font-weight:400">· ¥{{f.pricePer}}/人</span></div><div class="spot-card-desc">{{(f.specialDishes||[]).slice(0,3).join('、')}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{f.address||'中堰村'}}</span></div><div style="display:flex;gap:4px;margin-top:auto"><button class="btn btn-p btn-s" @click.stop="openDetail(f)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+(f.address||'中堰村'))">🗺️ 导航</button><button class="btn btn-o btn-s" @click.stop="toast('链接已复制')">📤</button><button class="btn btn-o btn-s" style="font-size:13px;padding:2px 6px" @click.stop="f._fav=!f._fav;toast(f._fav?'已收藏':'已取消')">{{f._fav?'❤️':'♡'}}</button></div></div>
 </div>
 </div>
 <FoodDrawer :open="drawerOpen" :data="detailData" @close="drawerOpen=false" />
@@ -23,8 +23,8 @@ const filterText=ref(''),cat=ref('')
 const cats=[{v:'',l:'全部'},{v:'农家菜',l:'农家菜'},{v:'特色小吃',l:'特色小吃'},{v:'采摘体验',l:'采摘体验'},{v:'时令美食',l:'时令美食'}]
 const filteredList=computed(()=>{let l=foods;const f=filterText.value.toLowerCase();if(f)l=l.filter(x=>x.name.toLowerCase().includes(f)||(x.desc||'').toLowerCase().includes(f));if(cat.value)l=l.filter(x=>x.type===cat.value);return l})
 const drawerOpen=ref(false),detailData=ref(null)
-defineEmits(['detail'])
-function toast(m){alert(m)}
+function openDetail(f){detailData.value=f;drawerOpen.value=true}
+function toast(m){}
 </script>
 
 <style scoped>
