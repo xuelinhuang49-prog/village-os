@@ -136,7 +136,7 @@ const modules = [{ key: 'farming', icon: '🌾', label: '智慧农业' }, { key:
 const modLabels = { farming: '智慧农业', ecommerce: '农产品电商', tourism: '乡村文旅', livestock: '智慧养殖' }
 const subLabels = { lands: '地块管理', crops: '作物档案', records: '农事记录', monitor: '生长监测', irrigation: '水肥管理', pest: '病虫害预警', products: '商品管理', orders: '订单管理', trace: '产品溯源', live: '直播中心', analytics: '经营分析', spots: '景点游览', bnbs: '特色民宿', activities: '活动体验', foods: '美食推荐', records2: '养殖档案', env: '环境监测', feed: '投喂管理', disease: '疫病预警', slaughter: '出栏管理' }
 const subMap = { farming: ['lands', 'crops', 'records', 'monitor', 'irrigation', 'pest'], ecommerce: ['products', 'orders', 'trace', 'live', 'analytics'], tourism: ['spots', 'bnbs', 'activities', 'foods'], livestock: ['records2', 'env', 'feed', 'disease', 'slaughter'] }
-const addBtnLabels = { lands: '新增地块', crops: '新增作物', records: '新增记录', irrigation: '新增计划', pest: '新增预警', products: '新增商品', orders: '新增订单', trace: '新增溯源', live: '创建直播', analytics: '导出报表', records2: '新增养殖批次', feed: '新增投喂计划', slaughter: '新增出栏记录' }
+const addBtnLabels = { lands: '新增地块', crops: '新增作物', records: '新增记录', irrigation: '新增计划', pest: '新增预警', products: '新增商品', orders: '新增订单', trace: '新增溯源', live: '创建直播', analytics: '导出报表', records2: '新增养殖批次', feed: '新增投喂计划', slaughter: '新增出栏记录', foods: '新增商户' }
 const chartTitles = { lands: '地块分布分析', crops: '作物阶段分布', records: '农事类型分布', products: '商品销量分布', records2: '养殖存栏统计' }
 const secondaryTitles = { lands: '地块概况', crops: '种植日历', records: '最近农事', irrigation: '灌溉状态', pest: '病虫害监测', records2: '养殖概况', feed: '投喂状态', slaughter: '出栏记录' }
 const curMod = ref('farming'), curSub = ref('lands'), page = ref(1), filterText = ref(''), bnbfilterText = ref(''), pageSize = 8
@@ -381,7 +381,7 @@ function spotCatIcon(t){const m={'自然风光':'🌳','采摘体验':'🍑','�
 function spotCatColor(t){const m={'自然风光':'#28C76F','采摘体验':'#F5B83D','休闲娱乐':'#28C7FA','研学教育':'#A77BFF','人文文化':'#E74C3C','乡村文化':'#A77BFF'};return m[t]||'#28C76F'}
 function spotBadge(s){if(s.tag==='HOT')return {icon:'🔥',label:'热门',cls:'hot'};if(s.tag==='RECOMMEND')return {icon:'⭐',label:'推荐',cls:'rec'};if(s.tag==='NEW')return {icon:'🆕',label:'新上线',cls:'new'};if(s.visitors>5000)return {icon:'🔥',label:'热门',cls:'hot'};return null}
 
-const dataMap = { lands, crops, records, irrigation: lands, pest: diseaseAlerts, overview: products, records2: livestock, feed: feedData, slaughter: slaughterData, products, spots: tSpots, bnbs: tBnBs, activities }
+const dataMap = { lands, crops, records, irrigation: lands, pest: diseaseAlerts, overview: products, records2: livestock, feed: feedData, slaughter: slaughterData, products, spots: tSpots, bnbs: tBnBs, activities, foods }
 const currentData = computed(() => dataMap[curSub.value] || [])
 const filteredData = computed(() => { const f = filterText.value.toLowerCase(); if (!f) return currentData.value; return currentData.value.filter(d => Object.values(d).some(v => String(v).toLowerCase().includes(f))) })
 const totalPages = computed(() => Math.ceil(filteredData.value.length / pageSize) || 1)
@@ -396,6 +396,7 @@ const stats = computed(() => {
   if (k === 'irrigation') return [{ label: '灌溉地块', value: lands.filter(l=>l.irrigation).length+'块', cls: '' }, { label: '今日用水', value: '1,280 m³', cls: 'g' }, { label: '灌溉覆盖率', value: Math.round(lands.filter(l=>l.irrigation).length/lands.length*100)+'%', cls: 'y' }]
   if (k === 'feed') return [{ label: '今日投喂', value: feedData.length+'次', cls: '' }, { label: '已完成', value: feedData.filter(f=>f.status==='已完成').length+'次', cls: 'g' }, { label: '进行中', value: feedData.filter(f=>f.status==='进行中').length+'次', cls: 'y' }]
   if (k === 'slaughter') return [{ label: '出栏批次', value: slaughterData.length+'批', cls: '' }, { label: '预计出栏', value: slaughterData.filter(s=>s.status!=='已出栏').length+'批', cls: 'y' }, { label: '已出栏', value: slaughterData.filter(s=>s.status==='已出栏').length+'批', cls: 'g' }]
+if (k === 'foods') return [{ label: '总餐饮商户', value: foods.length+'家', cls: '' }, { label: '营业中', value: foods.filter(f=>f.status==='开放').length+'家', cls: 'g' }, { label: '推荐商户', value: foods.filter(f=>parseFloat(f.rating)>=4.7).length+'家', cls: 'y' }, { label: '累计浏览', value: foods.reduce((s,f)=>s+(f.visitors||0),0)+'次', cls: '' }]
   if (k === 'pest') return [{ label: '活跃预警', value: diseaseAlerts.filter(a=>a.status==='监控中').length+'条', cls: 'y' }, { label: '已处理', value: diseaseAlerts.filter(a=>a.status==='已处理').length+'条', cls: 'g' }]
   if (k === 'overview') return [{ label: '在售商品', value: products.length+'种', cls: '' }, { label: '累计销量', value: products.reduce((s,p)=>s+p.sales,0)+'件', cls: 'g' }, { label: '销售额', value: '¥'+products.reduce((s,p)=>s+p.price*p.sales,0).toLocaleString(), cls: 'y' }]
   return [{ label: '总数', value: arr.length, cls: '' }]
@@ -411,6 +412,7 @@ const tableCols = computed(() => {
   if (k === 'feed') return ['养殖区', '投喂方式', '时间', '投喂量', '状态']
   if (k === 'slaughter') return ['养殖区', '品种', '数量', '日期', '均重', '单价', '状态']
   if (k === 'pest') return ['预警类型', '风险等级', '影响区域', '症状', '状态']
+  if (k === 'foods') return ['店铺名称', '类型', '人均消费', '营业状态', '推荐', '浏览量', '操作']
   return ['名称', '状态']
 })
 
@@ -424,6 +426,7 @@ function renderCell(r, ci) {
   if (k === 'feed') { const vals = [r.name||'--', r.type||'--', r.time||'--', r.amount||'--', '<span class="tag '+(r.status==='已完成'?'g':r.status==='进行中'?'y':'dim')+'">'+r.status+'</span>']; return vals[ci] || '--' }
   if (k === 'slaughter') { const vals = [r.name||'--', r.breed||'--', r.count||'--', r.date||'--', r.weight||'--', r.price||'--', '<span class="tag '+(r.status==='已出栏'?'g':r.status==='待出栏'?'y':'dim')+'">'+r.status+'</span>']; return vals[ci] || '--' }
   if (k === 'pest') { const vals = ['<span class="tag y">'+r.disease+'</span>', '<span class="tag '+(r.risk==='中风险'?'y':'g')+'">'+r.risk+'</span>', r.building, r.symptom, '<span class="tag '+(r.status==='监控中'?'y':'g')+'">'+r.status+'</span>']; return vals[ci] || '--' }
+  if (k === 'foods') { const vals = ['<span style="color:#fff;font-weight:600">'+r.name+'</span>', r.type, '¥'+r.pricePer+'/人', '<span class="tag '+(r.status==='开放'?'g':'dim')+'">'+r.status+'</span>', '<span style="color:#F5B83D">⭐'+r.rating+'</span>', (r.visitors||0).toLocaleString(), '']; return vals[ci] || '--' }
   return r[tableCols.value[ci]] || '--'
 }
 
