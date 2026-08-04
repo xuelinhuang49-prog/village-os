@@ -15,6 +15,7 @@
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px"><div><span style="color:#6F91A8">🌡 水温</span> <span :style="{color:a.waterTemp>30||a.waterTemp<20?'#E74C3C':'#fff'}">{{a.waterTemp}}℃</span></div><div><span style="color:#6F91A8">🧪 pH</span> <span :style="{color:a.ph>9||a.ph<6?'#E74C3C':a.ph>8.5||a.ph<6.5?'#F5B83D':'#fff'}">{{a.ph}}</span></div><div><span style="color:#6F91A8">💧 溶氧</span> <span :style="{color:a.oxygen<4?'#E74C3C':a.oxygen<5?'#F5B83D':'#fff'}">{{a.oxygen}}mg/L</span></div><div><span style="color:#6F91A8">⚠️ 氨氮</span> <span :style="{color:a.ammonia>0.5?'#E74C3C':a.ammonia>0.3?'#F5B83D':'#fff'}">{{a.ammonia}}mg/L</span></div></div>
 <div style="margin-top:8px;font-size:9px;color:#6F91A8">👤 {{a.manager||'--'}} · 🕐 {{a.recordTime?.slice(5,16)}} · {{a.source==='传感器自动采集'?'🤖自动':a.source==='农户手工记录'?'👨手工':'👨‍💼补录'}}</div>
 <div v-if="a.status!=='正常'" style="margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(245,158,11,.1);font-size:10px;color:#F5B83D">💡 {{a.suggestion||'请检查水质'}}</div>
+<div style="margin-top:8px;text-align:right"><span style="color:#28C76F;font-size:10px;cursor:pointer">查看详情 →</span></div>
 </div>
 </div>
 
@@ -37,6 +38,13 @@
 <div class="dg3"><span class="dl3">养殖区域</span><div>{{detailData.area}}</div></div>
 <div class="dg3"><span class="dl3">数据来源</span><div>{{detailData.source==='传感器自动采集'?'🤖 自动采集':detailData.source==='农户手工记录'?'👨 农户记录':'👨‍💼 管理员补录'}}</div></div>
 <div class="dg3" v-if="detailData.remark"><span class="dl3">备注</span><div>{{detailData.remark}}</div></div>
+<div v-if="detailData.status!=='正常'" style="margin-top:8px;padding:10px;border-radius:8px;background:rgba(245,158,11,.08)">
+<div style="font-size:11px;font-weight:700;color:#F5B83D;margin-bottom:6px">💡 处理建议</div>
+<div style="font-size:10px;color:#B7D3E8;line-height:1.8">✓ {{detailData.suggestion||'开启增氧设备'}}</div>
+<div style="font-size:10px;color:#B7D3E8;line-height:1.8">✓ 30分钟后重新检测</div>
+<div style="font-size:10px;color:#B7D3E8;line-height:1.8">✓ 若仍异常请联系技术人员</div>
+</div>
+<div class="dg3"><span class="dl3">📊 本月监测</span><div style="font-weight:600">{{records.filter(r=>r.archiveId===detailData.archiveId).length}}次</div></div>
 <div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-p btn-s" @click="openAdd();detailOpen=false">+ 新增记录</button><button class="btn btn-o btn-s" @click="detailOpen=false">关闭</button></div>
 </div>
 </div>
