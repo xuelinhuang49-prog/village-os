@@ -2,7 +2,7 @@
 <div style="padding:14px 18px">
 <div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🍽 投喂管理 · 今日投喂状态<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 中堰村</span></div>
 
-<div class="srow" style="margin-bottom:10px"><div class="scard"><div class="sv">{{areas.length}}个</div><div class="sl">养殖区域</div></div><div class="scard g"><div class="sv">{{areas.filter(a=>a.status==='已完成').length}}个</div><div class="sl">已完成</div></div><div class="scard y"><div class="sv">{{areas.filter(a=>a.status==='待投喂').length}}个</div><div class="sl">待投喂</div></div><div class="scard"><div class="sv">{{areas.length}}项</div><div class="sl">今日计划</div></div></div>
+<div class="srow" style="margin-bottom:10px"><div class="scard"><div class="sv">{{areas.length}}个</div><div class="sl">今日任务</div></div><div class="scard g"><div class="sv">{{areas.filter(a=>a.status==='已完成').length}}个</div><div class="sl">已完成</div></div><div class="scard y"><div class="sv">{{areas.filter(a=>a.status==='待投喂').length}}个</div><div class="sl">待处理</div></div><div class="scard r"><div class="sv">{{areas.filter(a=>a.status==='已超时').length}}个</div><div class="sl">超时未投</div></div></div>
 
 <div style="display:flex;gap:10px;margin-bottom:10px"><button class="btn btn-p btn-s" @click="openAdd">记录投喂</button><span style="flex:1"></span></div>
 
@@ -25,15 +25,17 @@
 <div class="ds-title">🍽 投喂信息</div>
 <div class="dg3"><span class="dl3">投喂时间</span><div>{{detailData.feedTime||detailData.planTime||'--'}}</div></div>
 <div class="dg3"><span class="dl3">饲料</span><div>{{detailData.feedName||'--'}}</div></div>
-<div class="dg3"><span class="dl3">投喂量</span><div style="font-weight:600">{{detailData.amount||'--'}} kg</div></div>
+<div class="dg3"><span class="dl3">计划投喂量</span><div style="font-weight:600">{{detailData.amount||'--'}} kg</div></div>
+<div class="dg3" v-if="detailData.actualAmount"><span class="dl3">实际投喂量</span><div style="font-weight:600" :style="{color:detailData.actualAmount<detailData.amount?'#F5B83D':'#28C76F'}">{{detailData.actualAmount}} kg<span v-if="detailData.actualAmount<detailData.amount" style="font-size:9px;color:#F5B83D;margin-left:4px">投喂不足</span></div></div>
 <div class="dg3"><span class="dl3">投喂方式</span><div>{{detailData.method||'--'}}</div></div>
 <div class="dg3"><span class="dl3">负责人</span><div>{{detailData.manager||'--'}}</div></div>
+<div v-if="detailData.envNote" class="dg3"><span class="dl3">🌡 投喂前环境</span><div style="font-size:10px;color:#28C76F">{{detailData.envNote}}</div></div>
 <div class="ds-title">🐟 养殖信息</div>
 <div class="dg3"><span class="dl3">批次</span><div>{{detailData.batchName}}</div></div>
 <div class="dg3"><span class="dl3">编号</span><div style="color:#28C76F">{{detailData.batchNo}}</div></div>
 <div class="dg3"><span class="dl3">养殖区域</span><div>{{detailData.area}}</div></div>
 <div class="dg3" v-if="detailData.remark"><span class="dl3">备注</span><div>{{detailData.remark}}</div></div>
-<div style="display:flex;gap:8px;margin-top:14px"><button v-if="detailData.status==='待投喂'" class="btn btn-p btn-s" @click="quickFeed(detailData);detailOpen=false">记录投喂</button><button class="btn btn-o btn-s" @click="detailOpen=false">关闭</button></div>
+<div style="display:flex;gap:8px;margin-top:14px"><button v-if="detailData.status==='待投喂'" class="btn btn-p btn-s" @click="quickFeed(detailData);detailOpen=false">立即投喂</button><button class="btn btn-o btn-s" @click="alert('历史记录：'+detailData.batchName)">📋 查看历史</button><button class="btn btn-o btn-s" @click="detailOpen=false">关闭</button></div>
 </div>
 </div>
 
@@ -62,12 +64,12 @@ import {ref,reactive,computed} from 'vue'
 const breedingList=[{id:1,batchNo:'ZY-SC-202603-001',batchName:'2026年春季加州鲈批次',area:'荷虾混养区A塘',category:'水产',type:'鲈鱼',breed:'加州鲈',manager:'赵大哥',phone:'139****6789'},{id:2,batchNo:'ZY-SC-202604-001',batchName:'2026年澳洲淡水龙虾批次',area:'智能水产养殖基地1号池',category:'水产',type:'澳洲淡水龙虾',breed:'澳洲品系',manager:'李婶',phone:'138****8901'},{id:3,batchNo:'ZY-SC-202605-001',batchName:'2026年罗非鱼育成批次',area:'智慧渔业车间2号池',category:'水产',type:'罗非鱼',breed:'吉富品系',manager:'张大叔',phone:'137****2345'}]
 
 const records=reactive([
-{id:1,archiveId:1,batchNo:'ZY-SC-202603-001',batchName:'2026年春季加州鲈批次',area:'荷虾混养区A塘',feedName:'配合饲料1号',amount:50,feedTime:'07:00',method:'自动投喂',manager:'赵大哥',status:'已完成',remark:''},
-{id:2,archiveId:2,batchNo:'ZY-SC-202604-001',batchName:'2026年澳洲淡水龙虾批次',area:'智能水产养殖基地1号池',feedName:'虾饲料',amount:30,planTime:'18:00',method:'人工投喂',manager:'李婶',status:'待投喂',remark:''},
-{id:3,archiveId:3,batchNo:'ZY-SC-202605-001',batchName:'2026年罗非鱼育成批次',area:'智慧渔业车间2号池',feedName:'鱼饲料2号',amount:45,feedTime:'14:00',method:'自动投喂',manager:'张大叔',status:'自动投喂中',remark:'自动设备运行正常'}
+{id:1,archiveId:1,batchNo:'ZY-SC-202603-001',batchName:'2026年春季加州鲈批次',area:'荷虾混养区A塘',feedName:'配合饲料1号',amount:50,actualAmount:50,feedTime:'07:00',method:'自动投喂',manager:'赵大哥',status:'已完成',remark:''},
+{id:2,archiveId:2,batchNo:'ZY-SC-202604-001',batchName:'2026年澳洲淡水龙虾批次',area:'智能水产养殖基地1号池',feedName:'虾饲料',amount:30,actualAmount:0,planTime:'18:00',method:'人工投喂',manager:'李婶',status:'待投喂',remark:''},
+{id:3,archiveId:3,batchNo:'ZY-SC-202605-001',batchName:'2026年罗非鱼育成批次',area:'智慧渔业车间2号池',feedName:'鱼饲料2号',amount:45,actualAmount:45,feedTime:'14:00',method:'自动投喂',manager:'张大叔',status:'自动投喂中',remark:'自动设备运行正常'}
 ])
 
-const areas=computed(()=>{const seen=new Set();const result=[];records.forEach(r=>{if(!seen.has(r.archiveId)){seen.add(r.archiveId);const bl=breedingList.find(l=>l.id===r.archiveId);result.push({key:r.archiveId,archiveId:r.archiveId,area:r.area,batchName:r.batchName,batchNo:r.batchNo,feedName:r.feedName,amount:r.amount,feedTime:r.feedTime,planTime:r.planTime,method:r.method,manager:bl?.manager||r.manager,status:r.status,remark:r.remark,timeLeft:r.status==='待投喂'?'约2小时':'--'})}});return result})
+const areas=computed(()=>{const seen=new Set();const result=[];records.forEach(r=>{if(!seen.has(r.archiveId)){seen.add(r.archiveId);const bl=breedingList.find(l=>l.id===r.archiveId);result.push({key:r.archiveId,archiveId:r.archiveId,area:r.area,batchName:r.batchName,batchNo:r.batchNo,feedName:r.feedName,amount:r.amount,actualAmount:r.actualAmount||0,feedTime:r.feedTime,planTime:r.planTime,method:r.method,manager:bl?.manager||r.manager,status:r.status,remark:r.remark,timeLeft:r.status==='待投喂'?'约2小时':'--',envNote:r.status==='已完成'?'投喂前环境：水温26.5℃ 溶氧6.2mg/L 适合投喂':''})}});return result})
 
 const detailOpen=ref(false),detailData=ref(null),addOpen=ref(false)
 function showDetail(a){detailData.value=a;detailOpen.value=true}
