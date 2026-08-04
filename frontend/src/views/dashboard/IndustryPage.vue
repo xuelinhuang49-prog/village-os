@@ -49,7 +49,8 @@
 <div style="display:flex;gap:4px;margin-top:auto"><button class="btn btn-p btn-s" @click.stop="showActDetail(a)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+(a.address||'中堰村'),'info')">🗺️ 导航</button><button class="btn btn-o btn-s" @click.stop="toast('链接已复制','ok')">📤</button><button class="btn btn-o btn-s" style="font-size:13px;padding:2px 6px" @click.stop="a._fav=!a._fav;toast(a._fav?'已收藏':'已取消','ok')">{{a._fav?'❤️':'♡'}}</button></div></div>
 </div>
 </div>
-</template><template v-else-if="isDataPage">
+</template><EnvMonitor v-if="curMod==='livestock'&&curSub==='env'" />
+<template v-else-if="isDataPage">
 <div v-if="curSub==='lands'" class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🌍 地块管理 · 中堰村农业地块信息总览</div>
 <div v-if="curSub==='crops'" class="tbanner" style="border-left-color:#28C7FA;color:#28C7FA">🌱 作物档案 · 品种信息与生长周期追溯</div>
 <div v-if="curSub==='records'" class="tbanner" style="border-left-color:#F5B83D;color:#F5B83D">📝 农事记录 · 施肥/灌溉/打药/修剪操作日志</div>
@@ -120,6 +121,7 @@
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import FoodList from '@/views/dashboard/tourism/FoodList.vue'
+import EnvMonitor from '@/views/dashboard/tourism/EnvMonitor.vue'
 import * as echarts from 'echarts'
 import EcommercePage from '@/views/industry/EcommercePage.vue'
 import PestDashboard from '@/views/pest/PestDashboard.vue'
@@ -149,7 +151,7 @@ const contentRef = ref(null)
 let chartInstance = null
 
 const subTabs = computed(() => subMap[curMod.value] || [])
-const isDataPage = computed(() => ['lands', 'crops', 'records', 'irrigation', 'records2', 'feed', 'slaughter', 'env'].includes(curSub.value))
+const isDataPage = computed(() => ['lands', 'crops', 'records', 'irrigation', 'records2', 'feed', 'slaughter'].includes(curSub.value))
 const showChart = computed(() => ['lands', 'crops', 'records', 'pest', 'products'].includes(curSub.value))
 const hasSecondary = computed(() => ['lands', 'crops', 'records', 'irrigation'].includes(curSub.value))
 const isMgmtPage = computed(() => ['products', 'orders', 'spots', 'bnbs', 'activities', 'trace', 'analytics', 'heritage', 'guide', 'planning'].includes(curSub.value))
