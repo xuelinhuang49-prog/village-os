@@ -726,7 +726,7 @@ watch([curMod, curSub], () => { chartInstance && chartInstance.dispose(); chartI
 // ===== LocalStorage persistence =====
 const STORAGE_KEY = 'ind_data'
 function saveAllData() {
-  const data = { lands: [...lands], crops: [...crops], records: [...records], products: [...products], tSpots: [...tSpots], tBnBs: [...tBnBs], livestock: [...livestock], feedData: [...feedData], slaughterData: [...slaughterData], bnbOrders: [...bnbOrders], ecoOrders: [...ecoOrders], activities: [...activities], diseaseAlerts: [...diseaseAlerts], uidCounter }
+  const data = { lands: [...lands], crops: [...crops], records: [...records], products: [...products], tSpots: [...tSpots], tBnBs: [...tBnBs], livestock: [...livestock], feedData: [...feedData], slaughterData: [...slaughterData], bnbOrders: [...bnbOrders], ecoOrders: [...ecoOrders], activities: [...activities], foods: [...foods], diseaseAlerts: [...diseaseAlerts], uidCounter }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
 }
 function loadAllData() {
