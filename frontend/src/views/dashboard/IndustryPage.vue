@@ -880,6 +880,14 @@ tr:hover td { background: rgba(14,165,233,0.05); cursor: pointer; }
 .npk-label { font-size: 11px; color: #B7D3E8; position: relative; z-index: 1; }
 .frow { display: flex; gap: 10px; }
 .frow .fld { flex: 1; }
+.fl { margin-bottom: 10px; } .fl label { display: block; font-size: 11px; color: #6F91A8; margin-bottom: 4px; }
+.fin { width: 100%; padding: 8px 10px; border-radius: 8px; font-size: 12px; font-family: inherit; background: rgba(57,217,138,0.06); border: 1px solid rgba(40,199,111,0.10); color: #B7D3E8; outline: none; box-sizing: border-box; }
+.fin:focus { border-color: #28C76F; }
+.fl2 { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #6F91A8; cursor: pointer; }
+.ds-title { font-size: 12px; font-weight: 700; color: #28C76F; margin: 12px 0 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(40,199,111,0.10); }
+.dg3 { background: rgba(10,36,68,0.55); padding: 10px; border-radius: 8px; margin-bottom: 6px; }
+.dl3 { display: block; font-size: 9px; color: #28C76F; margin-bottom: 3px; }
+.dg3 div:last-child { font-size: 12px; color: #B7D3E8; }
 .toast { padding: 10px 18px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #fff; pointer-events: auto; animation: ti .3s ease, to .3s ease 2s forwards; }
 .toast.ok { background: linear-gradient(135deg, #059669, #39D98A); }
 .toast.info { background: linear-gradient(135deg, #39D98A, #28C76F); }
