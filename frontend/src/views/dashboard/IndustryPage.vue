@@ -50,6 +50,7 @@
 </div>
 </div>
 </template><EnvMonitor v-if="curMod==='livestock'&&curSub==='env'" />
+<FeedingMonitor v-if="curMod==='livestock'&&curSub==='feed'" />
 <template v-else-if="isDataPage">
 <div v-if="curSub==='lands'" class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🌍 地块管理 · 中堰村农业地块信息总览</div>
 <div v-if="curSub==='crops'" class="tbanner" style="border-left-color:#28C7FA;color:#28C7FA">🌱 作物档案 · 品种信息与生长周期追溯</div>
@@ -122,6 +123,7 @@ import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from
 import { useRouter } from 'vue-router'
 import FoodList from '@/views/dashboard/tourism/FoodList.vue'
 import EnvMonitor from '@/views/dashboard/tourism/EnvMonitor.vue'
+import FeedingMonitor from '@/views/dashboard/tourism/FeedingMonitor.vue'
 import * as echarts from 'echarts'
 import EcommercePage from '@/views/industry/EcommercePage.vue'
 import PestDashboard from '@/views/pest/PestDashboard.vue'
