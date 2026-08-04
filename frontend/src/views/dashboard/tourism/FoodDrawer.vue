@@ -14,12 +14,12 @@
 <div class="sitem"><div class="sicon">💰</div><div><div class="ssub">人均消费</div><div class="slab" style="color:#28C76F">¥{{data.pricePer}}/人</div></div></div>
 <div class="sitem"><div class="sicon">🕒</div><div><div class="ssub">营业时间</div><div class="slab">{{data.openTime||'--'}}</div></div></div>
 <div class="sitem"><div class="sicon">📍</div><div><div class="ssub">所在位置</div><div class="slab">{{data.address||'中堰村'}}</div></div></div>
-<div class="sitem"><div class="sicon">📞</div><div><div class="ssub">联系电话</div><div class="slab" style="color:#28C76F;cursor:pointer" @click="showPhone=!showPhone">{{showPhone?(data.phone||'--'):'点击拨号'}}</div></div></div>
+<div class="sitem"><div class="sicon">📞</div><div><div class="ssub">联系电话</div><div class="slab" style="color:#28C76F;cursor:pointer" @click="showPhone=!showPhone">{{showPhone?(data.phone||'--'):'电话咨询'}}</div></div></div>
 </div>
 <div style="font-size:12px;font-weight:700;color:#28C76F;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(40,199,111,.1)">🍲 推荐菜</div>
 <div style="display:flex;gap:6px;flex-wrap:wrap"><span v-for="d in data.specialDishes" :key="d" class="stag2">{{d}}</span></div>
 <div v-if="data.desc" style="margin-top:10px;background:rgba(10,36,68,.55);border-radius:8px;padding:12px 14px"><div class="ssub" style="margin-bottom:4px">📖 商家简介</div><div style="color:#8FA8C0;font-size:11px;line-height:1.8">{{data.desc}}</div></div>
-<div class="ssub" style="margin-top:4px">🛎 配套服务</div>
+<div style="font-size:12px;font-weight:700;color:#28C76F;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(40,199,111,.1)">🛎 配套服务</div>
 <div v-if="data.facilities&&data.facilities.length" style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 8px"><span v-for="x in data.facilities" :key="x" class="stag2">{{x==='停车'?'🅿':x==='包厢'?'🚪':x==='可团餐'?'👨‍👩‍👧':x==='WiFi'?'📶':x==='儿童座椅'?'👶':'✅'}} {{x}}</span></div>
 <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);padding:4px 0 8px">👁 已有 {{(data.visitors||0).toLocaleString()}} 人浏览</div>
 <div style="display:flex;gap:8px;padding-top:8px;border-top:1px solid rgba(40,199,111,.08);flex-wrap:wrap">
