@@ -1,9 +1,9 @@
 <template>
 <div class="drawer-overlay" :class="{on:open}" @click="$emit('close')"></div>
 <div class="drawer" :class="{on:open}">
-<div class="drawer-hd"><h3>🍽 {{data?.name}}</h3><button class="drawer-close" @click="$emit('close')">✕</button></div>
+<div class="drawer-hd"><h3>🍽 美食详情</h3><button class="drawer-close" @click="$emit('close')">✕</button></div>
 <div class="drawer-bd" v-if="data">
-<div class="spot-cover" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(10,61,92,.6));height:120px;display:flex;align-items:center;justify-content:center;border-radius:8px;margin-bottom:10px"><div style="font-size:48px;opacity:.5">🍽</div></div>
+<div class="spot-cover" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(10,61,92,.6));height:100px;display:flex;align-items:center;justify-content:center;border-radius:8px;margin-bottom:10px"><div style="font-size:48px;opacity:.5">🍽</div></div>
 <div style="text-align:center;padding:14px 0 6px">
 <div style="font-size:17px;font-weight:700;color:#fff">{{data.name}}</div>
 <div style="color:#F5B83D;font-size:12px;margin-top:4px">{{stars}} <span style="color:#B7D3E8;font-weight:500">{{data.rating}}</span></div>
@@ -18,13 +18,13 @@
 <div style="font-size:12px;font-weight:700;color:#28C76F;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(40,199,111,.1)">🍲 推荐菜</div>
 <div style="display:flex;gap:6px;flex-wrap:wrap"><span v-for="d in data.specialDishes" :key="d" class="stag2">{{d}}</span></div>
 <div v-if="data.desc" style="margin-top:10px;background:rgba(10,36,68,.55);border-radius:8px;padding:12px"><div class="ssub" style="margin-bottom:6px">📝 店铺介绍</div><div style="color:#8FA8C0;font-size:11px;line-height:1.7">{{data.desc}}</div></div>
-<div v-if="data.facilities&&data.facilities.length" style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0"><span v-for="x in data.facilities" :key="x" style="font-size:14px">{{x==='停车'?'🅿':x==='包厢'?'🚪':x==='可团餐'?'👨‍👩‍👧':x==='WiFi'?'📶':x==='儿童座椅'?'👶':'✅'}} <span style="font-size:9px;color:#6F91A8">{{x}}</span></span></div>
+<div v-if="data.facilities&&data.facilities.length" style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0"><span v-for="x in data.facilities" :key="x" class="stag2">{{x==='停车'?'🅿':x==='包厢'?'🚪':x==='可团餐'?'👨‍👩‍👧':x==='WiFi'?'📶':x==='儿童座椅'?'👶':'✅'}} {{x}}</span></div>
 <div style="text-align:center;font-size:9px;color:rgba(111,145,168,.5);margin-top:8px">累计浏览 {{(data.visitors||0).toLocaleString()}} 次</div>
 <div style="display:flex;gap:8px;padding-top:10px;border-top:1px solid rgba(40,199,111,.08);margin-top:10px;flex-wrap:wrap">
 <button class="btn btn-p" style="padding:6px 16px;font-size:11px" @click="navTo">📍 立即导航</button>
 <button class="btn btn-o btn-s" @click="callPhone">📞 电话咨询</button>
-<button class="btn btn-o btn-s" @click="shareIt">📤 分享</button>
 <button class="btn btn-o btn-s" style="color:#E74C3C;border-color:rgba(231,76,60,.3)" @click="fav=!fav">{{fav?'❤️':'♡'}} 收藏</button>
+<button class="btn btn-o btn-s" @click="shareIt">📤 分享</button>
 <button class="btn btn-o btn-s" style="color:#6F91A8" @click="$emit('close')">关闭</button>
 </div>
 </div>
