@@ -14,19 +14,20 @@
 <div class="sitem"><div class="sicon">💰</div><div><div class="ssub">人均消费</div><div class="slab" style="color:#28C76F">¥{{data.pricePer}}/人</div></div></div>
 <div class="sitem"><div class="sicon">🕒</div><div><div class="ssub">营业时间</div><div class="slab">{{data.openTime||'--'}}</div></div></div>
 <div class="sitem"><div class="sicon">📍</div><div><div class="ssub">所在位置</div><div class="slab">{{data.address||'中堰村'}}</div></div></div>
-<div class="sitem"><div class="sicon">📞</div><div><div class="ssub">联系电话</div><div class="slab" style="color:#28C76F;cursor:pointer" @click="showPhone=!showPhone">{{showPhone?(data.phone||'--'):'点击查看'}}</div></div></div>
+<div class="sitem"><div class="sicon">📞</div><div><div class="ssub">联系电话</div><div class="slab" style="color:#28C76F;cursor:pointer" @click="showPhone=!showPhone">{{showPhone?(data.phone||'--'):'点击拨号'}}</div></div></div>
 </div>
 <div style="font-size:12px;font-weight:700;color:#28C76F;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(40,199,111,.1)">🍲 推荐菜</div>
 <div style="display:flex;gap:6px;flex-wrap:wrap"><span v-for="d in data.specialDishes" :key="d" class="stag2">{{d}}</span></div>
-<div v-if="data.desc" style="margin-top:10px;background:rgba(10,36,68,.55);border-radius:8px;padding:12px"><div class="ssub" style="margin-bottom:6px">📖 商家介绍</div><div style="color:#8FA8C0;font-size:11px;line-height:1.7">{{data.desc}}</div></div>
-<div v-if="data.facilities&&data.facilities.length" style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0"><span v-for="x in data.facilities" :key="x" class="stag2">{{x==='停车'?'🅿':x==='包厢'?'🚪':x==='可团餐'?'👨‍👩‍👧':x==='WiFi'?'📶':x==='儿童座椅'?'👶':'✅'}} {{x}}</span></div>
-<div style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-top:8px">👁 浏览 {{(data.visitors||0).toLocaleString()}}</div>
-<div style="display:flex;gap:8px;padding-top:10px;border-top:1px solid rgba(40,199,111,.08);margin-top:10px;flex-wrap:wrap">
+<div v-if="data.desc" style="margin-top:10px;background:rgba(10,36,68,.55);border-radius:8px;padding:12px 14px"><div class="ssub" style="margin-bottom:4px">📖 商家简介</div><div style="color:#8FA8C0;font-size:11px;line-height:1.8">{{data.desc}}</div></div>
+<div class="ssub" style="margin-top:4px">🛎 配套服务</div>
+<div v-if="data.facilities&&data.facilities.length" style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 8px"><span v-for="x in data.facilities" :key="x" class="stag2">{{x==='停车'?'🅿':x==='包厢'?'🚪':x==='可团餐'?'👨‍👩‍👧':x==='WiFi'?'📶':x==='儿童座椅'?'👶':'✅'}} {{x}}</span></div>
+<div style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);padding:4px 0 8px">👁 已有 {{(data.visitors||0).toLocaleString()}} 人浏览</div>
+<div style="display:flex;gap:8px;padding-top:8px;border-top:1px solid rgba(40,199,111,.08);flex-wrap:wrap">
 <button class="btn btn-p" style="padding:6px 16px;font-size:11px" @click="navTo">📍 立即导航</button>
 <button class="btn btn-o btn-s" @click="callPhone">📞 电话咨询</button>
 <button class="btn btn-o btn-s" style="color:#E74C3C;border-color:rgba(231,76,60,.3)" @click="fav=!fav">{{fav?'❤️':'♡'}} 收藏</button>
 <button class="btn btn-o btn-s" @click="shareIt">📤 分享</button>
-<button class="btn btn-o btn-s" style="color:#6F91A8" @click="$emit('close')">关闭</button>
+<button class="btn btn-o btn-s" style="color:#6F91A8" @click="$emit('close')">返回</button>
 </div>
 </div>
 </div>
