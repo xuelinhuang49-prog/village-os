@@ -148,7 +148,7 @@ const contentRef = ref(null)
 let chartInstance = null
 
 const subTabs = computed(() => subMap[curMod.value] || [])
-const isDataPage = computed(() => ['lands', 'crops', 'records', 'irrigation', 'records2', 'feed', 'slaughter'].includes(curSub.value))
+const isDataPage = computed(() => ['lands', 'crops', 'records', 'irrigation', 'records2', 'feed', 'slaughter', 'env'].includes(curSub.value))
 const showChart = computed(() => ['lands', 'crops', 'records', 'pest', 'products'].includes(curSub.value))
 const hasSecondary = computed(() => ['lands', 'crops', 'records', 'irrigation'].includes(curSub.value))
 const isMgmtPage = computed(() => ['products', 'orders', 'spots', 'bnbs', 'activities', 'trace', 'analytics', 'heritage', 'guide', 'planning'].includes(curSub.value))
@@ -368,8 +368,13 @@ const monitorPoints = reactive([
 const currentMonitorPoint = computed(() => monitorPoints.find(p => p.id === monitorPoint.value) || monitorPoints[0])
 const monitorData = reactive({ temp: '26.5', hum: '62', soil: '28', light: '48500' })
 function switchMonitorPoint(id) { monitorPoint.value = id; monitorData.temp = (26 + Math.random()*2).toFixed(1); monitorData.hum = (60 + Math.random()*5).toFixed(0); monitorData.soil = (26 + Math.random()*5).toFixed(0); monitorData.light = (46000 + Math.random()*5000).toFixed(0); nextTick(() => initChart()) }
-const envData = reactive([{ time: '10:00', temp: 27.2, hum: 68, nh3: 5.2, light: 480 }, { time: '10:05', temp: 27.5, hum: 67, nh3: 5.5, light: 490 }, { time: '10:10', temp: 27.8, hum: 66, nh3: 5.8, light: 500 }, { time: '10:15', temp: 28.0, hum: 65, nh3: 6.1, light: 510 }, { time: '10:20', temp: 28.1, hum: 64, nh3: 6.3, light: 515 }])
-const envLatest = computed(() => envData[envData.length - 1])
+const envData = reactive([
+  { id:1, archiveId:1, batchNo:'ZY-SC-202603-001', batchName:'2026年春季加州鲈批次', area:'荷虾混养区A塘', waterTemp:26.5, ph:7.4, oxygen:6.2, ammonia:0.18, turbidity:5.2, waterLevel:95, status:'正常', source:'传感器自动采集', recordTime:'2026-08-04 15:20', updatedAt:'2026-08-04 15:20', remark:'' },
+  { id:2, archiveId:2, batchNo:'ZY-SC-202604-001', batchName:'2026年澳洲淡水龙虾批次', area:'智能水产养殖基地1号池', waterTemp:28.2, ph:7.1, oxygen:5.5, ammonia:0.35, turbidity:6.8, waterLevel:88, status:'预警', source:'传感器自动采集', recordTime:'2026-08-04 14:00', updatedAt:'2026-08-04 14:00', remark:'溶解氧偏低，注意增氧' },
+  { id:3, archiveId:3, batchNo:'ZY-SC-202605-001', batchName:'2026年罗非鱼育成批次', area:'智慧渔业车间2号池', waterTemp:25.8, ph:7.6, oxygen:6.8, ammonia:0.12, turbidity:4.1, waterLevel:92, status:'正常', source:'农户手工记录', recordTime:'2026-08-04 16:00', updatedAt:'2026-08-04 16:00', remark:'' },
+  { id:4, archiveId:1, batchNo:'ZY-SC-202603-001', batchName:'2026年春季加州鲈批次', area:'荷虾混养区A塘', waterTemp:26.2, ph:7.3, oxygen:6.0, ammonia:0.20, turbidity:5.5, waterLevel:94, status:'正常', source:'传感器自动采集', recordTime:'2026-08-04 09:00', updatedAt:'2026-08-04 09:00', remark:'' }
+])
+const envLatest = computed(() => envData[0])
 
 // Data map and computed
 const feedData = reactive([{ id: 1, name: '养猪场A区', type: '自动投喂', time: '07:00', amount: '2.5kg/头', status: '已完成' }, { id: 2, name: '养鸡场1号', type: '自动投喂', time: '06:30', amount: '120g/只', status: '已完成' }, { id: 3, name: '养牛场', type: '手动投喂', time: '08:00', amount: '15kg/头', status: '进行中' }, { id: 4, name: '智能水产基地', type: '自动投喂', time: '07:30', amount: '50kg', status: '已完成' }])
@@ -389,7 +394,7 @@ function spotCatIcon(t){const m={'自然风光':'🌳','采摘体验':'🍑','�
 function spotCatColor(t){const m={'自然风光':'#28C76F','采摘体验':'#F5B83D','休闲娱乐':'#28C7FA','研学教育':'#A77BFF','人文文化':'#E74C3C','乡村文化':'#A77BFF'};return m[t]||'#28C76F'}
 function spotBadge(s){if(s.tag==='HOT')return {icon:'🔥',label:'热门',cls:'hot'};if(s.tag==='RECOMMEND')return {icon:'⭐',label:'推荐',cls:'rec'};if(s.tag==='NEW')return {icon:'🆕',label:'新上线',cls:'new'};if(s.visitors>5000)return {icon:'🔥',label:'热门',cls:'hot'};return null}
 
-const dataMap = { lands, crops, records, irrigation: lands, pest: diseaseAlerts, overview: products, records2: livestock, feed: feedData, slaughter: slaughterData, products, spots: tSpots, bnbs: tBnBs, activities }
+const dataMap = { lands, crops, records, irrigation: lands, pest: diseaseAlerts, overview: products, records2: livestock, feed: feedData, slaughter: slaughterData, products, spots: tSpots, bnbs: tBnBs, activities, env: envData }
 const currentData = computed(() => dataMap[curSub.value] || [])
 const filteredData = computed(() => { const f = filterText.value.toLowerCase(); if (!f) return currentData.value; return currentData.value.filter(d => Object.values(d).some(v => String(v).toLowerCase().includes(f))) })
 const totalPages = computed(() => Math.ceil(filteredData.value.length / pageSize) || 1)
@@ -407,6 +412,7 @@ const stats = computed(() => {
   if (k === 'slaughter') return [{ label: '出栏批次', value: slaughterData.length+'批', cls: '' }, { label: '预计出栏', value: slaughterData.filter(s=>s.status!=='已出栏').length+'批', cls: 'y' }, { label: '已出栏', value: slaughterData.filter(s=>s.status==='已出栏').length+'批', cls: 'g' }]
 if (k === 'foods') return [{ label: '总餐饮商户', value: foods.length+'家', cls: '' }, { label: '营业中', value: foods.filter(f=>f.status==='开放').length+'家', cls: 'g' }, { label: '推荐商户', value: foods.filter(f=>parseFloat(f.rating)>=4.7).length+'家', cls: 'y' }, { label: '累计浏览', value: foods.reduce((s,f)=>s+(f.visitors||0),0)+'次', cls: '' }]
   if (k === 'pest') return [{ label: '活跃预警', value: diseaseAlerts.filter(a=>a.status==='监控中').length+'条', cls: 'y' }, { label: '已处理', value: diseaseAlerts.filter(a=>a.status==='已处理').length+'条', cls: 'g' }]
+  if (k === 'env') return [{ label: '监测批次', value: new Set(envData.map(e=>e.archiveId)).size+' 批', cls: '' }, { label: '正常监测', value: envData.filter(e=>e.status==='正常').length+' 条', cls: 'g' }, { label: '异常预警', value: envData.filter(e=>e.status!=='正常').length+' 项', cls: 'r' }, { label: '今日记录', value: envData.length+' 条', cls: '' }]
   if (k === 'overview') return [{ label: '在售商品', value: products.length+'种', cls: '' }, { label: '累计销量', value: products.reduce((s,p)=>s+p.sales,0)+'件', cls: 'g' }, { label: '销售额', value: '¥'+products.reduce((s,p)=>s+p.price*p.sales,0).toLocaleString(), cls: 'y' }]
   return [{ label: '总数', value: arr.length, cls: '' }]
 })
@@ -421,6 +427,7 @@ const tableCols = computed(() => {
   if (k === 'feed') return ['养殖区', '投喂方式', '时间', '投喂量', '状态']
   if (k === 'slaughter') return ['养殖区', '品种', '数量', '日期', '均重', '单价', '状态']
   if (k === 'pest') return ['预警类型', '风险等级', '影响区域', '症状', '状态']
+  if (k === 'env') return ['记录时间', '档案编号', '批次名称', '养殖区域', '水温', 'pH', '溶解氧', '氨氮', '状态', '数据来源', '操作']
   if (k === 'foods') return ['店铺名称', '类型', '人均消费', '营业状态', '推荐', '浏览量', '操作']
   return ['名称', '状态']
 })
@@ -435,6 +442,7 @@ function renderCell(r, ci) {
   if (k === 'feed') { const vals = [r.name||'--', r.type||'--', r.time||'--', r.amount||'--', '<span class="tag '+(r.status==='已完成'?'g':r.status==='进行中'?'y':'dim')+'">'+r.status+'</span>']; return vals[ci] || '--' }
   if (k === 'slaughter') { const vals = [r.name||'--', r.breed||'--', r.count||'--', r.date||'--', r.weight||'--', r.price||'--', '<span class="tag '+(r.status==='已出栏'?'g':r.status==='待出栏'?'y':'dim')+'">'+r.status+'</span>']; return vals[ci] || '--' }
   if (k === 'pest') { const vals = ['<span class="tag y">'+r.disease+'</span>', '<span class="tag '+(r.risk==='中风险'?'y':'g')+'">'+r.risk+'</span>', r.building, r.symptom, '<span class="tag '+(r.status==='监控中'?'y':'g')+'">'+r.status+'</span>']; return vals[ci] || '--' }
+  if (k === 'env') { const statusCls={'正常':'g','预警':'y','异常':'r'}; const vals = [(r.recordTime||'').slice(5,16), '<span style="color:#28C76F;font-size:10px">'+(r.batchNo||'--')+'</span>', r.batchName||'--', r.area||'--', (r.waterTemp||'--')+'℃', 'pH '+(r.ph||'--'), (r.oxygen||'--')+'mg/L', (r.ammonia||'--')+'mg/L', '<span class="tag '+(statusCls[r.status]||'g')+'">'+r.status+'</span>', r.source||'--', '']; return vals[ci] || '--' }
   if (k === 'foods') { const vals = ['<span style="color:#fff;font-weight:600">'+r.name+'</span>', r.type, '¥'+r.pricePer+'/人', '<span class="tag '+(r.status==='开放'?'g':'dim')+'">'+r.status+'</span>', '<span style="color:#F5B83D">⭐'+r.rating+'</span>', (r.visitors||0).toLocaleString(), '']; return vals[ci] || '--' }
   return r[tableCols.value[ci]] || '--'
 }
