@@ -198,7 +198,11 @@ const tBnBs = reactive([{ id: 1, name: '田园居', _dist:'距产业园300m', ad
   { type: '亲子房', area: '42㎡', beds: '3人', price: 208 }], reviews: [{ name: '周女士', text: '果园采摘太有意思了', stars: 5 },
   { name: '吴先生', text: '早餐很丰盛', stars: 4 },
   { name: '郑女士', text: '整体不错', stars: 4 }], trend: [70, 55, 62, 78, 85, 90, 88, 92, 85, 80, 75, 68] }])
-const livestock = reactive([{ id: 1, type: '澳洲淡水龙虾', breed: '澳洲品系', count: 80000, building: '智能水产养殖基地', status: '成长期' }, { id: 2, type: '鲈鱼', breed: '加州鲈', count: 5000, building: '荷虾混养区', status: '成长期' }, { id: 3, type: '罗非鱼', breed: '吉富品系', count: 30000, building: '智慧渔业车间', status: '育成期' }])
+const livestock = reactive([
+  { id: 1, batchNo:'ZY-SC-202603-001', batchName:'2026年春季加州鲈批次', category:'水产', type:'鲈鱼', breed:'加州鲈', initialCount:5500, count:5000, unit:'尾', area:'荷虾混养区A塘', startDate:'2026-03-15', expectDate:'2026-09-15', stage:'成长期', health:'正常', source:'自繁', manager:'赵大哥', phone:'139****6789', villageName:'中堰村', remark:'生长状况良好，定期换水', updatedAt:'2026-07-20' },
+  { id: 2, batchNo:'ZY-SC-202604-001', batchName:'2026年澳洲淡水龙虾批次', category:'水产', type:'澳洲淡水龙虾', breed:'澳洲品系', initialCount:85000, count:80000, unit:'尾', area:'智能水产养殖基地1号池', startDate:'2026-04-01', expectDate:'2026-10-01', stage:'成长期', health:'正常', source:'外购虾苗', manager:'李婶', phone:'138****8901', villageName:'中堰村', remark:'定期检测水质，氨氮指标正常', updatedAt:'2026-07-18' },
+  { id: 3, batchNo:'ZY-SC-202605-001', batchName:'2026年罗非鱼育成批次', category:'水产', type:'罗非鱼', breed:'吉富品系', initialCount:32000, count:30000, unit:'尾', area:'智慧渔业车间2号池', startDate:'2026-05-01', expectDate:'2026-11-01', stage:'育成期', health:'观察中', source:'自繁', manager:'张大叔', phone:'137****2345', villageName:'中堰村', remark:'近期出现少量死亡，已采样送检', updatedAt:'2026-07-22' }
+])
 const bnbOrders = reactive([{ id: 'ORD0617', guest: '张女士', bnb: '田园居', room: '家庭房', checkIn: '2026-06-22', checkOut: '2026-06-24', amount: 576, status: '已入住', phone: '138****5678' },
   { id: 'ORD0618', guest: '李女士', bnb: '山景阁', room: '景观房', checkIn: '2026-06-25', checkOut: '2026-06-27', amount: 656, status: '待入住', phone: '139****8901' },
   { id: 'ORD0619', guest: '王先生', bnb: '果园人家', room: '标准间', checkIn: '2026-06-20', checkOut: '2026-06-22', amount: 316, status: '已退房', phone: '136****2345' },
@@ -397,6 +401,7 @@ const stats = computed(() => {
   if (k === 'crops') return [{ label: '作物种类', value: arr.length + '种', cls: '' }, { label: '种植面积', value: arr.reduce((s, c) => s + (c.area || 0), 0) + '亩', cls: 'g' }]
   if (k === 'records') return [{ label: '农事记录总数', value: arr.length + '条', cls: '' }, { label: '施肥条数', value: arr.filter(r => r.type === '施肥').length + '条', cls: 'g' }, { label: '灌溉条数', value: arr.filter(r => r.type === '灌溉').length + '条', cls: 'y' }]
   if (k === 'irrigation') return [{ label: '灌溉地块', value: lands.filter(l=>l.irrigation).length+'块', cls: '' }, { label: '今日用水', value: '1,280 m³', cls: 'g' }, { label: '灌溉覆盖率', value: Math.round(lands.filter(l=>l.irrigation).length/lands.length*100)+'%', cls: 'y' }]
+  if (k === 'records2') return [{ label: '养殖批次', value: livestock.length+'批', cls: '' }, { label: '当前存栏', value: livestock.reduce((s,l)=>s+(l.count||0),0).toLocaleString()+(livestock[0]?.unit||'尾'), cls: 'g' }, { label: '正常养殖', value: livestock.filter(l=>l.health==='正常').length+'批', cls: 'g' }, { label: '待处理', value: livestock.filter(l=>l.health!=='正常').length+'项', cls: 'y' }]
   if (k === 'feed') return [{ label: '今日投喂', value: feedData.length+'次', cls: '' }, { label: '已完成', value: feedData.filter(f=>f.status==='已完成').length+'次', cls: 'g' }, { label: '进行中', value: feedData.filter(f=>f.status==='进行中').length+'次', cls: 'y' }]
   if (k === 'slaughter') return [{ label: '出栏批次', value: slaughterData.length+'批', cls: '' }, { label: '预计出栏', value: slaughterData.filter(s=>s.status!=='已出栏').length+'批', cls: 'y' }, { label: '已出栏', value: slaughterData.filter(s=>s.status==='已出栏').length+'批', cls: 'g' }]
 if (k === 'foods') return [{ label: '总餐饮商户', value: foods.length+'家', cls: '' }, { label: '营业中', value: foods.filter(f=>f.status==='开放').length+'家', cls: 'g' }, { label: '推荐商户', value: foods.filter(f=>parseFloat(f.rating)>=4.7).length+'家', cls: 'y' }, { label: '累计浏览', value: foods.reduce((s,f)=>s+(f.visitors||0),0)+'次', cls: '' }]
@@ -410,7 +415,7 @@ const tableCols = computed(() => {
   if (k === 'lands') return ['名称', '面积(亩)', '土壤', '作物', '状态']
   if (k === 'crops') return ['名称', '品种', '播种日期', '周期', '面积', '阶段']
   if (k === 'records') return ['类型', '作物', '地块', '日期', '详情', '操作人']
-  if (k === 'records2') return ['类型', '品种', '存栏', '圈舍', '状态']
+  if (k === 'records2') return ['档案编号', '类型', '品种', '批次名称', '当前存栏', '养殖区域', '入栏日期', '生长阶段', '健康状态', '操作']
   if (k === 'irrigation') return ['地块', '灌水方式', '最近灌溉', '用水量', '状态']
   if (k === 'feed') return ['养殖区', '投喂方式', '时间', '投喂量', '状态']
   if (k === 'slaughter') return ['养殖区', '品种', '数量', '日期', '均重', '单价', '状态']
@@ -424,7 +429,7 @@ function renderCell(r, ci) {
   if (k === 'lands') { const vals = [r.name, r.area, r.soil, r.crop, '<span class="tag ' + (r.status === '盛果期' || r.status === '采收中' ? 'g' : r.status === '已收割' ? 'dim' : 'b') + '">' + r.status + '</span>']; return vals[ci] || '--' }
   if (k === 'crops') { const vals = [r.name, r.variety, r.plantDate, r.cycle, r.area, r.stage]; return vals[ci] || '--' }
   if (k === 'records') { const vals = ['<span class="tag ' + (r.type === '施肥' ? 'b' : r.type === '灌溉' ? 'g' : r.type === '打药' ? 'r' : 'y') + '">' + r.type + '</span>', r.crop, r.plot, r.date, r.detail, r.operator]; return vals[ci] || '--' }
-  if (k === 'records2') { const vals = [r.type, r.breed, typeof r.count === 'number' ? r.count.toLocaleString() : r.count, r.building, '<span class="tag b">' + r.status + '</span>']; return vals[ci] || '--' }
+  if (k === 'records2') { const vals = ['<span style="color:#28C76F;font-size:10px">'+(r.batchNo||'--')+'</span>', r.type, r.breed, r.batchName||'--', (r.count||0).toLocaleString()+(r.unit||'尾'), r.area||'--', r.startDate||'--', r.stage||'--', '<span class="tag '+(r.health==='正常'?'g':r.health==='观察中'?'y':'r')+'">'+(r.health||'--')+'</span>', '']; return vals[ci] || '--' }
   if (k === 'irrigation') { const vals = [r.name||'--', '滴灌', r.date||'2026-06-15', '180m³', '<span class="tag g">正常</span>']; return vals[ci] || '--' }
   if (k === 'feed') { const vals = [r.name||'--', r.type||'--', r.time||'--', r.amount||'--', '<span class="tag '+(r.status==='已完成'?'g':r.status==='进行中'?'y':'dim')+'">'+r.status+'</span>']; return vals[ci] || '--' }
   if (k === 'slaughter') { const vals = [r.name||'--', r.breed||'--', r.count||'--', r.date||'--', r.weight||'--', r.price||'--', '<span class="tag '+(r.status==='已出栏'?'g':r.status==='待出栏'?'y':'dim')+'">'+r.status+'</span>']; return vals[ci] || '--' }
