@@ -647,6 +647,8 @@ function fallbackDownload(blob, filename) {
 }
 
 // Detail/Drawer
+const foodFilterText=ref(''),foodCat=ref(''),foodCats=[{v:'',l:'全部'},{v:'农家菜',l:'农家菜'},{v:'特色小吃',l:'特色小吃'},{v:'采摘体验',l:'采摘体验'},{v:'时令美食',l:'时令美食'}]
+const filteredFoods=computed(()=>{let l=foods;const f=foodFilterText.value.toLowerCase();if(f)l=l.filter(x=>x.name.toLowerCase().includes(f)||(x.desc||'').toLowerCase().includes(f));if(foodCat.value)l=l.filter(x=>x.type===foodCat.value);return l})
 function showFoodDetail(f){drawerData.value={"店铺名称":f.name,"类型":f.type,"评分":f.rating,"人均":"¥"+f.pricePer+"/人","营业时间":f.openTime||"--","地址":f.address||"中堰村","联系电话":f.phone||"--","推荐菜品":(f.specialDishes||[]).join("、"),"店铺介绍":f.desc||"--","配套服务":(f.facilities||[]).join("、"),"浏览量":(f.visitors||0)+"次"};drawerTitle.value=f.name;drawerOpen.value=true} 
 function showDetail(r) { drawerData.value = r; drawerTitle.value = subLabels[curSub.value] + ' — ' + (r.name || r.title || r.type || ''); drawerOpen.value = true }
 function showBnbDetail(id) { const b = tBnBs.find(x => x.id === id); if (!b) return; drawerData.value = {'民宿名称':b.name,'类型':bnbType(b),'⭐ 评分':starRating(b.rating)+' '+b.rating,'💰 价格':'¥'+b.price+' 起/晚','🕗 营业时间':b.openTime||'--','👥 可住人数':'2-4人 · '+b.rooms+'间房','📍 地址':b.address||'中堰村','👤 房东':b.owner||'--','📞 联系电话':b.phone||'--','📝 介绍':b.desc||'--','🏷 特色':(b.tags||'--'),'🚗 距景区':b._dist||'--','📊 累计入住':(b.bookings||0)+'人'}; drawerTitle.value = b.name; drawerOpen.value = true }
