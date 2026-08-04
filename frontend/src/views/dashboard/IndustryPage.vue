@@ -657,7 +657,7 @@ function showDetail(r) {
     drawerData.value = {
       '📋 档案编号':r.batchNo||'--','📋 批次名称':r.batchName||'--','📋 所属村庄':r.villageName||'中堰村','📋 负责人':r.manager+'（'+r.phone+'）',
       '🐟 养殖类别':r.category||'--','🐟 品种':r.type+'（'+r.breed+'）','🐟 养殖区域':r.area||'--','🐟 初始数量':(r.initialCount||0).toLocaleString()+' '+(r.unit||'尾'),'🐟 当前存栏':(r.count||0).toLocaleString()+' '+(r.unit||'尾'),'🐟 入栏日期':r.startDate||'--','🐟 预计出栏':r.expectDate||'--',
-      '📈 生长阶段':r.stage||'--','📈 健康状态':r.health||'--','📈 来源':r.source||'--','📈 备注':r.remark||'--','📈 更新时间':(r.updatedAt||'--')
+      '📈 生长阶段':r.stage||'--','📈 健康状态':(r.health==='正常'?'🟢 ':'')+(r.health==='观察中'?'🟡 ':'')+(r.health==='异常'?'🔴 ':'')+(r.health||'--'),'📈 来源':r.source||'--','📈 备注':r.remark||'--','📈 更新时间':(r.updatedAt||'--')
     }
   } else {
     drawerData.value = r
