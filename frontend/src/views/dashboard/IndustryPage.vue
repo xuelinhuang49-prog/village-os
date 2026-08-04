@@ -903,6 +903,7 @@ tr:hover td { background: rgba(14,165,233,0.05); cursor: pointer; }
 .dg3 { background: rgba(10,36,68,0.55); padding: 10px; border-radius: 8px; margin-bottom: 6px; }
 .dl3 { display: block; font-size: 9px; color: #28C76F; margin-bottom: 3px; }
 .dg3 div:last-child { font-size: 12px; color: #B7D3E8; }
+.tb{width:100%;border-collapse:collapse}.tb th,.tb td{padding:8px 10px;text-align:left;font-size:10px}.tb th{background:rgba(10,36,68,.55);color:#6F91A8;border-bottom:2px solid rgba(40,199,111,.1)}.tb td{border-bottom:1px solid rgba(14,165,233,.06)}.tb tr:hover td{background:rgba(14,165,233,.04)}.pd{font-size:9px;color:#6F91A8;margin-top:1px}
 .toast { padding: 10px 18px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #fff; pointer-events: auto; animation: ti .3s ease, to .3s ease 2s forwards; }
 .toast.ok { background: linear-gradient(135deg, #059669, #39D98A); }
 .toast.info { background: linear-gradient(135deg, #39D98A, #28C76F); }
