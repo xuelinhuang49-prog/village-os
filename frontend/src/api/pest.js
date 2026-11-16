@@ -41,10 +41,15 @@ export const riskEvents = [
 ]
 
 // ===== AI诊断模拟 =====
-export function simulateAiRecognize(imageFile, villageId) {
+// 按大类过滤病害库，避免「上传叶片照片却匹配到水产/畜牧疾病」的离谱结果（未接入真实AI前）
+export function simulateAiRecognize(imageFile, villageId, category) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const matches = diseaseLibrary
+      let matches = diseaseLibrary
+      if (category === '植物') matches = matches.filter(d => d.category.indexOf('植物') === 0)
+      else if (category === '动物') matches = matches.filter(d => d.category === '动物疾病')
+      else if (category === '水产') matches = matches.filter(d => d.category === '水产疾病')
+      if (!matches.length) matches = diseaseLibrary
       const result = matches[Math.floor(Math.random() * matches.length)]
       resolve({
         diseaseId: result.id,

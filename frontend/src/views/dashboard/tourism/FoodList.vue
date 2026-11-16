@@ -1,14 +1,14 @@
 <template>
 <div style="padding:14px 18px">
-<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🍽 美食推荐 · 品味乡村特色<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 当前村庄：中堰村</span></div>
+<div class="tbanner" style="border-left-color:#22B573;color:#22B573">🍽 美食推荐 · 品味乡村特色<span style="font-size:10px;color:#66788A;font-weight:400;margin-left:8px">📍 当前村庄：中堰村</span></div>
 <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
-<span style="position:relative;display:inline-flex;align-items:center"><input v-model="filterText" placeholder="🔍 搜索餐馆、菜品..." style="padding:6px 30px 6px 12px;border-radius:8px;border:1px solid rgba(40,199,111,.1);background:rgba(57,217,138,.06);color:#B7D3E8;font-size:12px;width:240px;font-family:inherit;outline:none"><span v-if="filterText" @click="filterText=''" style="position:absolute;right:6px;cursor:pointer;color:#6F91A8;font-size:14px;line-height:1" title="清空">×</span></span>
+<span style="position:relative;display:inline-flex;align-items:center"><input v-model="filterText" placeholder="🔍 搜索餐馆、菜品..." style="padding:6px 30px 6px 12px;border-radius:8px;border:1px solid #E3EAF0;background:rgba(34,181,115,.06);color:#475867;font-size:12px;width:240px;font-family:inherit;outline:none"><span v-if="filterText" @click="filterText=''" style="position:absolute;right:6px;cursor:pointer;color:#66788A;font-size:14px;line-height:1" title="清空">×</span></span>
 <div style="display:flex;gap:4px;flex-wrap:wrap"><button v-for="c in cats" :key="c.v" :class="cat===c.v?'btn btn-p btn-s':'btn btn-o btn-s'" @click="cat=c.v">{{c.l}}<span v-if="c.v" style="font-size:9px;opacity:.7;margin-left:2px">({{foods.filter(f=>f.type===c.v).length}})</span></button></div>
 </div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
 <div v-for="f in filteredList" :key="f.id" class="spot-card" @click="openDetail(f)">
-<div class="spot-cover" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(10,61,92,.6))"><div class="spot-cover-icon">🍽</div><div class="spot-cover-status" style="background:rgba(40,199,111,.7)">营业中</div></div>
-<div style="padding:12px 14px 14px;display:flex;flex-direction:column;flex:1"><div class="spot-card-name">{{f.name}}</div><div class="spot-tag" style="color:#F5B83D;border-color:#F5B83D;margin-bottom:4px;display:inline-block;width:fit-content">{{f.type}}</div><div class="spot-card-rating">⭐ {{f.rating}} <span style="color:#6F91A8;font-weight:400">· ¥{{f.pricePer}}/人</span></div><div class="spot-card-desc">{{(f.specialDishes||[]).slice(0,3).join('、')}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#6F91A8"><span>📍 {{f.address||'中堰村'}}</span></div><div style="display:flex;gap:4px;margin-top:auto"><button class="btn btn-p btn-s" @click.stop="openDetail(f)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+(f.address||'中堰村'))">🗺️ 导航</button><button class="btn btn-o btn-s" @click.stop="toast('链接已复制')">📤</button><button class="btn btn-o btn-s" style="font-size:13px;padding:2px 6px" @click.stop="f._fav=!f._fav;toast(f._fav?'已收藏':'已取消')">{{f._fav?'❤️':'♡'}}</button></div></div>
+<div class="spot-cover" :style="{background:foodCover()}"><div class="spot-cover-status" style="background:rgba(34,181,115,0.70)">营业中</div></div>
+<div style="padding:12px 14px 14px;display:flex;flex-direction:column;flex:1"><div class="spot-card-name">{{f.name}}</div><div class="spot-tag" style="color:#F2A62B;border-color:#F2A62B;margin-bottom:4px;display:inline-block;width:fit-content">{{f.type}}</div><div class="spot-card-rating">⭐ {{f.rating}} <span style="color:#66788A;font-weight:400">· ¥{{f.pricePer}}/人</span></div><div class="spot-card-desc">{{(f.specialDishes||[]).slice(0,3).join('、')}}</div><div style="display:flex;gap:8px;margin:8px 0;font-size:10px;color:#66788A"><span>📍 {{f.address||'中堰村'}}</span></div><div style="display:flex;gap:4px;margin-top:auto"><button class="btn btn-p btn-s" @click.stop="openDetail(f)">查看详情</button><button class="btn btn-o btn-s" @click.stop="toast('导航到：'+(f.address||'中堰村'))">🗺️ 导航</button><button class="btn btn-o btn-s" @click.stop="toast('链接已复制')">📤</button><button class="btn btn-o btn-s" style="font-size:13px;padding:2px 6px" @click.stop="f._fav=!f._fav;toast(f._fav?'已收藏':'已取消')">{{f._fav?'❤️':'♡'}}</button></div></div>
 </div>
 </div>
 <FoodDrawer :open="drawerOpen" :data="detailData" @close="drawerOpen=false" />
@@ -25,21 +25,24 @@ const filteredList=computed(()=>{let l=foods;const f=filterText.value.toLowerCas
 const drawerOpen=ref(false),detailData=ref(null)
 function openDetail(f){detailData.value=f;drawerOpen.value=true}
 function toast(m){}
+// 美食封面：内嵌 SVG「农家餐桌」插画（无外网依赖）
+const _foodSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"><defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe0b0"/><stop offset="1" stop-color="#f6e7cf"/></linearGradient></defs><rect width="800" height="500" fill="url(#bg)"/><circle cx="150" cy="110" r="44" fill="#ffe08a" opacity=".9"/><rect y="352" width="800" height="148" fill="#c89a6a"/><rect y="344" width="800" height="12" fill="#a8794c"/><ellipse cx="200" cy="402" rx="72" ry="18" fill="#8a6a48" opacity=".45"/><circle cx="200" cy="392" r="56" fill="#fff"/><circle cx="200" cy="392" r="42" fill="#e05a4a"/><ellipse cx="430" cy="410" rx="68" ry="17" fill="#8a6a48" opacity=".45"/><circle cx="430" cy="400" r="52" fill="#fff"/><circle cx="430" cy="400" r="38" fill="#4fa35a"/><ellipse cx="640" cy="406" rx="62" ry="16" fill="#8a6a48" opacity=".45"/><path d="M580 398 q60 62 120 0 z" fill="#e8d8b8"/><ellipse cx="640" cy="396" rx="42" ry="12" fill="#f2a62b"/><path d="M622 336 q8 -18 0 -34 q-8 -18 0 -34" stroke="#fff" stroke-width="4" fill="none" opacity=".55"/><path d="M654 340 q8 -18 0 -34 q-8 -18 0 -34" stroke="#fff" stroke-width="4" fill="none" opacity=".45"/></svg>`
+function foodCover(){ return 'url("data:image/svg+xml,' + encodeURIComponent(_foodSvg) + '") center/cover' }
 </script>
 
 <style scoped>
-.spot-card{background:rgba(5,25,48,.96);border:1px solid rgba(190,214,234,.55);border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s;display:flex;flex-direction:column}
-.spot-card:hover{border-color:rgba(72,193,255,.95);transform:translateY(-2px)}
+.spot-card{background:#FFFFFF;border:1px solid #E3EAF0;border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s;display:flex;flex-direction:column}
+.spot-card:hover{border-color:rgba(14,165,233,.95);transform:translateY(-2px)}
 .spot-cover{height:220px;position:relative;display:flex;align-items:center;justify-content:center;border-radius:10px 10px 0 0;overflow:hidden}
 .spot-cover-icon{font-size:56px;opacity:.5}
 .spot-cover-status{position:absolute;bottom:8px;right:8px;font-size:10px;padding:3px 10px;border-radius:10px;color:#fff}
-.spot-card-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
+.spot-card-name{font-size:15px;font-weight:700;color:#1F2D3D;margin-bottom:2px}
 .spot-tag{display:inline-block;font-size:9px;padding:1px 8px;border-radius:10px;border:1px solid;font-weight:500}
-.spot-card-rating{font-size:10px;color:#F5B83D;font-weight:600;margin-bottom:6px}
-.spot-card-desc{font-size:11px;color:#6F91A8;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
-.tbanner{font-size:13px;font-weight:700;padding:8px 12px;border-radius:6px;background:rgba(40,199,111,.06);margin-bottom:12px}
+.spot-card-rating{font-size:10px;color:#F2A62B;font-weight:600;margin-bottom:6px}
+.spot-card-desc{font-size:11px;color:#66788A;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
+.tbanner{font-size:13px;font-weight:700;padding:8px 12px;border-radius:6px;background:rgba(34,181,115,.08);margin-bottom:12px}
 .btn{display:inline-block;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:inherit}
-.btn-p{background:linear-gradient(135deg,#39D98A,#28C76F);color:#fff;box-shadow:0 2px 8px rgba(57,217,138,.2)}
-.btn-o{background:transparent;border:1px solid rgba(14,165,233,.28);color:#28C76F}
+.btn-p{background:linear-gradient(135deg,#22B573,#1BA366);color:#fff;box-shadow:0 2px 8px rgba(34,181,115,.2)}
+.btn-o{background:transparent;border:1px solid rgba(14,165,233,.28);color:#22B573}
 .btn-s{padding:3px 9px;font-size:10px}
 </style>

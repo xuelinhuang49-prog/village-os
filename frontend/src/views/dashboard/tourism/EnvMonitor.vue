@@ -1,6 +1,6 @@
 <template>
 <div style="padding:14px 18px">
-<div class="tbanner" style="border-left-color:#28C76F;color:#28C76F">🌡 环境监测 · 养殖区当前状态<span style="font-size:10px;color:#6F91A8;font-weight:400;margin-left:8px">📍 中堰村</span></div>
+<div class="tbanner" style="border-left-color:#22B573;color:#22B573">🌡 环境监测 · 养殖区当前状态<span style="font-size:12px;color:#66788A;font-weight:400;margin-left:8px">📍 中堰村</span></div>
 
 <!-- 统计卡 -->
 <div class="srow" style="margin-bottom:10px"><div class="scard"><div class="sv">{{areas.length}}个</div><div class="sl">监测区域</div></div><div class="scard g"><div class="sv">{{areas.filter(a=>a.status==='正常').length}}个</div><div class="sl">正常区域</div></div><div class="scard r"><div class="sv">{{areas.filter(a=>a.status!=='正常').length}}个</div><div class="sl">需要处理</div></div><div class="scard"><div class="sv">{{records.length}}条</div><div class="sl">今日采集</div></div></div>
@@ -11,11 +11,11 @@
 <!-- 区域卡片 -->
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px">
 <div v-for="a in areas" :key="a.key" class="panel" style="padding:14px;margin:0;cursor:pointer" @click="showDetail(a)">
-<div style="display:flex;justify-content:space-between;margin-bottom:10px"><div><span style="font-size:15px;font-weight:700;color:#fff">{{a.area}}</span><span style="font-size:10px;color:#6F91A8;margin-left:6px">{{a.batchName}}</span></div><span :class="'tag '+(a.status==='正常'?'g':'r')" style="font-size:9px">{{a.status==='正常'?'🟢 正常':'🔴 预警'}}</span></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px"><div><span style="color:#6F91A8">🌡 水温</span> <span :style="{color:a.waterTemp>30||a.waterTemp<20?'#E74C3C':'#fff'}">{{a.waterTemp}}℃</span></div><div><span style="color:#6F91A8">🧪 pH</span> <span :style="{color:a.ph>9||a.ph<6?'#E74C3C':a.ph>8.5||a.ph<6.5?'#F5B83D':'#fff'}">{{a.ph}}</span></div><div><span style="color:#6F91A8">💧 溶氧</span> <span :style="{color:a.oxygen<4?'#E74C3C':a.oxygen<5?'#F5B83D':'#fff'}">{{a.oxygen}}mg/L</span></div><div><span style="color:#6F91A8">⚠️ 氨氮</span> <span :style="{color:a.ammonia>0.5?'#E74C3C':a.ammonia>0.3?'#F5B83D':'#fff'}">{{a.ammonia}}mg/L</span></div></div>
-<div style="margin-top:8px;font-size:9px;color:#6F91A8">👤 {{a.manager||'--'}} · 🕐 {{a.recordTime?.slice(5,16)}} · {{a.source==='传感器自动采集'?'🤖自动':a.source==='农户手工记录'?'👨手工':'👨‍💼补录'}}</div>
-<div v-if="a.status!=='正常'" style="margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(245,158,11,.1);font-size:10px;color:#F5B83D">💡 {{a.suggestion||'请检查水质'}}</div>
-<div style="margin-top:8px;text-align:right"><span style="color:#28C76F;font-size:10px;cursor:pointer">查看详情 →</span></div>
+<div style="display:flex;justify-content:space-between;margin-bottom:10px"><div><span style="font-size:17px;font-weight:700;color:#1F2D3D">{{a.area}}</span><span style="font-size:12px;color:#66788A;margin-left:6px">{{a.batchName}}</span></div><span :class="'tag '+(a.status==='正常'?'g':'r')" style="font-size:11px">{{a.status==='正常'?'🟢 正常':'🔴 预警'}}</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px"><div><span style="color:#66788A">🌡 水温</span> <span :style="{color:a.waterTemp>30||a.waterTemp<20?'#E05252':'#1F2D3D'}">{{a.waterTemp}}℃</span></div><div><span style="color:#66788A">🧪 pH</span> <span :style="{color:a.ph>9||a.ph<6?'#E05252':a.ph>8.5||a.ph<6.5?'#F2A62B':'#1F2D3D'}">{{a.ph}}</span></div><div><span style="color:#66788A">💧 溶氧</span> <span :style="{color:a.oxygen<4?'#E05252':a.oxygen<5?'#F2A62B':'#1F2D3D'}">{{a.oxygen}}mg/L</span></div><div><span style="color:#66788A">⚠️ 氨氮</span> <span :style="{color:a.ammonia>0.5?'#E05252':a.ammonia>0.3?'#F2A62B':'#1F2D3D'}">{{a.ammonia}}mg/L</span></div></div>
+<div style="margin-top:8px;font-size:11px;color:#66788A">👤 {{a.manager||'--'}} · 🕐 {{a.recordTime?.slice(5,16)}} · {{a.source==='传感器自动采集'?'🤖自动':a.source==='农户手工记录'?'👨手工':'👨‍💼补录'}}</div>
+<div v-if="a.status!=='正常'" style="margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(242,166,43,.12);font-size:12px;color:#F2A62B">💡 {{a.suggestion||'请检查水质'}}</div>
+<div style="margin-top:8px;text-align:right"><span style="color:#22B573;font-size:12px;cursor:pointer">查看详情 →</span></div>
 </div>
 </div>
 
@@ -24,27 +24,42 @@
 <div class="drawer" :class="{on:detailOpen}">
 <div class="drawer-hd"><h3>🌡 {{detailData?.area}}</h3><button class="drawer-close" @click="detailOpen=false">✕</button></div>
 <div class="drawer-bd" v-if="detailData">
-<div style="text-align:center;padding:10px 0 14px"><span :class="'tag '+(detailData.status==='正常'?'g':'r')" style="font-size:11px;padding:4px 14px">{{detailData.status==='正常'?'🟢 当前正常':'🔴 需要关注'}}</span><div style="font-size:11px;color:#6F91A8;margin-top:6px">{{detailData.statusNote||'更新时间 '+detailData.recordTime?.slice(0,16)}}</div></div>
+<div style="text-align:center;padding:10px 0 14px"><span :class="'tag '+(detailData.status==='正常'?'g':'r')" style="font-size:13px;padding:4px 14px">{{detailData.status==='正常'?'🟢 当前正常':'🔴 需要关注'}}</span><div style="font-size:13px;color:#66788A;margin-top:6px">{{detailData.statusNote||'更新时间 '+detailData.recordTime?.slice(0,16)}}</div></div>
 <div class="ds-title">🌡 监测指标</div>
-<div class="dg3"><span class="dl3">水温</span><div :style="{color:detailData.waterTemp>30||detailData.waterTemp<20?'#E74C3C':'#fff'}">{{detailData.waterTemp}}℃</div></div>
-<div class="dg3"><span class="dl3">pH</span><div :style="{color:detailData.ph>9||detailData.ph<6?'#E74C3C':detailData.ph>8.5||detailData.ph<6.5?'#F5B83D':'#fff'}">{{detailData.ph}}</div></div>
-<div class="dg3"><span class="dl3">溶解氧</span><div :style="{color:detailData.oxygen<4?'#E74C3C':detailData.oxygen<5?'#F5B83D':'#fff'}">{{detailData.oxygen}} mg/L</div></div>
-<div class="dg3"><span class="dl3">氨氮</span><div :style="{color:detailData.ammonia>0.5?'#E74C3C':detailData.ammonia>0.3?'#F5B83D':'#fff'}">{{detailData.ammonia}} mg/L</div></div>
+<div class="dg3"><span class="dl3">水温</span><div :style="{color:detailData.waterTemp>30||detailData.waterTemp<20?'#E05252':'#1F2D3D'}">{{detailData.waterTemp}}℃</div></div>
+<div class="dg3"><span class="dl3">pH</span><div :style="{color:detailData.ph>9||detailData.ph<6?'#E05252':detailData.ph>8.5||detailData.ph<6.5?'#F2A62B':'#1F2D3D'}">{{detailData.ph}}</div></div>
+<div class="dg3"><span class="dl3">溶解氧</span><div :style="{color:detailData.oxygen<4?'#E05252':detailData.oxygen<5?'#F2A62B':'#1F2D3D'}">{{detailData.oxygen}} mg/L</div></div>
+<div class="dg3"><span class="dl3">氨氮</span><div :style="{color:detailData.ammonia>0.5?'#E05252':detailData.ammonia>0.3?'#F2A62B':'#1F2D3D'}">{{detailData.ammonia}} mg/L</div></div>
 <div class="dg3"><span class="dl3">浊度</span><div>{{detailData.turbidity||'--'}} NTU</div></div>
 <div class="dg3"><span class="dl3">水位</span><div>{{detailData.waterLevel||'--'}}%</div></div>
 <div class="ds-title">🐟 养殖信息</div>
 <div class="dg3"><span class="dl3">批次</span><div>{{detailData.batchName}}</div></div>
-<div class="dg3"><span class="dl3">编号</span><div style="color:#28C76F">{{detailData.batchNo}}</div></div>
+<div class="dg3"><span class="dl3">编号</span><div style="color:#22B573">{{detailData.batchNo}}</div></div>
 <div class="dg3"><span class="dl3">养殖区域</span><div>{{detailData.area}}</div></div>
 <div class="dg3"><span class="dl3">数据来源</span><div>{{detailData.source==='传感器自动采集'?'🤖 自动采集':detailData.source==='农户手工记录'?'👨 农户记录':'👨‍💼 管理员补录'}}</div></div>
 <div class="dg3" v-if="detailData.remark"><span class="dl3">备注</span><div>{{detailData.remark}}</div></div>
-<div v-if="detailData.status!=='正常'" style="margin-top:8px;padding:10px;border-radius:8px;background:rgba(245,158,11,.08)">
-<div style="font-size:11px;font-weight:700;color:#F5B83D;margin-bottom:6px">💡 处理建议</div>
-<div style="font-size:10px;color:#B7D3E8;line-height:1.8">✓ {{detailData.suggestion||'开启增氧设备'}}</div>
-<div style="font-size:10px;color:#B7D3E8;line-height:1.8">✓ 30分钟后重新检测</div>
-<div style="font-size:10px;color:#B7D3E8;line-height:1.8">✓ 若仍异常请联系技术人员</div>
-</div>
-<div class="dg3"><span class="dl3">📊 本月监测</span><div style="font-weight:600">{{records.filter(r=>r.archiveId===detailData.archiveId).length}}次</div></div>
+<div v-if="detailData.status!=='正常'" style="margin-top:8px;padding:10px;border-radius:8px;background:rgba(242,166,43,.10)">
+<div style="font-size:13px;font-weight:700;color:#F2A62B;margin-bottom:6px">💡 处理建议</div>
+<div style="font-size:12px;color:#475867;line-height:1.8">✓ {{detailData.suggestion||'开启增氧设备'}}</div>
+<div style="font-size:12px;color:#475867;line-height:1.8">✓ 30分钟后重新检测</div>
+<div style="font-size:12px;color:#475867;line-height:1.8">✓ 若仍异常请联系技术人员</div>
+	</div>
+	<!-- 处理记录（仅异常时显示） -->
+	<div v-if="detailData.status!=='正常'" style="margin-top:10px">
+	<div class="ds-title">🩺 处理记录</div>
+	<div v-for="t in getTreatments(detailData.archiveId)" :key="t.id" class="dg3" style="border-left:3px solid #22B573">
+	<div style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:600;color:#1F2D3D">{{t.measure}}</span><span style="font-size:11px;color:#66788A">{{t.time?.slice(5,16)}}</span></div>
+	<div style="font-size:12px;color:#66788A;margin-top:3px">👤 {{t.handler}} · 复测结果：<span :style="{color:t.retest==='已恢复正常'?'#22B573':t.retest==='持续预警'?'#E05252':'#F2A62B'}">{{t.retest}}</span></div>
+	</div>
+	<div v-if="!treatFormOpen" style="margin-top:6px"><button class="btn btn-o btn-s" style="border-color:rgba(242,166,43,.25);color:#F2A62B" @click="treatFormOpen=true">+ 记录处理</button></div>
+	<div v-if="treatFormOpen" style="margin-top:8px;padding:10px;border-radius:8px;background:#F0F3F8;border:1px solid rgba(34,181,115,.12)">
+	<div class="fld"><label>处理措施</label><input v-model="treatForm.measure" class="fin" placeholder="开启增氧机、换水30%..."></div>
+	<div class="frow2"><div class="fld"><label>处理人</label><input v-model="treatForm.handler" class="fin" placeholder="赵大哥"></div><div class="fld"><label>处理时间</label><input v-model="treatForm.time" class="fin" :placeholder="nowStr"></div></div>
+	<div class="fld"><label>复测结果</label><select v-model="treatForm.retest" class="fin"><option>已恢复正常</option><option>仍需观察</option><option>持续预警</option></select></div>
+	<div style="display:flex;gap:6px"><button class="btn btn-p btn-s" @click="saveTreatment(detailData.archiveId)">保存处理</button><button class="btn btn-o btn-s" @click="treatFormOpen=false">取消</button></div>
+	</div>
+	</div>
+	<div class="dg3"><span class="dl3">📊 监测记录</span><div style="font-weight:600">{{records.filter(r=>r.archiveId===detailData.archiveId).length}}条</div></div>
 <div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-p btn-s" @click="openAdd();detailOpen=false">+ 新增记录</button><button class="btn btn-o btn-s" @click="detailOpen=false">关闭</button></div>
 </div>
 </div>
@@ -56,11 +71,11 @@
 <div class="drawer-bd">
 <div class="ds-title">📋 选择养殖区域</div>
 <div class="fld"><label>养殖档案</label><select v-model="form.archiveId" class="fin" @change="onArchiveChange"><option value="">请选择</option><option v-for="l in breedingList" :key="l.id" :value="l.id">{{l.batchNo}} - {{l.area}}</option></select></div>
-<div class="fld"><label>批次名称</label><input :value="selectedArchive?.batchName||'--'" class="fin" disabled style="color:#6F91A8"></div>
-<div class="fld"><label>养殖区域</label><input :value="selectedArchive?.area||'--'" class="fin" disabled style="color:#6F91A8"></div>
+<div class="fld"><label>批次名称</label><input :value="selectedArchive?.batchName||'--'" class="fin" disabled style="color:#66788A"></div>
+<div class="fld"><label>养殖区域</label><input :value="selectedArchive?.area||'--'" class="fin" disabled style="color:#66788A"></div>
 <div class="ds-title">🌡 监测数据</div>
-<div class="frow2"><div class="fld"><label>水温 (℃)</label><input v-model.number="form.waterTemp" type="number" class="fin" step="0.1" placeholder="26.5"><span v-if="form.waterTemp>30" style="font-size:9px;color:#E74C3C">⚠ 水温偏高</span><span v-if="form.waterTemp<20" style="font-size:9px;color:#E74C3C">⚠ 水温偏低</span></div><div class="fld"><label>pH</label><input v-model.number="form.ph" type="number" class="fin" step="0.1" placeholder="7.4"><span v-if="form.ph>9" style="font-size:9px;color:#E74C3C">⚠ pH偏高</span><span v-if="form.ph<6" style="font-size:9px;color:#E74C3C">⚠ pH偏低</span></div></div>
-<div class="frow2"><div class="fld"><label>溶解氧 (mg/L)</label><input v-model.number="form.oxygen" type="number" class="fin" step="0.1" placeholder="6.2"><span v-if="form.oxygen<4" style="font-size:9px;color:#E74C3C">⚠ 溶氧不足</span><span v-if="form.oxygen>=4&&form.oxygen<5" style="font-size:9px;color:#F5B83D">建议增氧</span></div><div class="fld"><label>氨氮 (mg/L)</label><input v-model.number="form.ammonia" type="number" class="fin" step="0.01" placeholder="0.18"><span v-if="form.ammonia>0.5" style="font-size:9px;color:#E74C3C">⚠ 氨氮偏高</span></div></div>
+<div class="frow2"><div class="fld"><label>水温 (℃)</label><input v-model.number="form.waterTemp" type="number" class="fin" step="0.1" placeholder="26.5"><span v-if="form.waterTemp>30" style="font-size:11px;color:#E05252">⚠ 水温偏高</span><span v-if="form.waterTemp<20" style="font-size:11px;color:#E05252">⚠ 水温偏低</span></div><div class="fld"><label>pH</label><input v-model.number="form.ph" type="number" class="fin" step="0.1" placeholder="7.4"><span v-if="form.ph>9" style="font-size:11px;color:#E05252">⚠ pH偏高</span><span v-if="form.ph<6" style="font-size:11px;color:#E05252">⚠ pH偏低</span></div></div>
+<div class="frow2"><div class="fld"><label>溶解氧 (mg/L)</label><input v-model.number="form.oxygen" type="number" class="fin" step="0.1" placeholder="6.2"><span v-if="form.oxygen<4" style="font-size:11px;color:#E05252">⚠ 溶氧不足</span><span v-if="form.oxygen>=4&&form.oxygen<5" style="font-size:11px;color:#F2A62B">建议增氧</span></div><div class="fld"><label>氨氮 (mg/L)</label><input v-model.number="form.ammonia" type="number" class="fin" step="0.01" placeholder="0.18"><span v-if="form.ammonia>0.5" style="font-size:11px;color:#E05252">⚠ 氨氮偏高</span></div></div>
 <div class="frow2"><div class="fld"><label>浊度 (NTU)</label><input v-model.number="form.turbidity" type="number" class="fin" step="0.1" placeholder="5.2"></div><div class="fld"><label>水位 (%)</label><input v-model.number="form.waterLevel" type="number" class="fin" placeholder="95"></div></div>
 <div class="fld"><label>数据来源</label><select v-model="form.source" class="fin"><option>传感器自动采集</option><option>农户手工记录</option><option>管理员补录</option></select></div>
 <div class="fld"><label>备注</label><textarea v-model="form.remark" class="fin" rows="2" placeholder="备注信息..." style="resize:vertical"></textarea></div>
@@ -84,12 +99,26 @@ const records=reactive([
 const areas=computed(()=>{const seen=new Set();const result=[];records.forEach(r=>{if(!seen.has(r.archiveId)){seen.add(r.archiveId);const bl=breedingList.find(l=>l.id===r.archiveId);result.push({key:r.archiveId,archiveId:r.archiveId,area:r.area,batchName:r.batchName,batchNo:r.batchNo,manager:bl?.manager||'--',waterTemp:r.waterTemp,ph:r.ph,oxygen:r.oxygen,ammonia:r.ammonia,turbidity:r.turbidity,waterLevel:r.waterLevel,status:r.status,recordTime:r.recordTime,source:r.source,suggestion:r.status==='预警'?'溶解氧偏低，建议开启增氧机':r.status==='异常'?'请立即检查水质':'',statusNote:r.status==='正常'?'当前水质适宜，无需处理':r.status==='预警'?'建议30分钟后重新检测':'请立即联系技术人员'})}});return result})
 
 const detailOpen=ref(false),detailData=ref(null),addOpen=ref(false)
-function showDetail(a){detailData.value=a;detailOpen.value=true}
+function showDetail(a){detailData.value=a;detailOpen.value=true;treatFormOpen.value=false}
 
 const form=reactive({archiveId:'',waterTemp:'',ph:'',oxygen:'',ammonia:'',turbidity:'',waterLevel:'',source:'农户手工记录',remark:''})
 const selectedArchive=computed(()=>breedingList.find(l=>l.id===form.archiveId))
 function onArchiveChange(){}
 function openAdd(){form.archiveId='';form.waterTemp='';form.ph='';form.oxygen='';form.ammonia='';form.turbidity='';form.waterLevel='';form.source='农户手工记录';form.remark='';addOpen.value=true}
+
+// 处理记录
+const treatments=reactive([{id:1,archiveId:2,measure:'已开启增氧机，调整至最大功率',handler:'赵大哥',time:'2026-08-04 14:30',retest:'持续预警'}])
+const treatFormOpen=ref(false)
+const treatForm=reactive({measure:'',handler:'',time:'',retest:'已恢复正常'})
+const nowStr=computed(()=>new Date().toISOString().replace('T',' ').slice(0,16))
+function getTreatments(aid){return treatments.filter(t=>t.archiveId===aid)}
+function saveTreatment(aid){
+  if(!treatForm.measure){alert('请填写处理措施');return}
+  treatments.unshift({id:Date.now(),archiveId:aid,measure:treatForm.measure,handler:treatForm.handler||'--',time:treatForm.time||nowStr.value,retest:treatForm.retest||'已恢复正常'})
+  treatForm.measure='';treatForm.handler='';treatForm.time='';treatForm.retest='已恢复正常'
+  treatFormOpen.value=false
+  alert('处理记录已保存')
+}
 function saveRecord(){
   if(!form.archiveId){alert('请选择养殖档案');return}
   const arch=breedingList.find(l=>l.id===form.archiveId)
@@ -101,18 +130,18 @@ function saveRecord(){
 </script>
 
 <style scoped>
-.tbanner{font-size:13px;font-weight:700;padding:8px 12px;border-radius:6px;background:rgba(40,199,111,.06);margin-bottom:12px}
-.srow{display:flex;gap:10px;flex-wrap:wrap}.scard{flex:1;min-width:100px;height:85px;background:rgba(5,25,48,.96);border:1px solid rgba(190,214,234,.55);border-radius:10px;padding:12px;display:flex;flex-direction:column;justify-content:center}.scard .sv{font-size:22px;font-weight:700;color:#28C76F;font-family:monospace}.scard .sl{font-size:10px;color:#6F91A8;margin-top:3px}.scard.g .sv{color:#28C76F}.scard.r .sv{color:#E74C3C}
-.panel{background:rgba(8,24,48,.88);border:1px solid rgba(205,224,241,.78);border-radius:10px;margin-bottom:10px}
-.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}.tag.g{background:rgba(16,214,160,.15);color:#28C76F}.tag.y{background:rgba(245,158,11,.15);color:#F5B83D}.tag.r{background:rgba(231,76,60,.15);color:#E74C3C}
-.ds-title{font-size:12px;font-weight:700;color:#28C76F;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(40,199,111,.1)}
-.dg3{background:rgba(10,36,68,.55);padding:10px;border-radius:8px;margin-bottom:6px}.dl3{display:block;font-size:9px;color:#28C76F;margin-bottom:3px}.dg3 div:last-child{font-size:12px;color:#B7D3E8}
-.fld{margin-bottom:10px}.fld label{display:block;font-size:11px;color:#6F91A8;margin-bottom:4px}.fld input,.fld select{width:100%;padding:8px 10px;border-radius:8px;font-size:12px;font-family:inherit;background:rgba(57,217,138,.06);border:1px solid rgba(40,199,111,.1);color:#B7D3E8;outline:none;box-sizing:border-box}.frow2{display:flex;gap:8px}.frow2 .fld{flex:1}
-.fin{width:100%;padding:8px 10px;border-radius:8px;font-size:12px;font-family:inherit;background:rgba(57,217,138,.06);border:1px solid rgba(40,199,111,.1);color:#B7D3E8;outline:none;box-sizing:border-box}
-.btn{display:inline-block;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:inherit}.btn-p{background:linear-gradient(135deg,#39D98A,#28C76F);color:#fff;box-shadow:0 2px 8px rgba(57,217,138,.2)}.btn-o{background:transparent;border:1px solid rgba(14,165,233,.28);color:#28C76F}.btn-s{padding:3px 9px;font-size:10px}
+.tbanner{font-size:15px;font-weight:700;padding:8px 12px;border-radius:6px;background:#EBEFF4;margin-bottom:12px}
+.srow{display:flex;gap:10px;flex-wrap:wrap}.scard{flex:1;min-width:100px;height:85px;background:#FFFFFF;border:1px solid #E3EAF0;border-radius:10px;padding:12px;display:flex;flex-direction:column;justify-content:center}.scard .sv{font-size:22px;font-weight:700;color:#22B573;font-family:monospace}.scard .sl{font-size:12px;color:#66788A;margin-top:3px}.scard.g .sv{color:#22B573}.scard.r .sv{color:#E05252}
+.panel{background:#FFFFFF;border:1px solid #E3EAF0;border-radius:10px;margin-bottom:10px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600}.tag.g{background:rgba(34,181,115,.12);color:#22B573}.tag.y{background:rgba(242,166,43,.12);color:#F2A62B}.tag.r{background:rgba(224,82,82,.12);color:#E05252}
+.ds-title{font-size:14px;font-weight:700;color:#22B573;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #E3EAF0}
+.dg3{background:#F8FAFB;padding:10px;border-radius:8px;margin-bottom:6px}.dl3{display:block;font-size:11px;color:#22B573;margin-bottom:3px}.dg3 div:last-child{font-size:14px;color:#475867}
+.fld{margin-bottom:10px}.fld label{display:block;font-size:13px;color:#66788A;margin-bottom:4px}.fld input,.fld select{width:100%;padding:8px 10px;border-radius:8px;font-size:14px;font-family:inherit;background:#FFFFFF;border:1px solid #E3EAF0;color:#475867;outline:none;box-sizing:border-box}.frow2{display:flex;gap:8px}.frow2 .fld{flex:1}
+.fin{width:100%;padding:8px 10px;border-radius:8px;font-size:14px;font-family:inherit;background:#FFFFFF;border:1px solid #E3EAF0;color:#475867;outline:none;box-sizing:border-box}
+.btn{display:inline-block;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit}.btn-p{background:linear-gradient(135deg,#22B573,#1BA366);color:#fff;box-shadow:0 2px 8px rgba(34,181,115,.20)}.btn-o{background:transparent;border:1px solid #D0D8E2;color:#22B573}.btn-s{padding:3px 9px;font-size:12px}
 .drawer-overlay{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .3s}.drawer-overlay.on{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:460px;z-index:100;background:rgba(6,20,44,.98);border-left:1px solid rgba(40,199,111,.1);transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column}.drawer.on{transform:translateX(0)}
-.drawer-hd{padding:14px 18px;border-bottom:1px solid rgba(40,199,111,.1);display:flex;justify-content:space-between;align-items:center}.drawer-hd h3{font-size:14px;font-weight:700;color:#fff}
-.drawer-close{width:28px;height:28px;border-radius:50%;border:1px solid rgba(40,199,111,.1);background:rgba(10,60,130,.2);color:#B7D3E8;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:460px;z-index:100;background:#FFFFFF;border-left:1px solid #E3EAF0;transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column}.drawer.on{transform:translateX(0)}
+.drawer-hd{padding:14px 18px;border-bottom:1px solid #E3EAF0;display:flex;justify-content:space-between;align-items:center}.drawer-hd h3{font-size:16px;font-weight:700;color:#1F2D3D}
+.drawer-close{width:28px;height:28px;border-radius:50%;border:1px solid #E3EAF0;background:#F0F3F8;color:#475867;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
 .drawer-bd{flex:1;overflow-y:auto;padding:16px 18px}
 </style>

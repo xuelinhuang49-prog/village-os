@@ -1,0 +1,145 @@
+function applySubsidy(s){
+  // routed via applyFromList now
+}
+// ===== 耕地地力保护补贴 =====
+function showLandSubsidyForm(){
+  let h='<div class="mod-desc" style="display:flex;align-items:center;gap:6px"><span style="font-size:16px">👤</span><span style="color:#6F91A8;font-size:11px">本人信息 — 以下字段从当前登录账户自动带出，无需手动填写</span></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>姓名</label><input class="svc-self-field" value="王友德" readonly></div><div class="svc-fld"><label>身份证号</label><input class="svc-self-field" value="342***15**07" readonly></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>户籍所在地</label><input class="svc-self-field" value="刘圩村" readonly></div><div class="svc-fld"><label>联系电话</label><input class="svc-self-field" value="138****5432" readonly></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">🌾 耕地信息</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>承包耕地面积（亩）<span style="color:#F44">*</span></label><input type="number" id="landArea" placeholder="请输入承包耕地面积" oninput="window._svc.calcLandAmount()" min="1" step="0.1"></div><div class="svc-fld"><label>地块位置<span style="color:#F44">*</span></label><input type="text" id="landLocation" placeholder="如：刘圩村三组"></div></div>'
+  h+='<div class="mod-divider"></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>预估补贴金额</label><div id="landAmountDisplay" style="background:rgba(40,199,250,0.05);border:1px solid rgba(40,199,250,0.15);border-radius:6px;padding:10px 12px;font-size:18px;color:#28C76F;font-weight:700;text-align:center">¥0.00</div></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">📎 材料上传</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><button class="svc-upload-btn" onclick="window._svc.triggerLandProofUpload()">📄 上传土地承包经营权证</button><span class="svc-upload-hint" id="landProofStatus">未上传</span></div></div>'
+  h+='<div class="svc-form-row" style="margin-top:16px"><button class="svc-btn svc-btn-secondary" onclick="window._svc.clsMod()" style="flex:none;width:auto">取消</button><button class="svc-btn svc-btn-primary" onclick="window._svc.submitLandSubsidy()" style="flex:none;width:auto">✓ 提交申请</button></div>'
+  opMod('🌾 耕地地力保护补贴申请',h,'mod-md')
+}
+function calcLandAmount(){
+  const area=parseFloat(document.getElementById('landArea')?.value)||0
+  const display=document.getElementById('landAmountDisplay')
+  if(display)display.textContent='¥'+(area*120).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})
+}
+function submitLandSubsidy(){
+  const area=parseFloat(document.getElementById('landArea')?.value)||0
+  if(!area||area<1){toast('请输入有效的承包耕地面积（≥1亩）','err');return}
+  if(!document.getElementById('landLocation')?.value.trim()){toast('请输入地块位置','err');return}
+  const now=new Date()
+  const appNo='SB'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+String(Math.floor(Math.random()*900)+100)
+  const id=Date.now()
+  subsidy.push({id,appNo,name:'王友德',type:'耕地地力保护补贴',amount:Math.round(area*120),status:'审核中',date:now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0'),node:'已提交',nodes:['已提交','村级初审','乡镇审核','部门复核','待发放','已发放'],currentNodeIdx:0})
+  toast('申请已提交！编号：'+appNo,'ok');clsMod()
+}
+// ===== 农机购置补贴 =====
+function showMachineSubsidyForm(){
+  let h='<div class="mod-desc" style="display:flex;align-items:center;gap:6px"><span style="font-size:16px">👤</span><span style="color:#6F91A8;font-size:11px">本人信息 — 以下字段从当前登录账户自动带出，无需手动填写</span></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>姓名</label><input class="svc-self-field" value="王友德" readonly></div><div class="svc-fld"><label>身份证号</label><input class="svc-self-field" value="342***15**07" readonly></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>户籍所在地</label><input class="svc-self-field" value="刘圩村" readonly></div><div class="svc-fld"><label>联系电话</label><input class="svc-self-field" value="138****5432" readonly></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">🚜 机具信息</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>机具大类<span style="color:#F44">*</span></label><select id="machineCat" onchange="window._svc.calcMachineAmount()"><option value="">请选择</option><option value="耕整地机械">耕整地机械</option><option value="种植施肥机械">种植施肥机械</option><option value="收获机械">收获机械</option><option value="动力机械">动力机械</option></select></div><div class="svc-fld"><label>机具名称<span style="color:#F44">*</span></label><input type="text" id="machineName" placeholder="如：轮式拖拉机"></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>生产企业<span style="color:#F44">*</span></label><input type="text" id="machineMfr" placeholder="生产企业全称"></div><div class="svc-fld"><label>机具型号<span style="color:#F44">*</span></label><input type="text" id="machineModel" placeholder="规格型号"></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld">'
+  h+='<label>购置日期<span style="color:#F44">*</span></label>'
+  h+='<div class="svc-date-wrap" onclick="var d=this.querySelector(\'input[type=date]\');d.showPicker?d.showPicker():d.focus()"><input type="text" placeholder="请选择日期" readonly><input type="date" id="machineDate" onchange="var t=this.parentElement.querySelector(\'input[type=text]\');t.value=this.value;this.parentElement.classList.toggle(\'has-val\',!!this.value);window._svc.calcMachineAmount()"></div>'
+  h+='</div><div class="svc-fld"><label>购置价格（元）<span style="color:#F44">*</span></label><input type="number" id="machinePrice" placeholder="输入购置价格" oninput="window._svc.calcMachineAmount()" min="0"></div></div>'
+  h+='<div class="mod-divider"></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>预估补贴金额（购机价格×35%）</label><div id="machineAmountDisplay" style="background:rgba(40,199,250,0.05);border:1px solid rgba(40,199,250,0.15);border-radius:6px;padding:10px 12px;font-size:18px;color:#28C76F;font-weight:700;text-align:center">¥0.00</div></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">📎 材料上传</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><button class="svc-upload-btn" onclick="window._svc.triggerInvoiceUpload()">📄 上传购机发票</button><span class="svc-upload-hint" id="invoiceStatus">未上传</span></div><div class="svc-fld"><button class="svc-upload-btn" onclick="window._svc.triggerDiagnosisUpload()">🆔 上传身份证及人机合影</button><span class="svc-upload-hint" id="idPhotoStatus">未上传</span></div></div>'
+  h+='<div class="svc-form-row" style="margin-top:16px"><button class="svc-btn svc-btn-secondary" onclick="window._svc.clsMod()" style="flex:none;width:auto">取消</button><button class="svc-btn svc-btn-primary" onclick="window._svc.submitMachineSubsidy()" style="flex:none;width:auto">✓ 提交申请</button></div>'
+  opMod('🚜 农机购置补贴申请',h,'mod-md')
+}
+function calcMachineAmount(){
+  const price=parseFloat(document.getElementById('machinePrice')?.value)||0
+  const display=document.getElementById('machineAmountDisplay')
+  if(display)display.textContent='¥'+Math.round(price*0.35).toLocaleString('zh-CN')
+}
+function submitMachineSubsidy(){
+  const cat=document.getElementById('machineCat')?.value
+  const name=document.getElementById('machineName')?.value.trim()
+  const mfr=document.getElementById('machineMfr')?.value.trim()
+  const model=document.getElementById('machineModel')?.value.trim()
+  const date=document.getElementById('machineDate')?.value
+  const price=parseFloat(document.getElementById('machinePrice')?.value)||0
+  if(!cat||!name||!mfr||!model||!date||!price){toast('请填写所有必填字段','err');return}
+  const now=new Date()
+  const appNo='SB'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+String(Math.floor(Math.random()*900)+100)
+  const id=Date.now()
+  subsidy.push({id,appNo,name:'王友德',type:'农机购置补贴',amount:Math.round(price*0.35),status:'审核中',date:now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0'),node:'已提交',nodes:['已提交','村级初审','乡镇审核','部门复核','待发放','已发放'],currentNodeIdx:0})
+  toast('申请已提交！编号：'+appNo,'ok');clsMod()
+}
+// ===== 低保补助 =====
+function showDibaoForm(){
+  let h='<div class="mod-desc" style="display:flex;align-items:center;gap:6px"><span style="font-size:16px">👤</span><span style="color:#6F91A8;font-size:11px">本人信息 — 以下字段从当前登录账户自动带出，无需手动填写</span></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>姓名</label><input class="svc-self-field" value="王友德" readonly></div><div class="svc-fld"><label>身份证号</label><input class="svc-self-field" value="342***15**07" readonly></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>户籍所在地</label><input class="svc-self-field" value="刘圩村" readonly></div><div class="svc-fld"><label>联系电话</label><input class="svc-self-field" value="138****5432" readonly></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">👨‍👩‍👧‍👦 家庭信息</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>家庭人口<span style="color:#F44">*</span></label><input type="number" id="dibaoPop" placeholder="家庭实际人口数" oninput="window._svc.calcDibaoIncome()" min="1"></div><div class="svc-fld"><label>家庭月总收入（元）<span style="color:#F44">*</span></label><input type="number" id="dibaoIncome" placeholder="所有家庭成员月收入合计" oninput="window._svc.calcDibaoIncome()" min="0"></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld" style="flex:1"><label>人均月收入</label><div id="dibaoPerCapita" style="background:rgba(40,199,250,0.05);border:1px solid rgba(40,199,250,0.15);border-radius:6px;padding:10px 12px;font-size:18px;color:#28C76F;font-weight:700;text-align:center">¥0.00</div></div></div>'
+  h+='<div class="mod-divider"></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld" style="flex:1"><label>预估补助金额（¥300/人/月）</label><div id="dibaoAmountDisplay" style="background:rgba(40,199,250,0.05);border:1px solid rgba(40,199,250,0.15);border-radius:6px;padding:10px 12px;font-size:18px;color:#28C76F;font-weight:700;text-align:center">¥0.00</div></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">📝 困难描述</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld" style="flex:1"><textarea id="dibaoDesc" placeholder="请描述家庭困难情况（如疾病、残疾、失业等），以便审核人员评估..." rows="3" style="width:100%"></textarea></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">📎 材料上传</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><button class="svc-upload-btn" onclick="window._svc.triggerInvoiceUpload()">🆔 上传身份证及户口本</button><span class="svc-upload-hint" id="dibaoIdStatus">未上传</span></div><div class="svc-fld"><button class="svc-upload-btn" onclick="window._svc.triggerDiagnosisUpload()">📄 上传收入及财产证明</button><span class="svc-upload-hint" id="dibaoIncomeStatus">未上传</span></div></div>'
+  h+='<div class="svc-form-row" style="margin-top:16px"><button class="svc-btn svc-btn-secondary" onclick="window._svc.clsMod()" style="flex:none;width:auto">取消</button><button class="svc-btn svc-btn-primary" onclick="window._svc.submitDibao()" style="flex:none;width:auto">✓ 提交申请</button></div>'
+  opMod('💳 低保补助申请',h,'mod-md')
+}
+function calcDibaoIncome(){
+  const pop=parseInt(document.getElementById('dibaoPop')?.value)||0
+  const income=parseFloat(document.getElementById('dibaoIncome')?.value)||0
+  const perCap=pop>0?Math.round(income/pop):0
+  const perCapEl=document.getElementById('dibaoPerCapita')
+  if(perCapEl)perCapEl.textContent='¥'+perCap.toLocaleString('zh-CN')
+  const amountEl=document.getElementById('dibaoAmountDisplay')
+  if(amountEl)amountEl.textContent='¥'+(pop*300).toLocaleString('zh-CN')
+}
+function submitDibao(){
+  const pop=parseInt(document.getElementById('dibaoPop')?.value)||0
+  const income=parseFloat(document.getElementById('dibaoIncome')?.value)||0
+  if(!pop||pop<1){toast('请输入有效的家庭人口数','err');return}
+  if(!income){toast('请输入家庭月总收入','err');return}
+  if(!document.getElementById('dibaoDesc')?.value.trim()){toast('请描述家庭困难情况','err');return}
+  const perCap=Math.round(income/pop)
+  if(perCap>=600){toast('经核算，家庭人均月收入 ¥'+perCap.toLocaleString()+' ≥ ¥600，不符合低保申请条件','err');return}
+  const now=new Date()
+  const appNo='SB'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+String(Math.floor(Math.random()*900)+100)
+  const id=Date.now()
+  subsidy.push({id,appNo,name:'王友德',type:'低保补助',amount:pop*300,status:'审核中',date:now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0'),node:'已提交',nodes:['已提交','村级初审','乡镇审核','部门复核','待发放','已发放'],currentNodeIdx:0})
+  toast('申请已提交！编号：'+appNo,'ok');clsMod()
+}
+// ===== 创业补贴 =====
+function showBizSubsidyForm(){
+  let h='<div class="mod-desc" style="display:flex;align-items:center;gap:6px"><span style="font-size:16px">👤</span><span style="color:#6F91A8;font-size:11px">本人信息 — 以下字段从当前登录账户自动带出，无需手动填写</span></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>姓名</label><input class="svc-self-field" value="王友德" readonly></div><div class="svc-fld"><label>身份证号</label><input class="svc-self-field" value="342***15**07" readonly></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>户籍所在地</label><input class="svc-self-field" value="刘圩村" readonly></div><div class="svc-fld"><label>联系电话</label><input class="svc-self-field" value="138****5432" readonly></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">🏢 创业信息</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>经营主体名称<span style="color:#F44">*</span></label><input type="text" id="bizName" placeholder="个体工商户或企业全称"></div><div class="svc-fld"><label>统一社会信用代码<span style="color:#F44">*</span></label><input type="text" id="bizCode" placeholder="18位统一社会信用代码"></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld">'
+  h+='<label>成立日期<span style="color:#F44">*</span></label>'
+  h+='<div class="svc-date-wrap" onclick="var d=this.querySelector(\'input[type=date]\');d.showPicker?d.showPicker():d.focus()"><input type="text" placeholder="请选择日期" readonly><input type="date" id="bizDate" onchange="var t=this.parentElement.querySelector(\'input[type=text]\');t.value=this.value;this.parentElement.classList.toggle(\'has-val\',!!this.value)"></div>'
+  h+='</div><div class="svc-fld"><label>经营地址<span style="color:#F44">*</span></label><input type="text" id="bizAddress" placeholder="经营场所详细地址"></div></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld" style="flex:1"><label>经营项目（简述）<span style="color:#F44">*</span></label><textarea id="bizProject" placeholder="描述经营内容和规模..." rows="2" style="width:100%"></textarea></div></div>'
+  h+='<div class="mod-divider"></div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><label>申请补贴金额（元）<span style="color:#F44">*</span></label><input type="number" id="bizAmount" placeholder="最高¥8,000" min="1" max="8000"><div style="font-size:10px;color:#f59e0b;margin-top:3px">⚠ 最高不超过¥8,000，以实际审批金额为准</div></div><div class="svc-fld"><label>银行账号<span style="color:#F44">*</span></label><input type="text" id="bizBank" placeholder="收款银行账号"></div></div>'
+  h+='<div class="mod-divider"></div><div class="mod-section-title">📎 材料上传</div>'
+  h+='<div class="svc-form-row"><div class="svc-fld"><button class="svc-upload-btn" onclick="window._svc.triggerInvoiceUpload()">📄 上传营业执照</button><span class="svc-upload-hint" id="bizLicenseStatus">未上传</span></div><div class="svc-fld"><button class="svc-upload-btn" onclick="window._svc.triggerDiagnosisUpload()">📄 上传创业计划书</button><span class="svc-upload-hint" id="bizPlanStatus">未上传</span></div></div>'
+  h+='<div class="svc-form-row" style="margin-top:16px"><button class="svc-btn svc-btn-secondary" onclick="window._svc.clsMod()" style="flex:none;width:auto">取消</button><button class="svc-btn svc-btn-primary" onclick="window._svc.submitBizSubsidy()" style="flex:none;width:auto">✓ 提交申请</button></div>'
+  opMod('🏢 创业补贴申请',h,'mod-md')
+}
+function submitBizSubsidy(){
+  const bizName=document.getElementById('bizName')?.value.trim()
+  const bizCode=document.getElementById('bizCode')?.value.trim()
+  const bizDate=document.getElementById('bizDate')?.value
+  const bizAddress=document.getElementById('bizAddress')?.value.trim()
+  const bizProject=document.getElementById('bizProject')?.value.trim()
+  const bizAmount=parseFloat(document.getElementById('bizAmount')?.value)||0
+  const bizBank=document.getElementById('bizBank')?.value.trim()
+  if(!bizName||!bizCode||!bizDate||!bizAddress||!bizProject||!bizAmount||!bizBank){toast('请填写所有必填字段','err');return}
+  if(bizAmount>8000){toast('申请金额最高不超过¥8,000','err');return}
+  const now=new Date()
+  const appNo='SB'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+String(Math.floor(Math.random()*900)+100)
+  const id=Date.now()
+  subsidy.push({id,appNo,name:'王友德',type:'创业补贴',amount:Math.min(bizAmount,8000),status:'审核中',date:now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0'),node:'已提交',nodes:['已提交','村级初审','乡镇审核','部门复核','待发放','已发放'],currentNodeIdx:0})
+  toast('申请已提交！编号：'+appNo,'ok');clsMod()
+}

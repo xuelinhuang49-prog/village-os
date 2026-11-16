@@ -31,9 +31,16 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 生成 JWT Token
+     * 生成 JWT Token（默认角色 admin，兼容管理端登录）
      */
     public String generateToken(Long userId, Long tenantId, Long villageId, String username) {
+        return generateToken(userId, tenantId, villageId, username, "admin");
+    }
+
+    /**
+     * 生成 JWT Token（携带角色，农户登录传 farmer）
+     */
+    public String generateToken(Long userId, Long tenantId, Long villageId, String username, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
@@ -42,6 +49,7 @@ public class JwtTokenProvider {
         claims.put("tenant_id", tenantId);
         claims.put("village_id", villageId);
         claims.put("username", username);
+        claims.put("role", role);
 
         return Jwts.builder()
                 .claims(claims)

@@ -22,4 +22,5 @@ public class Insurance {
     private String hospital;
     private String diagnosis;
     private String reimburse;
+    private Long farmerId;
 }

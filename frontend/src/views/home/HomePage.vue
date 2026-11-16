@@ -10,6 +10,7 @@
           <li><a href="#arch" class="nav-link" :class="{ active: activeSection === 'arch' }"><i class="fa-solid fa-sitemap"></i> 架构设计</a></li>
           <li><a href="#features" class="nav-link" :class="{ active: activeSection === 'features' }"><i class="fa-solid fa-star"></i> 核心功能</a></li>
           <li><a href="#modules" class="nav-link" :class="{ active: activeSection === 'modules' }"><i class="fa-solid fa-table-cells-large"></i> 应用模块</a></li>
+          <li><router-link to="/admin" class="nav-link"><i class="fa-solid fa-user-gear"></i> 管理后台</router-link></li>
           <li><router-link to="/dashboard" class="nav-link nav-cta"><i class="fa-solid fa-arrow-right"></i> 进入平台</router-link></li>
         </ul>
       </div>
@@ -34,7 +35,7 @@
         <p class="hero-desc">菜单式、模块化、可演进的一体化数字乡村综合服务平台</p>
         <div class="hero-buttons">
           <router-link to="/dashboard" class="hero-btn-primary"><i class="fa-solid fa-gauge-high"></i> 进入驾驶舱</router-link>
-          <router-link to="/dashboard" class="hero-btn-outline"><i class="fa-solid fa-chart-pie"></i> 数据大屏</router-link>
+          <router-link :to="{ path: '/dashboard', query: { fullscreen: 1 } }" class="hero-btn-outline"><i class="fa-solid fa-chart-pie"></i> 数据大屏</router-link>
           <a href="#intro" class="hero-btn-outline"><i class="fa-solid fa-circle-info"></i> 了解平台</a>
         </div>
       </div>
@@ -55,7 +56,7 @@
         <div class="intro-grid">
           <div class="intro-panel">
             <h3>"1+4+N"乡村综合服务体系</h3>
-            <p>平台以统一数字底座为核心，通过数据中心、治理中心、产业中心、服务中心四大能力中台，支撑多个业务应用模块灵活组合。</p>
+            <p>平台以统一数字底座为核心，通过数字产业中心、数字服务中心、数字治理中心、生态治理中心四大能力中台，支撑多个业务应用模块灵活组合。</p>
             <p>面向不同类型村庄，可按需配置智慧农业、电商溯源、村务治理、养老关怀、教育培训、GIS一张图等能力，持续改善农村人居环境、兴旺农村产业经济、便捷农民生产生活。</p>
           </div>
           <div class="visual-panel"><div><div class="big-icon"><i class="fa-solid fa-map-location-dot"></i></div><div class="visual-title">中堰村全域态势感知</div><div class="visual-desc">GIS数字孪生 · 52个监测节点 · 一屏观全村</div></div></div>
@@ -181,10 +182,10 @@ const stats = [
 
 // ===== 四大中心 =====
 const centers = [
-  { icon: '📊', title: '数据中心', desc: '统一数据汇聚<br>86张表 · 14个业务域' },
-  { icon: '🏛️', title: '治理中心', desc: '基层治理数字化<br>五维数据库 · 网格管理' },
-  { icon: '🌾', title: '产业中心', desc: '智慧农业 + 电商<br>农作物 · 品牌溯源' },
-  { icon: '🤝', title: '服务中心', desc: '便民惠民服务<br>医疗 · 养老 · 教育' }
+  { icon: '🌾', title: '数字产业中心', desc: '智慧农业 + 电商<br>农作物 · 品牌溯源' },
+  { icon: '🤝', title: '数字服务中心', desc: '便民惠民服务<br>医疗 · 养老 · 教育' },
+  { icon: '🏛️', title: '数字治理中心', desc: '基层治理数字化<br>五维数据库 · 网格管理' },
+  { icon: '🌿', title: '生态治理中心', desc: '生态环境监测<br>病虫害预警 · 人居环境' }
 ]
 
 // ===== 六大能力 =====
@@ -200,11 +201,13 @@ const pillars = [
 // ===== 应用模块 =====
 const modules = [
   { icon: 'fa-solid fa-chart-pie', iconBg: '#e8f1fb', iconColor: '#043e6b', title: '乡村驾驶舱', desc: '村情总览 · GIS数字孪生 · 实时监测 · 风险预警', to: '/dashboard' },
-  { icon: 'fa-solid fa-wheat-awn', iconBg: '#e8f8ef', iconColor: '#1a8a4a', title: '智慧农业', desc: '地块管理 · 作物档案 · 农事记录 · 水肥管理', to: '/dashboard' },
-  { icon: 'fa-solid fa-cart-shopping', iconBg: '#fff4df', iconColor: '#b66b00', title: '农产品电商', desc: '在线商城 · 直播带货 · 品牌溯源 · 物流追踪', to: '/dashboard' },
+  { icon: 'fa-solid fa-wheat-awn', iconBg: '#e8f8ef', iconColor: '#1a8a4a', title: '智慧农业', desc: '地块管理 · 作物档案 · 农事记录 · 水肥管理', to: '/industry' },
+  { icon: 'fa-solid fa-cart-shopping', iconBg: '#fff4df', iconColor: '#b66b00', title: '农产品电商', desc: '在线商城 · 直播带货 · 品牌溯源 · 物流追踪', to: '/industry/ecommerce' },
   { icon: 'fa-solid fa-building-columns', iconBg: '#f1eefe', iconColor: '#6d45c5', title: '村务治理', desc: '事件上报流转 · 网格管理 · 五维数据库', to: '/dashboard' },
-  { icon: 'fa-solid fa-heart-pulse', iconBg: '#fdecec', iconColor: '#c0392b', title: '养老关怀', desc: '一键呼救 · 异常预警 · 健康档案 · 智能手环', to: '/dashboard' },
-  { icon: 'fa-solid fa-graduation-cap', iconBg: '#e8f1fb', iconColor: '#065a9a', title: '农技培训', desc: '直播课堂 · 技能培训 · 政策宣传 · 专家答疑', to: '/dashboard' }
+  { icon: 'fa-solid fa-seedling', iconBg: '#e6f6ee', iconColor: '#0f8a4d', title: '生态治理', desc: '病虫害预警 · 环境监测 · 人居环境', to: '/dashboard' },
+  { icon: 'fa-solid fa-heart-pulse', iconBg: '#fdecec', iconColor: '#c0392b', title: '养老关怀', desc: '一键呼救 · 异常预警 · 健康档案 · 智能手环', to: '/service' },
+  { icon: 'fa-solid fa-graduation-cap', iconBg: '#e8f1fb', iconColor: '#065a9a', title: '农技培训', desc: '直播课堂 · 技能培训 · 政策宣传 · 专家答疑', to: '/service' },
+  { icon: 'fa-solid fa-user-gear', iconBg: '#f0f2f5', iconColor: '#4a5a6a', title: '管理后台', desc: '用户管理 · 民宿订单 · 审核中心 · 数据备份', to: '/admin' }
 ]
 
 // ===== 多端覆盖 =====

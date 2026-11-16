@@ -6,7 +6,7 @@ spring:
     name: village-os-backend
 
   datasource:
-    url: jdbc:h2:file:./data/village_os;MODE=MySQL;AUTO_SERVER=TRUE
+    url: jdbc:h2:file:./data/village_os;MODE=MySQL;AUTO_SERVER=TRUE;NON_KEYWORDS=USER
     username: sa
     password:
     driver-class-name: org.h2.Driver

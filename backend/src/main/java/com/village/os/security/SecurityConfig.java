@@ -30,6 +30,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/farmer/login").permitAll()
+                        .requestMatchers("/api/v1/policy/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/health").permitAll()
                         .requestMatchers("/api/**").authenticated()

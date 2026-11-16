@@ -1,24 +1,27 @@
 @echo off
 chcp 65001 >nul
 echo ============================================
-echo   数字乡村平台 - 一键启动 (Windows)
-echo ============================================
-echo.
-echo 启动顺序:
-echo   1. 确保 PostgreSQL 已启动
-echo   2. 确保 Redis 已启动
-echo   3. 启动后端 (端口 8080)
-echo   4. 启动前端 (端口 5173)
+echo   数字乡村平台 - 一键启动
 echo ============================================
 echo.
 
-echo [提示] 请分别运行以下命令:
+cd /d "%~dp0.."
+
+echo 正在启动后端 (后台窗口)...
+start "数字乡村-后端" cmd /c "cd /d backend && call mvnw.cmd spring-boot:run"
+
+echo 正在启动前端 (后台窗口)...
+start "数字乡村-前端" cmd /c "cd /d frontend && if not exist node_modules npm install && npm run dev"
+
 echo.
-echo   启动后端:  start backend\mvnw.cmd spring-boot:run
-echo   启动前端:  cd frontend ^&^& npm run dev
+echo ============================================
+echo   启动中，请稍候...
+echo   后端启动约需 15-30 秒
+echo   前端启动约需 5-10 秒
+echo   浏览器访问: http://localhost:5173
+echo ============================================
 echo.
-echo 或者分两个终端分别执行:
-echo   Terminal 1: scripts\start-backend.bat
-echo   Terminal 2: scripts\start-frontend.bat
+echo 关闭本窗口不影响服务运行。
+echo 要停止服务，请关闭"数字乡村-后端"和"数字乡村-前端"两个窗口。
 echo.
 pause

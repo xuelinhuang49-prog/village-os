@@ -14,6 +14,7 @@ public class AdminUser {
     private String name;
     private String role;
     private String org;
+    private String gridId;
     private String phone;
     private String status;
     private String permissions;

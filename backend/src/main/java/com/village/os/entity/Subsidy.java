@@ -16,4 +16,5 @@ public class Subsidy {
     private Integer progress;
     private String material;
     private String handler;
+    private Long farmerId;
 }

@@ -53,3 +53,16 @@ desktop.ini
 
 # --- Docker ---
 docker-compose.override.yml
+
+# --- H2 运行时数据库 ---
+backend/data/
+*.mv.db
+*.lock.db
+*.trace.db
+*.h2.db
+
+# --- Maven 生成物 ---
+effective-pom.xml
+
+# --- 编辑器残留 ---
++r.status+

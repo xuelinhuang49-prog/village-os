@@ -10,7 +10,7 @@ cd /d "%~dp0..\backend"
 echo [1/2] 检查 Java 环境...
 java -version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERROR] 未找到 Java，请安装 JDK 17+
+    echo [ERROR] 未找到 Java，请安装 JDK 25+
     pause
     exit /b 1
 )

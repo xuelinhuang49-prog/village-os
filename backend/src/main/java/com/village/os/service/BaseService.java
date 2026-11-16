@@ -46,13 +46,30 @@ public class BaseService<M extends BaseMapper<T>, T> {
             for (Map.Entry<String, Object> entry : fields.entrySet()) {
                 var field = entity.getClass().getDeclaredField(entry.getKey());
                 field.setAccessible(true);
-                field.set(entity, entry.getValue());
+                field.set(entity, coerce(entry.getValue(), field.getType()));
             }
         } catch (Exception e) {
             throw new RuntimeException("更新字段失败", e);
         }
         mapper.updateById(entity);
         return mapper.selectById(id);
+    }
+
+    /** 数值类型适配：JSON 反序列化到 Map 时整数会变 Integer、小数变 Double，
+     *  直接 field.set 会因类型不匹配抛异常，这里按目标字段类型做转换。 */
+    private Object coerce(Object value, Class<?> target) {
+        if (value == null) return null;
+        if (target.isInstance(value)) return value;
+        if (value instanceof Number) {
+            Number n = (Number) value;
+            if (target == Double.class || target == double.class) return n.doubleValue();
+            if (target == Integer.class || target == int.class) return n.intValue();
+            if (target == Long.class || target == long.class) return n.longValue();
+            if (target == Float.class || target == float.class) return n.floatValue();
+            if (target == Short.class || target == short.class) return n.shortValue();
+        }
+        if (target == String.class) return String.valueOf(value);
+        return value;
     }
 
     public boolean removeById(Long id) {

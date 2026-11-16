@@ -48,10 +48,10 @@ const routes = [
   },
   {
     path: '/admin',
-    name: 'Admin',
-    component: () => import('@/views/dashboard/AdminPage.vue'),
-    meta: { title: '管理后台' }
-  }
+    name: 'AdminLogin',
+    component: () => import('@/views/login/AdminLoginPage.vue'),
+    meta: { title: '管理员登录' }
+  },
 ]
 
 const router = createRouter({

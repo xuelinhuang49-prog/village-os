@@ -16,7 +16,7 @@ echo ""
 # 检查 Java
 echo "[1/3] 检查 Java 环境..."
 if ! command -v java &> /dev/null; then
-    echo "[ERROR] 未找到 Java，请安装 JDK 17+"
+    echo "[ERROR] 未找到 Java，请安装 JDK 25+"
     exit 1
 fi
 echo "      Java 环境正常: $(java -version 2>&1 | head -1)"

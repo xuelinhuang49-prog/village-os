@@ -18,4 +18,5 @@ public class Crop {
     private String fertilizer;
     private String status;
     private String description;
+    private Long farmerId;
 }

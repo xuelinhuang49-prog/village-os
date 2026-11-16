@@ -18,4 +18,5 @@ public class Land {
     private Double gisLat;
     private Double gisLng;
     private String createdAt;
+    private Long farmerId;
 }

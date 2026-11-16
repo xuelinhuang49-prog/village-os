@@ -12,11 +12,26 @@ import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import OSM from 'ol/source/OSM'
+import XYZ from 'ol/source/XYZ'
 import Feature from 'ol/Feature'
 import Point from 'ol/geom/Point'
 import { Style, Circle, Fill, Stroke, Text } from 'ol/style'
 import { fromLonLat } from 'ol/proj'
 import { defaults as defaultControls } from 'ol/control'
+
+// ===== 天地图（国家地理信息公共服务平台：国界规范 + 中文注记 + 无坐标偏移）=====
+// 免费申请「浏览器端」key：https://console.tianditu.gov.cn/api/key
+// 填入 key 后地图自动切换为天地图；留空则回退 OpenStreetMap（国外底图，国内可能加载慢/打不开）
+const TIANDITU_KEY = '95612d93a08fd560faaaeec5c4b9b0d7'
+const TD_SUBS = ['0', '1', '2', '3', '4', '5', '6', '7']
+function tiandituUrl(layer, z, x, y) {
+  const s = TD_SUBS[(x + y) % 8]
+  const lyr = layer === 'cva_w' ? 'cva' : 'vec'
+  return `https://t${s}.tianditu.gov.cn/${layer}/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=${lyr}&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${z}&TILEROW=${y}&TILECOL=${x}&tk=${TIANDITU_KEY}`
+}
+function tiandituLayer(layer) {
+  return new TileLayer({ source: new XYZ({ tileUrlFunction: (c) => tiandituUrl(layer, c[0], c[1], c[2]) }) })
+}
 
 const CENTER = [108.51, 32.89]
 const TYPES = [
@@ -32,10 +47,13 @@ let map, vectorSource
 
 onMounted(() => {
   vectorSource = new VectorSource()
+  const baseLayers = TIANDITU_KEY
+    ? [tiandituLayer('vec_w'), tiandituLayer('cva_w')]
+    : [new TileLayer({ source: new OSM() })]
   map = new Map({
     target: mapRef.value,
     controls: defaultControls({ zoom: true, attribution: false }),
-    layers: [new TileLayer({ source: new OSM() }), new VectorLayer({ source: vectorSource })],
+    layers: [...baseLayers, new VectorLayer({ source: vectorSource })],
     view: new View({ center: fromLonLat(CENTER), zoom: 15 })
   })
 
