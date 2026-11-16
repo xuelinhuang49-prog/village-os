@@ -12,6 +12,15 @@
 
 ---
 
+## 📸 界面预览
+
+| 界面 | 界面 |
+|------|------|
+| ![数字乡村平台](docs/screenshots/screenshot-1.png) | ![数字乡村平台](docs/screenshots/screenshot-2.png) |
+| ![数字乡村平台](docs/screenshots/screenshot-3.png) | ![数字乡村平台](docs/screenshots/screenshot-4.png) |
+
+---
+
 ## ✨ 功能模块
 
 ### 平台基础能力
